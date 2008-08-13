@@ -8,18 +8,22 @@ structure Wiki = struct
                         NONE => raise U.notFound
                       | SOME { id, text } => { id = id, title = title, text = text }
 
-  val wikilink = RE.compileString "..."
-
   fun formatPage page = let
         fun getMatch (SOME { pos, len }) = Substring.string (Substring.slice (pos, 0, SOME len))
           | getMatch NONE = raise Option
 
         fun makeLink s = "<a href=\"" ^ s ^ "\">" ^ s ^ "</a>"
 
+        val translateCR = String.translate (fn #"\n" => "<br />"
+                                             | c => String.str c) 
+
         val match = RE.match [ ("\\[([A-Za-z]*)\\]", fn m =>
                                   makeLink (getMatch (MatchTree.nth (m, 1)))),
-                               ("[^\\[]+", fn m =>
-                                WebUtil.escapeStr (getMatch (MatchTree.root m)))
+                               ("[^\\[]+", fn m => let
+                                  val match = getMatch (MatchTree.root m)
+                                in        
+                                  translateCR (WebUtil.escapeStr match)
+                                end) 
                              ]
                              Substring.getc
 
