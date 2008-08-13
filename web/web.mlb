@@ -1,0 +1,11 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
+web.sml
+web-util.sig
+web-util.sml
+$(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
+form.sig
+form.sml
+server/cgi.sml
+server/scgi-server.sml
+server/fastcgi-server.sml

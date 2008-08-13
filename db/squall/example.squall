@@ -1,0 +1,15 @@
+--- getById: int -> { id: int, value: string } option
+
+select id, value from foo_table where id = ?
+
+--- x: int -> unit
+
+update fnord set frobbed = 1 where id = ?
+
+--- foo: unit -> unit
+
+update xyzzy set wut = 1
+
+--- bar: { x: string } -> unit
+
+insert into blort (zot) values (?)

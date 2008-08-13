@@ -1,0 +1,8 @@
+Group is
+	$/basis.cm
+	../../util/rope.cm
+	../../util/stream.sml
+	nqx.lex
+	tinyxml.sml
+	tinyxml_parser.sig
+	tinyxml_parser.sml

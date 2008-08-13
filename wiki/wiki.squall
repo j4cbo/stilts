@@ -1,0 +1,11 @@
+--- getPage: string -> { id: int, text: string } option
+
+select id, text from page where title = ?
+
+--- updatePage: { text: string, title: string } -> unit
+
+update page set text = ? where title = ?
+
+--- createPage: { text: string, title: string } -> unit
+
+insert into page (text, title) values (?, ?)

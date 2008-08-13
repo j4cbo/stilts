@@ -1,0 +1,8 @@
+$(SML_LIB)/basis/basis.mlb
+../../util/rope.sig
+../../util/rope.sml
+../../util/stream.sml
+nqx.lex.sml
+tinyxml.sml
+tinyxml_parser.sig
+tinyxml_parser.sml

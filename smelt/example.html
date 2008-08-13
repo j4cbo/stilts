@@ -1,0 +1,9 @@
+<?template TExample { adjective, class, frob } ?>
+<html>
+  hello, ${adjective} world!
+  <span class="${class}">classy</span>
+  <ul>
+   <li t:for="i in frob">${i}</li>
+  </ul>
+  <br t:if="true"/>
+</html>

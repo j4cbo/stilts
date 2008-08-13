@@ -1,0 +1,70 @@
+Squall 
+------
+
+  Squall is a preprocessor that builds well-typed SML wrappers for SQL queries
+and statements. It reads a description file containing a list of statements
+with associated type information, and produces source for an SML structure with
+one function for each statement.
+
+Each declaration has the following form:
+
+  --- funcname: intype -> outype
+  SELECT ... from ... ? ...
+
+  Any query supported by the database engine can be used. Squall does not parse
+the SQL template except, under certain circumstances, to determine the frst
+keyword; see below. When the generated function is run, each question mark
+character ("?") in the provided SQL will be replaced by its positionally-
+corresponding input parameter. The SQL must contain the correct number of ?
+symbols for the specified parameters.
+ 
+  The syntax for specifying input and output types is deliberately very close to
+that of SML. The input type can be one of the following:
+
+  unit                 No input; no ? substitutions in the SQL.
+  typ (* typ * ...)    Single value or tuple of values.
+  { foo: typ; ...}     Record. Since SML records are not ordered, the order in
+                         which fields are listed in the Squall description file
+                         is the order in which they will be mapped.
+
+  Defined output types are:
+
+  unit                No output. The wrapper checks to ensure that the query
+                        returns no rows.
+  typ (* typ * ...)   The query must return a single row; its columns are
+                        returned as a tuple of the given types.
+  { foo: typ; ... }   As above, but columns are mapped to fields in the record
+                        according to their order in the description field.
+  ... list            Either of the above two options may be speciied as a
+                        list. In this case, all rows are eager-loaded (using
+                        mysql_store_result) into a normal SML list.
+  ... array/vector    As with list; rows are then converted to an array/vector.
+  ... option          As above; the query must return either zero rows or one
+                        row, which correspond to NONE or SOME (rowtype).
+  affected_rows       Special. Functions declared as "-> affected_rows" must
+                        return no result set, as with return type unit; the
+                        wrapper function then returns the result of calling
+                        mysql_affected_rows(). 
+  insert_id           Analogous to affected_rows, but for mysql_insert_id().
+
+  Note that list is the "native" version; arrays and vectors are converted from
+a list. This is included largely for completeness' sake.
+
+  Currently, Smelt supports the following column types:
+
+  string             String. For MySQL, this is escaped using
+                     mysql_real_escape_string, quoted, and substituted.
+  int                Int.int. Encoded with Int.toString; decoded with
+                     Int.fromString.
+  word               LargeWord.word. Encoded with LargeWord.toString; decoded
+                     with LargeWord.fromString.
+
+  As implemented, Smelt uses the standard libmysqlclient functions, rather than
+its prepared statement API. This means that the database and libmysqlclient
+convert all returned values to strings, regarldess of their type according to
+the DB engine. Smelt then produces code to convert each field back to the
+appropriate type.
+
+  Future work:
+- Lazy loading from the database (mysql_use_result())
+- Use prepared statements

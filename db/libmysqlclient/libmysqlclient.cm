@@ -1,0 +1,10 @@
+Library
+	signature MYSQLCLIENT
+	structure MySQLClient
+is
+	$/basis.cm
+	$c/c.cm
+	FFI-smlnj/ffi.cm : make ()
+	libmysqlclient.sig
+	uchar-smlnj.sml
+	libmysqlclient.sml

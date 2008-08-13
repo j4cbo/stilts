@@ -1,0 +1,11 @@
+local
+	$(SML_LIB)/basis/basis.mlb
+	$(SML_LIB)/mlnlffi-lib/c.mlb
+	FFI-mlton/ffi.mlb
+	libmysqlclient.sig
+	uchar-mlton.sml
+	libmysqlclient.sml
+in
+	signature MYSQLCLIENT
+	structure MySQLClient
+end

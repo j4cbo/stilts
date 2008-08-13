@@ -1,0 +1,37 @@
+This is a wrapper for accessing MySQL from SML/NJ or MLton. It uses ML-NLFFI
+to load the libmysqlclient dynamic library, and then wraps most libmysqlclient
+functions as directly as possible.
+
+Some notes:
+
+- Although the details of the FFI are not exposed outside of the MySQLClient
+  structure, it is not entirely safe. Specifically, accessing a result after
+  its connection has been freed will cause undefined behavior (in the C sense),
+  and failing to call free_result or close results in memory leaks. In most
+  cases, another layer of wrapper code will be used (i.e. Squall), so this is
+  not a large concern.
+
+- This uses a clone of the real mysql.h, partially because mysql.h on OS X
+  on OS X includes system headers with GCC extensions which cause ml-nlffigen
+  to fail with parse errors. Additionally, the substitute mysql.h allows the
+  following workaround.
+
+- SML/NJ's code generator does not directly support 64-bit arithmetic, and
+  its code generator cannot handle the C calling convention for 64-bit values
+  on a 32-bit architecture. This is worked around as such:
+  - mysql_data_seek(), which takes a my_ulonglong parameter, raies Fail.
+  - The local mysql.h defines a typdef unsigned long my_ulonglong_returned;
+    mysql_affected_rows(), mysql_insert_id(), and mysql_num_rows() return this.
+    Although this is essentially an ABI mismatch, the effect (at least on x86)
+    is that the upper 32 bits will be truncated. Better than nothing.
+
+- SML/NJ's Compilation Manager will automatically invoke ml-nlffigen (via make)
+  if necessary. Before using libmysqlclient.mlb with MLton, you must invoke
+  'make' in the libmysqlclient directory to generate the bindings.
+
+
+An implementation using MLton's native FFI should be written. It would avoid
+the 64-bit incompatibilities with SML/NJ, bypass the massively inelegant need
+for a local, modified mysql.h, and be significantly more efficient due to the
+design of ML-NLFFI.
+

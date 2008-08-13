@@ -1,0 +1,16 @@
+<?template TEditPage { title, text, new } ?>
+<html>
+ <head>
+  <title>Wiki: ${title}</title>
+ </head>
+ <body>
+  <h1>Wiki: ${title}</h1>
+  <p t:if="new">This page does not exist yet. You can create it now:</p>
+  <form method="post" action="save">
+   <textarea rows="20" cols="60" name="content">${text}</textarea>
+   <br/>
+   <input type="submit" name="s" value="Save"/>
+   <input type="hidden" name="new" value="1" t:if="new"/>
+  </form>
+ </body>
+</html>

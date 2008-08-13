@@ -1,0 +1,8 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/mlyacc-lib/mlyacc-lib.mlb
+input.sml
+input.grm.sig
+input.grm.sml
+input.lex.sml
+squall.sml
+squall-standalone.sml

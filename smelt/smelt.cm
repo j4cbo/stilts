@@ -1,0 +1,11 @@
+Group is
+	$/basis.cm
+	$/smlnj-lib.cm
+	tinyxml/tinyxml.cm
+	templateattr.sig
+	templateattr.sml
+	templategen.sig
+	templategen.sml
+	templatecompiler.sig
+	templatecompiler.sml
+	smelt.sml

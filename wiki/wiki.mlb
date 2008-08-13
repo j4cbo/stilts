@@ -1,0 +1,10 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/smlnj-lib/RegExp/regexp-lib.mlb
+../db/libmysqlclient/libmysqlclient.mlb
+wiki.squall.sml
+../smelt/tinyxml/tinyxml.mlb
+../web/web.mlb
+templates/page.html.sml
+templates/edit.html.sml
+wiki.sml
+main.sml

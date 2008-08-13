@@ -1,0 +1,79 @@
+open SquallInput
+
+exception ParseError of string
+
+fun type_lookup "string" = String
+  | type_lookup "int" = Int
+  | type_lookup t = raise ParseError ("Unknown type: \"" ^ t ^ "\"")
+
+%%
+
+%term TOKEN of string
+    | STAR
+    | ARROW
+    | COLON
+    | LBRACE
+    | RBRACE
+    | LPAREN
+    | RPAREN
+    | COMMA
+    | LIST
+    | OPTION
+    | ARRAY
+    | VECTOR
+    | UNIT
+    | EOF
+    | SQLDATA of string
+
+%eop EOF
+%noshift EOF
+
+%nonterm START of sqlfunc list
+       | ITEMS of sqlfunc list
+       | ITEM of sqlfunc
+       | itype of inbinding
+       | otype of outbinding
+       | reptype of reptype
+       | tupleitems of vartype list
+       | recorditems of (string * vartype) list
+       | sqlseq of string
+
+%pos int
+
+%name Squall
+
+%%
+
+START:  ITEMS (ITEMS)
+
+ITEMS:   ITEM ITEMS (ITEM :: ITEMS)
+     |   ITEM (ITEM :: nil)
+
+ITEM: TOKEN COLON itype ARROW otype sqlseq
+        ({ name = TOKEN1, inb = itype, outb = otype, sql = sqlseq })
+
+itype: LPAREN tupleitems RPAREN (IBtuple tupleitems)
+     | tupleitems (IBtuple tupleitems)
+     | LBRACE recorditems RBRACE (IBrecord recorditems)
+     | UNIT (IBunit)
+
+otype: LPAREN tupleitems RPAREN (OBtuple (Rsingle, tupleitems))
+     | LPAREN tupleitems RPAREN reptype (OBtuple (reptype, tupleitems))
+     | tupleitems (OBtuple (Rsingle, tupleitems))
+     | LBRACE recorditems RBRACE (OBrecord (Rsingle, recorditems))
+     | LBRACE recorditems RBRACE reptype (OBrecord (reptype, recorditems))
+     | UNIT (OBunit)
+
+reptype: LIST (Rlist)
+       | OPTION (Roption)
+       | ARRAY (Rarray)
+       | VECTOR (Rvector)
+
+tupleitems: TOKEN STAR tupleitems ((type_lookup TOKEN) :: tupleitems)
+          | TOKEN ((type_lookup TOKEN) :: nil)
+
+recorditems: TOKEN COLON TOKEN COMMA recorditems ((TOKEN1, type_lookup TOKEN2) :: recorditems)
+           | TOKEN COLON TOKEN ((TOKEN1, type_lookup TOKEN2) :: nil)
+
+sqlseq:   SQLDATA sqlseq (SQLDATA ^ sqlseq)
+      |   SQLDATA (SQLDATA)

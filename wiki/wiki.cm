@@ -1,0 +1,12 @@
+Group is
+	$/basis.cm
+	$/regexp-lib.cm
+
+	../db/libmysqlclient/libmysqlclient.cm
+	../db/squall/squall-tool.cm : tool
+	wiki.squall
+
+	../web/web.cm
+
+	templates/templates.cm
+	wiki.sml
