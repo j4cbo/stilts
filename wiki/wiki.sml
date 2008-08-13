@@ -4,10 +4,6 @@ structure Wiki = struct
   structure RE = RegExpFn (structure P = AwkSyntax
                            structure E = BackTrackEngine)
 
-  fun getPage title = case SQL.getPage title of
-                        NONE => raise U.notFound
-                      | SOME { id, text } => { id = id, title = title, text = text }
-
   fun formatPage page = let
         fun getMatch (SOME { pos, len }) = Substring.string (Substring.slice (pos, 0, SOME len))
           | getMatch NONE = raise Option
