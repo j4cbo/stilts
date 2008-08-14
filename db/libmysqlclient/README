@@ -5,11 +5,10 @@ functions as directly as possible.
 Some notes:
 
 - Although the details of the FFI are not exposed outside of the MySQLClient
-  structure, it is not entirely safe. Specifically, accessing a result after
-  its connection has been freed will cause undefined behavior (in the C sense),
-  and failing to call free_result or close results in memory leaks. In most
-  cases, another layer of wrapper code will be used (i.e. Squall), so this is
-  not a large concern.
+  structure, it is not entirely memory-safe. Specifically, failing to call
+  close (on a connection) and free_result (on a result) will result in leaked
+  memory. In most cases, another layer of wrapper code will be used (i.e.
+  Squall) which ensures proper cleanup, so this is not a large concern.
 
 - This uses a clone of the real mysql.h, partially because mysql.h on OS X
   on OS X includes system headers with GCC extensions which cause ml-nlffigen
