@@ -33,11 +33,11 @@ struct
         | parseText acc (ch::rest) = parseText (ch::acc) rest
       and parseSubst acc nil = raise ParseError "missing } in substitution"
         | parseSubst acc (#"}"::rest) =
-            GenSubst("WebUtil.escapeStr", r acc)::(parseText nil rest)
+            GenSubst("WebUtil.escapeStr", r acc) :: (parseText nil rest)
         | parseSubst acc (ch::rest) = parseSubst (ch::acc) rest
       and parseRawSubst acc nil = raise ParseError "missing } in substitution"
         | parseRawSubst acc (#"}"::rest) =
-            GenSubst("(fn Web.HTML s => s)", r acc)::(parseText nil rest)
+            GenSubst("(fn Web.HTML s => s)", r acc) :: (parseText nil rest)
         | parseRawSubst acc (ch::rest) = parseRawSubst (ch::acc) rest
     in
       GenConcat(parseText nil (String.explode s))
@@ -51,9 +51,9 @@ struct
    *)
   fun genAttr (k, v) =
     GenConcat([
-      GenText(" " ^ k ^ "=\""),
-      (genTextExpression v),
-      GenText("\"")
+      GenText (" " ^ k ^ "=\""),
+      genTextExpression v,
+      GenText "\""
     ])
 
 
@@ -111,7 +111,7 @@ struct
                              nil => NONE
                            | c => SOME (GenConcat (map genNode children)))
           | attrLoop ((TA.TAFor (bindVar, iterVar)) :: rest) =
-              GenIterate(bindVar, iterVar, attrLoop rest)
+              GenIterate (bindVar, iterVar, attrLoop rest)
           | attrLoop ((TA.TAIf exp) :: rest) =
               GenCaseOf (exp, [ ("true", attrLoop rest),
                                 ("false", GenText "") ])

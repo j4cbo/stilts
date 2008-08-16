@@ -6,4 +6,8 @@
    <li t:for="i in frob">${i}</li>
   </ul>
   <br t:if="true"/>
+  <div t:case="frob">
+   <p t:of="nil">No elements in frob</p>
+   <p t:of="_">Elements in frob</p>
+  </div>
 </html>

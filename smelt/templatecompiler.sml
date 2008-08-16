@@ -46,9 +46,9 @@ struct
   fun compile (sname, itype, gen) = String.concat [
           "structure ",
           sname,
-          " = struct fun render(",
+          " = struct fun render ",
           itype,
-          ")=Web.HTML(",
+          "=Web.HTML(",
           compileGen gen,
           ") end"
         ]

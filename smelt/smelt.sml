@@ -25,5 +25,4 @@ structure Smelt = struct
                                  General.exnMessage e, "\n"];
                            OS.Process.failure)
 
-
 end

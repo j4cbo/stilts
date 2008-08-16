@@ -1,0 +1,80 @@
+Smelt
+-----
+
+  Smelt is an XML templating system that precompiles input documents to SML
+code, allowing template processing invocations to be properly typechecked.
+The generated code preserializes as much of the XML document tree as possible;
+thus, its complexity depends only on the portions being substituted, with all
+static content already flattened to plain text. The XML-embedded template is
+heavily inspired by Kid and Genshi, two similar tools for Python, but trimmed
+down and with some SML-specific features.
+
+  Input documents are parsed as XML. They must have a processing instruction,
+before the document element, of the form:
+
+  <?template StructureName input bindings ?>
+
+  The compiled template code will be a declaration of a structure, with the
+specified name, containing only a function "render":
+
+  structure StructureName = struct
+    val render: input bindings -> Web.HTML
+  end
+
+  Note that the input bindings are substituted into a function declaration, of
+the form "fun render ... = (expression)", so tuples must be parenthesized, and
+curried functions can be declared.
+
+  Within the document, two types of processing can be specified. Tree-level
+manipulation can be defined with t:... attributes on elements; additionally,
+within attribute values and text nodes, ${expressions} can be embedded to
+directly insert string content. The compiled code XML-escapes all ${}
+substitutions. To insert snippets of prerendered HTML, use $H{expr}; this
+inserts a "Web.html" value literally into the output, with no further
+processing.
+
+  Any attribute beginning with "t:" must be a valid template attribute. (Smelt
+is not yet namespace-aware, so this is not a namespace as such.) The following
+attributes are defined:
+
+- t:if="expr" (expr: bool)
+
+    Only include the tagged element and its children if "expr" is true.
+
+    Example: <p t:if="2 + 2 <> 4">Math is broken!</p>
+
+- t:ifOption="expr as binding" (expr: 'a option)
+
+    Only include the element and its children if "expr" evaluates to SOME 'a.
+  The binding is used in a pattern-match, "case expr of SOME binding => ...";
+  within child nodes, all bound variables will be available.
+    If no " as " is present in the parameter value, the while string will be
+  used for both expr and binding: "case s of SOME s => ...". 
+
+    Example: <p t:ifOption="#username session as name">Hello, ${name}!</p>
+
+- t:for="binding in expr" (expr: 'a list)
+
+    Substitute this node and all its children repeated for each value in expr,
+  with binding matched to each element in turn.
+
+    Example: <ul><li t:for="i in items">${i}</li></ul>
+
+- t:case="expr", t:of="binding"
+
+    These two must be used together; a t:case element contains a number of
+  child elements, each of which must contain a t:of attribute. Any text nodes
+  that are immediate children of a t:case will be ignored if they contain only
+  whitespace; it is an error if non-whitespace characters are found. They map
+  as expected to a case/of expression.
+
+    Example: <div t:case="cmp"><p t:of="GREATER">Greater</p> ... </div>
+
+  For compatibility with XML's unordered attribtes, t: attributes are always
+processed in the following order ("outer" to "inner"), rather than in the order
+in which they appear in the program's source.
+
+  t:of, t:for, t:ifOption, t:if, t:case
+
+  See "example.html" for some sample template code.
+ 
