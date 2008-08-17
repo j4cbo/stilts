@@ -50,7 +50,7 @@ that of SML. The input type can be one of the following:
   Note that list is the "native" version; arrays and vectors are converted from
 a list. This is included largely for completeness' sake.
 
-  Currently, Smelt supports the following column types:
+  Currently, Squall supports the following column types:
 
   string             String. For MySQL, this is escaped using
                      mysql_real_escape_string, quoted, and substituted.
@@ -59,10 +59,10 @@ a list. This is included largely for completeness' sake.
   word               LargeWord.word. Encoded with LargeWord.toString; decoded
                      with LargeWord.fromString.
 
-  As implemented, Smelt uses the standard libmysqlclient functions, rather than
+  As implemented, Squall uses the standard libmysqlclient functions, rather than
 its prepared statement API. This means that the database and libmysqlclient
 convert all returned values to strings, regarldess of their type according to
-the DB engine. Smelt then produces code to convert each field back to the
+the DB engine. Squall then produces code to convert each field back to the
 appropriate type.
 
   Future work:
