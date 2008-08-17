@@ -45,31 +45,59 @@ end = struct
                                              | c => String.str c) s) ^ "\""
 
 
-  (* val generateEscape: string * vartype -> string
+  (* val generateValueEscape: string * vartype -> string
    *
-   * generateEscape (ivar, typ) produces SML source for an expression that will
-   * escape the given free variable to be inserted into an SQL statement.
+   * generateValueEscape (ivar, typ) produces SML source for an expression that
+   * will escape the given free variable to be inserted into an SQL statement.
+   * This takes place after any option type handling.
    *
    * Example: generateEscape ("foo", SI.Int)   =>  "Int.toString foo"
    *)
-  fun generateEscape (ivar, SI.Int) = "(Int.toString " ^ ivar ^ ")"
-    | generateEscape (ivar, SI.String) =
+  fun generateEscapeValue (ivar, SI.Int) = "(Int.toString " ^ ivar ^ ")"
+    | generateEscapeValue (ivar, SI.String) =
           "(\"\\\"\" ^ (MySQLClient.real_escape_string conn " ^ ivar
                                                               ^ ") ^ \"\\\"\")"
 
 
-  (* val generateConv: string * vartype -> string
+  (* val generateEscape: string * varspec -> string
    *
-   * generateConv (ivar, typ) produces SML source for an expression that will
-   * turn the given free string variable into a value of the correct type.
+   * generateEscape (ivar, typ) produces SML source for an expression that will
+   * escape the given free variable, or variable option, for SQL.
+   *)
+  fun generateEscape (ivar, SI.Vrequired typ) = generateEscapeValue (ivar, typ)
+    | generateEscape (ivar, SI.Voption typ) =
+          "(case " ^ ivar ^ " of NONE=>\"NULL\"|SOME " ^ ivar ^ "=>"
+        ^ generateEscapeValue (ivar, typ) ^ ")"
+
+
+  (* val generateValueConv: string * vartype -> string
+   *
+   * generateValueConv (ivar, typ) produces SML source for an expression that
+   * will turn the given free string variable into a value of the correct type.
    *
    * Example: generateEscape ("foo", SI.String)  =>  "foo"
    *)
-  fun generateConv (ivar, SI.Int) =
+  fun generateValueConv (ivar, SI.Int) =
           "(case Int.fromString " ^ ivar
         ^ " of SOME i => i | NONE => raise (DataFormatError \""
         ^ (String.toString ivar) ^ "\"))"
-    | generateConv (ivar, SI.String) = ivar
+    | generateValueConv (ivar, SI.String) = ivar
+
+
+  (* fun generateConv: string * varspec -> string
+   *
+   * generateConv (ivar, typ) produces SML source for an expression that 
+   * performs option checking on the given free variable (if necessary) and
+   * then converts it to the correct type.
+   *)
+  fun generateConv (ivar, SI.Vrequired typ) = 
+          "(case " ^ ivar ^ " of NONE=>raise (DataFormatError\""
+        ^ (String.toString ivar) ^ "\")|SOME " ^ ivar ^ "=>"
+        ^ (generateValueConv (ivar, typ)) ^ ")"
+    | generateConv (ivar, SI.Voption typ) = 
+          "(case " ^ ivar ^ " of NONE=>NONE|SOME " ^ ivar ^ "=>SOME "
+        ^ (generateValueConv (ivar, typ)) ^ ")"
+
 
 
   (* val mkSQLGen: SI.inbinding * string -> string * string list

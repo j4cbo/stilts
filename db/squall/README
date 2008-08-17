@@ -58,6 +58,8 @@ a list. This is included largely for completeness' sake.
                      Int.fromString.
   word               LargeWord.word. Encoded with LargeWord.toString; decoded
                      with LargeWord.fromString.
+  ... option         Any of the above may also be an option; NULL values will
+                     be represented as NONE.
 
   As implemented, Squall uses the standard libmysqlclient functions, rather than
 its prepared statement API. This means that the database and libmysqlclient

@@ -198,9 +198,11 @@ structure MySQLClient :> MYSQLCLIENT = struct
         fun get_field (colIndex, len) = let
             val base = C.Get.ptr' (C.Ptr.sub' C.S.ptr (row, colIndex))
           in
-            Byte.bytesToString (Word8Vector.tabulate (len, fn i =>
+            if C.Ptr.isNull' base
+            then NONE 
+            else SOME (Byte.bytesToString (Word8Vector.tabulate (len, fn i =>
               UCharUtil.toWord8 (C.Get.uchar' (C.Ptr.sub' C.S.uchar (base, i)))
-            ))
+            )))
          end
       in
         if C.Ptr.isNull' row

@@ -56,7 +56,7 @@ signature MYSQLCLIENT = sig
   val fetch_field: result -> field option
   val fetch_field_direct: result -> int -> field
   val fetch_lengths: result -> Word32.word list
-  val fetch_row: result -> string list option
+  val fetch_row: result -> string option list option
   val field_seek: result -> int -> int
   val field_tell: result -> int 
   val free_result: result -> unit
@@ -85,6 +85,6 @@ signature MYSQLCLIENT = sig
   val thread_id: conn -> Word32.word
   val use_result: conn -> result option
 
-  val query_and_result: conn * string -> string list list
+  val query_and_result: conn * string -> string option list list
 
 end

@@ -34,9 +34,10 @@ fun type_lookup "string" = String
        | itype of inbinding
        | otype of outbinding
        | reptype of reptype
-       | tupleitems of vartype list
-       | recorditems of (string * vartype) list
+       | tupleitems of varspec list
+       | recorditems of (string * varspec) list
        | sqlseq of string
+       | varspec of varspec
 
 %pos int
 
@@ -69,11 +70,14 @@ reptype: LIST (Rlist)
        | ARRAY (Rarray)
        | VECTOR (Rvector)
 
-tupleitems: TOKEN STAR tupleitems ((type_lookup TOKEN) :: tupleitems)
-          | TOKEN ((type_lookup TOKEN) :: nil)
+tupleitems: varspec STAR tupleitems (varspec :: tupleitems)
+          | varspec (varspec :: nil)
 
-recorditems: TOKEN COLON TOKEN COMMA recorditems ((TOKEN1, type_lookup TOKEN2) :: recorditems)
-           | TOKEN COLON TOKEN ((TOKEN1, type_lookup TOKEN2) :: nil)
+recorditems: TOKEN COLON varspec COMMA recorditems ((TOKEN, varspec) :: recorditems)
+           | TOKEN COLON varspec ((TOKEN, varspec) :: nil)
+
+varspec: TOKEN OPTION (Voption (type_lookup TOKEN))
+       | TOKEN (Vrequired (type_lookup TOKEN))
 
 sqlseq:   SQLDATA sqlseq (SQLDATA ^ sqlseq)
       |   SQLDATA (SQLDATA)
