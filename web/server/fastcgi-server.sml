@@ -115,7 +115,7 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
    *)
   fun encodePairs pairs = let
           fun encodeNum i = if i < 128
-                then Word8Vector.tabulate (1, fn _ => Word8.fromInt i)
+                then W8V.tabulate (1, fn _ => Word8.fromInt i)
                 else let
                     val a = Word8Array.array (4, 0w0)
                     val i' = LargeWord.orb (0wx80000000, LargeWord.fromInt i)
@@ -128,7 +128,7 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
                                    Byte.stringToBytes k,
                                    Byte.stringToBytes v ]
       in
-        Word8Vector.concat (List.concat (map encodePair pairs))
+        W8V.concat (List.concat (map encodePair pairs))
       end
 
 
@@ -137,7 +137,7 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
    * Parse the 'role' and 'flags' fields from a FCGI_BEGIN_REQUEST record.
    *)
   fun parseBeginRequest v = ( LargeWord.toInt (PackWord16Big.subVec (v, 0)),
-                              Word8Vector.sub (v, 2) )
+                              W8V.sub (v, 2) )
                             handle Subscript => raise ProtocolError 
 
 
@@ -178,7 +178,7 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
                | (k as "FCGI_MAX_REQS", _) => SOME (k, "1")
                | (k as "FCGI_MPXS_CONNS", _) => SOME (k, "0")
                | _ => NONE
-             ) (parsePairs (Word8VectorSlice.full (#content record)))
+             ) (parsePairs (W8VS.full (#content record)))
          in
            sendRecord conn { version = 1,
                              rectype = FCGI_GET_VALUES_RESULT,
@@ -203,8 +203,8 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
       fun readStream conn expected acc = let
           val { content, ... } = getRecord conn expected
         in
-          if Word8Vector.length content = 0
-          then Word8Vector.concat (rev acc)
+          if W8V.length content = 0
+          then W8V.concat (rev acc)
           else readStream conn expected (content::acc)
         end
 
@@ -217,12 +217,26 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
 
       val response = CGI.make_response (app request)
 
+      val _ = print ("sending: " ^ (Int.toString (W8V.length response)) ^ "\n")
+
+      val limit = 65535
+
+      fun sendChunks start =
+            if (start + limit) < (W8V.length response)
+            then (sendRecord conn { version = 1,
+                                     rectype = FCGI_STDOUT,
+                                     reqId = reqId,
+                                     content = W8VS.vector (W8VS.slice
+                                              (response, start, SOME limit)) };
+                  sendChunks (start + limit))
+            else sendRecord conn { version = 1,
+                                   rectype = FCGI_STDOUT,
+                                   reqId = reqId,
+                                   content = W8VS.vector (W8VS.slice
+                                                     (response, start, NONE)) }
+
     in
-      print "Sending stdout...\n";
-      sendRecord conn { version = 1,
-                        rectype = FCGI_STDOUT,
-                        reqId = reqId,
-                        content = response };
+      sendChunks 0;
       sendRecord conn { version = 1,
                         rectype = FCGI_STDOUT,
                         reqId = reqId,
