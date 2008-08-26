@@ -10,6 +10,7 @@ structure TemplateAttr :> TEMPLATE_ATTR = struct
   datatype attr = TAFor of expr * expr
                 | TAIf of expr
                 | TAIfOption of expr * expr
+                | TAStrip of expr
                 | TACase of expr
                 | TAOf of expr
 
@@ -19,13 +20,14 @@ structure TemplateAttr :> TEMPLATE_ATTR = struct
    * Provide an ordering on template attributes.
    *)
   fun isBefore (a, b) = let
-      fun ordering (TAOf _) = 5
-        | ordering (TAFor _) = 4
-        | ordering (TAIfOption _) = 3
-        | ordering (TAIf _) = 2
+      fun ordering (TAOf _) = 6
+        | ordering (TAFor _) = 5
+        | ordering (TAIfOption _) = 4
+        | ordering (TAIf _) = 3
+        | ordering (TAStrip _) = 2
         | ordering (TACase _) = 1
     in
-      ordering a > ordering b
+      ordering a < ordering b
     end
 
 
@@ -52,6 +54,7 @@ structure TemplateAttr :> TEMPLATE_ATTR = struct
       end
     | fromKV ("t:case", v) = TACase v
     | fromKV ("t:of", v) = TAOf v
+    | fromKV ("t:strip", v) = TAStrip v
     | fromKV (k, v) = raise InvalidAttribute (k, v)
 
 

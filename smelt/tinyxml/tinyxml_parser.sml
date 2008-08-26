@@ -107,7 +107,7 @@ struct
               in
                 ((attrname, attrvalue)::rest, ls''')
               end
-          | _ => raise ParseError
+          | _ => (nil, ls')
         )
       | S.Cons(T.TAGEND, ls') => (nil, ls)
       | S.Cons(T.TAGSELFCLOSE, ls') => (nil, ls)

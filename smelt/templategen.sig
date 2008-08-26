@@ -11,4 +11,6 @@ sig
 
   val generate: TinyXML.document -> string * string * gen 
 
+
+  val optimizeGen: gen -> gen
 end

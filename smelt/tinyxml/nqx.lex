@@ -17,7 +17,7 @@ fun eof () = EOF
 
 space = ([\t\n] | " "); 
 identchar =  [A-Za-z_0-9:-];
-pcchar = [^<>&];
+pcchar = [^<>];
 
 %%
 

@@ -9,6 +9,7 @@ sig
   datatype attr = TAFor of expr * expr
                 | TAIf of expr
                 | TAIfOption of expr * expr
+                | TAStrip of expr
                 | TACase of expr
                 | TAOf of expr
 

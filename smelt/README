@@ -60,6 +60,12 @@ attributes are defined:
 
     Example: <ul><li t:for="i in items">${i}</li></ul>
 
+- t:strip="expr"
+
+    "Strip" the element (meaning, include only its child elements in-place) if
+  expr evaluates to true. As a shortcut, a blank expr is considered to always
+  be true.
+
 - t:case="expr", t:of="binding"
 
     These two must be used together; a t:case element contains a number of
@@ -74,7 +80,7 @@ attributes are defined:
 processed in the following order ("outer" to "inner"), rather than in the order
 in which they appear in the program's source.
 
-  t:of, t:for, t:ifOption, t:if, t:case
+  t:of, t:for, t:ifOption, t:if, t:strip, t:case
 
   See "example.html" for some sample template code.
  
