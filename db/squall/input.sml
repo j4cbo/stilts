@@ -2,7 +2,7 @@ structure SquallInput = struct
 
   datatype vartype = String | Int
 
-  datatype varspec = Vrequired of vartype | Voption of vartype
+  datatype varspec = Vrequired of vartype | Voption of vartype | Vlist of vartype
 
   datatype reptype = Rlist | Rarray | Rvector | Rsingle | Roption
 

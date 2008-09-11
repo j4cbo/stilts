@@ -77,6 +77,7 @@ recorditems: TOKEN COLON varspec COMMA recorditems ((TOKEN, varspec) :: recordit
            | TOKEN COLON varspec ((TOKEN, varspec) :: nil)
 
 varspec: TOKEN OPTION (Voption (type_lookup TOKEN))
+       | TOKEN LIST (Vlist (type_lookup TOKEN))
        | TOKEN (Vrequired (type_lookup TOKEN))
 
 sqlseq:   SQLDATA sqlseq (SQLDATA ^ sqlseq)

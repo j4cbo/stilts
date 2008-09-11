@@ -45,30 +45,31 @@ end = struct
                                              | c => String.str c) s) ^ "\""
 
 
-  (* val generateValueEscape: string * vartype -> string
+  (* val generateEscapeFunc: vartype -> string
    *
-   * generateValueEscape (ivar, typ) produces SML source for an expression that
-   * will escape the given free variable to be inserted into an SQL statement.
+   * generateEscapeFunc typ produces SML source for a function that
+   * will escape its input to be inserted into an SQL statement.
    * This takes place after any option type handling.
    *
-   * Example: generateEscape ("foo", SI.Int)   =>  "Int.toString foo"
+   * Example: generateEscapeFunc SI.Int  =>  "Int.toString"
    *)
-  fun generateEscapeValue (ivar, SI.Int) = "(Int.toString " ^ ivar ^ ")"
-    | generateEscapeValue (ivar, SI.String) =
-          "(\"\\\"\" ^ (MySQLClient.real_escape_string conn " ^ ivar
-                                                              ^ ") ^ \"\\\"\")"
-
+  fun generateEscapeFunc SI.Int = "Int.toString"
+    | generateEscapeFunc SI.String =
+          "(fn v=>\"\\\"\"^MySQLClient.real_escape_string conn v^\"\\\"\")"
 
   (* val generateEscape: string * varspec -> string
    *
    * generateEscape (ivar, typ) produces SML source for an expression that will
    * escape the given free variable, or variable option, for SQL.
    *)
-  fun generateEscape (ivar, SI.Vrequired typ) = generateEscapeValue (ivar, typ)
+  fun generateEscape (ivar, SI.Vrequired typ) =
+        "(" ^ generateEscapeFunc typ ^ " " ^ ivar ^ ")"
     | generateEscape (ivar, SI.Voption typ) =
           "(case " ^ ivar ^ " of NONE=>\"NULL\"|SOME " ^ ivar ^ "=>"
-        ^ generateEscapeValue (ivar, typ) ^ ")"
-
+        ^ generateEscapeFunc typ ^ " " ^ ivar ^ ")"
+    | generateEscape (ivar, SI.Vlist typ) =
+          "(\"(\"^String.concatWith\",\"(map " ^ generateEscapeFunc typ
+        ^ " " ^ ivar ^ ")^\")\")"
 
   (* val generateValueConv: string * vartype -> string
    *
@@ -97,7 +98,8 @@ end = struct
     | generateConv (ivar, SI.Voption typ) = 
           "(case " ^ ivar ^ " of NONE=>NONE|SOME " ^ ivar ^ "=>SOME "
         ^ (generateValueConv (ivar, typ)) ^ ")"
-
+    | generateConv (ivar, SI.Vlist typ) =
+          raise Fail "list not allowed in output types" 
 
 
   (* val mkSQLGen: SI.inbinding * string -> string * string list
