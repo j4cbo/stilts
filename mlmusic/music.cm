@@ -19,6 +19,7 @@ Group is
 	pagebar.sml
 	browser.sml
 	search.sml
+	player.sml
 	music.sml
 
 	index/search.sml

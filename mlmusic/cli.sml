@@ -55,6 +55,7 @@ structure CLI :> CLI = struct
     end
 
   fun command c ins = let
+        val () = print ("CLI: sending: " ^ String.concatWith " " ins ^ "\n")
         fun hex2 i = StringCvt.padLeft #"0" 2 (Int.fmt StringCvt.HEX i)
         fun quote #"-" = "-"
           | quote #"_" = "_"
@@ -67,6 +68,7 @@ structure CLI :> CLI = struct
         val out = String.concatWith " " (map (String.translate quote) ins)
         val () = SockUtil.sendVec (c, Byte.stringToBytes (out ^ "\n"))
         val fields = String.fields (fn c => c = #" ") (readline c)
+        val () = print ("CLI: got: " ^ String.concatWith " " fields ^ "\n")
       in
         map unquote fields
       end

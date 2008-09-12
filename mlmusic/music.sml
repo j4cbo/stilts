@@ -18,6 +18,7 @@ structure Wiki = struct
 
   val app = U.dispatch [ ( [ "browse" ], U.PREFIX, Browser.browseApp ),
                          ( [ "search", "" ], U.EXACT, SearchApp.searchApp ),
+                         ( [ "player" ], U.PREFIX, PlayerApp.playerApp ),
                          ( nil, U.PREFIX, rootHandler ) ]
 
   val conn_info : MySQLClient.connect_info = {

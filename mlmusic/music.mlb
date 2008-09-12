@@ -16,5 +16,7 @@ browser.sml
 index/search.sml
 search.sml
 db.sml
+cli.sml
+command.sml
 music.sml
 main.sml

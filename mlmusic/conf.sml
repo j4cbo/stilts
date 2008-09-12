@@ -1,5 +1,5 @@
 structure Conf = struct
 
-  val static = "http://localhost/~jacob/music-static"
+  val static = "/static"
 
 end

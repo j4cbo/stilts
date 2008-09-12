@@ -3,6 +3,16 @@ structure Command = struct
   structure Map = RedBlackMapFn (type ord_key = string
                                  val compare = String.compare)
 
+  fun foldMap (str, map) = let
+        val str' = Substring.full str
+        val (ls, rs) = Substring.splitl (fn c => c <> #":") str'
+      in
+        Map.insert (map, Substring.string ls,
+                         Substring.string (Substring.triml 1 rs))
+      end
+
+  val mapResp = foldl foldMap Map.empty
+
   fun mapMulti prefix list = let
 
         val prefix' = prefix ^ ":"
@@ -17,13 +27,6 @@ structure Command = struct
               (prologue :: items) => (prologue, items)
             | _ => raise Fail "unexpected result"
 
-        fun foldMap (str, map) = let
-              val str' = Substring.full str
-              val (ls, rs) = Substring.splitl (fn c => c <> #":") str'
-            in
-              Map.insert (map, Substring.string ls,
-                               Substring.string (Substring.triml 1 rs))
-            end
  
       in
         (prologue, map (foldl foldMap Map.empty) items)
@@ -37,6 +40,18 @@ structure Command = struct
                    | _ => raise Fail "unexpected result" 
       in
         mapMulti "playerindex" resp
+      end
+
+  fun status p = let
+        val resp = case CLI.command c [ p, "status" ] of 
+                     (_::"status"::rest) => rest
+                   | _ => raise Fail "unexpected result" 
+        fun jsonify (k, v, acc) =
+              ("\"" ^ String.toString k ^ "\":\"" ^ String.toString v ^ "\"")
+              :: acc
+        val kv = Map.foldli jsonify nil (mapResp resp)
+      in
+        "{" ^ String.concatWith "," kv ^ "}"
       end
 
 end
