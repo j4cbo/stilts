@@ -42,16 +42,27 @@ structure Command = struct
         mapMulti "playerindex" resp
       end
 
+  structure JSON = struct
+
+    fun string s = "\"" ^ String.toString s ^ "\""
+
+    fun list l = "[" ^ String.concatWith "," (map string l) ^ "]"
+
+    fun object map = let
+          fun process (k, v, acc) = (string k ^ ":" ^ string v) :: acc
+        in
+          "{" ^ String.concatWith "," (Map.foldli process nil map) ^ "}"
+        end
+  end
+
   fun status p = let
-        val resp = case CLI.command c [ p, "status" ] of 
-                     (_::"status"::rest) => rest
+        val resp = case CLI.command c [ p, "status", "-", "1" ] of 
+                     (_::"status"::"-"::"1"::rest) => rest
                    | _ => raise Fail "unexpected result" 
-        fun jsonify (k, v, acc) =
-              ("\"" ^ String.toString k ^ "\":\"" ^ String.toString v ^ "\"")
-              :: acc
-        val kv = Map.foldli jsonify nil (mapResp resp)
+        val (prologue, tracks) = mapMulti "playlist index" resp
       in
-        "{" ^ String.concatWith "," kv ^ "}"
+        "[" ^ JSON.object (mapResp prologue)
+            ^ ",[" ^ String.concatWith "," (map JSON.object tracks) ^ "]]"
       end
 
 end

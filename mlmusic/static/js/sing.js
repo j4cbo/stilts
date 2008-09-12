@@ -25,22 +25,22 @@
 
 	function updateStatus(postdata) {
 		$.post(
-			"/player/status/" + curPlayer(),
+			"/player/" + curPlayer() + "/status",
 			postdata,	
 			function(resp) {
 				var j = eval("(" + resp + ")");
 				parseStatusObject(j[0]);
-				var curSong = j[1][0];
+				curSong = j[1][0];
 			}
 		);
 	}
 
 	$.each({
-		"#repeatbutton":	"cmd=playlist_repeat&opt=",
-		"#shufflebutton":	"cmd=playlist_shuffle&opt=",
-		"#playbutton":		"cmd=pause",
-		"#prevbutton":		"cmd=playlist_index&opt=-1",
-		"#nextbutton":		"cmd=playlist_index&opt=%2b1",
+		"#repeatbutton":	"repeat",
+		"#shufflebutton":	"shuffle",
+		"#playbutton":		"pause",
+		"#prevbutton":		"prev",
+		"#nextbutton":		"next"
 	}, function(k, v) {
 		$(k).bind("click", function() {
 			updateStatus(v);

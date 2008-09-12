@@ -1,5 +1,5 @@
 structure Conf = struct
 
-  val static = "/static"
+  val static = "/static/v1"
 
 end

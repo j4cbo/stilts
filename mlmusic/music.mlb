@@ -18,5 +18,6 @@ search.sml
 db.sml
 cli.sml
 command.sml
+player.sml
 music.sml
 main.sml
