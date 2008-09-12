@@ -1,0 +1,14 @@
+Group is
+	$/basis.cm
+	$/smlnj-lib.cm
+
+	../../../stilts/db/libmysqlclient/libmysqlclient.cm
+	../../../stilts/db/squall/squall-tool.cm : tool
+	../db.sml
+	index.squall
+
+#if (SMLNJ_VERSION = 110) andalso (SMLNJ_MINOR_VERSION < 57)
+        pack-compat.sml
+#endif
+
+	index.sml

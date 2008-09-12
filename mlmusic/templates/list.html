@@ -1,0 +1,44 @@
+<?template TList { nextPrefix, cmdId, path, list, title, pb, start } ?>
+<html>
+<head>
+<link rel="stylesheet" href="${Conf.static}/css/sing-browse.css" type="text/css" />
+</head>
+<body>
+
+<div id="browseheader">
+ Browse: ${title}
+</div>
+
+<p id="browsepath">
+ <a href="/browse/home">Home</a>
+ <span t:for="(name, link) in path" t:strip=""> &gt; <a href="${link}">${name}</a> </span>
+</p>
+
+<div id="browsecontent" class="pathbar">
+
+ <p t:ifOption="pb" id="pagebar">
+  <t:for exp="pb" pattern="(pageOffset, pageLen, itemOffset, char)"><t:if
+    exp="pageOffset <> start"><a
+      href="?start=${Int.toString pageOffset}&amp;len=${Int.toString pageLen
+             }#${Int.toString itemOffset}">${String.str char}</a></t:if><t:if
+    exp="pageOffset = start"><a
+      href="?start=${Int.toString pageOffset}&amp;len=${Int.toString pageLen
+             }#${Int.toString itemOffset}" class="pbCur">${String.str
+   char}</a></t:if></t:for>
+ </p>
+
+ <ul class="browselist">
+  <t:if exp="case list of (_::_::_) => true | _ => false">$H{
+    TListItem.render ("1", "All Songs", NONE, "x")
+  }</t:if>
+  <t:for pattern="{ id, name }" exp="list">$H{
+    TListItem.render (Int.toString id, name, nextPrefix, cmdId)
+  }</t:for>
+ </ul>
+
+ </div>
+
+ <div id="browsefooter">...</div>
+
+</body>
+</html>

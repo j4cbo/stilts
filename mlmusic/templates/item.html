@@ -1,0 +1,9 @@
+<?template TListItem (id, name, nextPrefix, cmd) ?>
+<li>
+ <a href="javascript:Sing.ctl.add('${cmd}',${id})" class="addbutton"> </a><a
+    href="javascript:Sing.ctl.play('${cmd}',${id})" class="playbutton"> </a>
+ <t:case exp="nextPrefix">
+  <a t:of="SOME p" href="${p}${id}/" class="item">${name}</a>
+  <span t:of="NONE" class="item">${name}</span>
+ </t:case>
+</li>

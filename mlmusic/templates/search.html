@@ -1,0 +1,75 @@
+<?template TSearch (q, results) ?>
+<html>
+<head>
+<link rel="stylesheet" href="${Conf.static}/css/sing-browse.css" type="text/css" />
+</head>
+<body>
+
+<div id="browseheader">
+ Search
+</div>
+
+<p id="browsepath">
+ <a href="/browse/home">Home</a> &gt; <a href="/search/">Search</a>
+</p>
+
+<div id="browsecontent" class="pathbar">
+
+ <form method="post" action="/search/">
+  <input type="text" name="q" value="${q}" />
+  <input type="submit" value="Search" />
+ </form>
+
+ <div t:ifOption="results as { artists, albums, songs, itime, ttime }"
+      t:strip="">
+
+  <div t:if="case artists of nil => false | _ => true" t:strip="">
+   <p>Artists matching "${q}": ${Int.toString (length artists)}</p>
+   <ul class="browselist">
+    <li t:for="{ id, name, mm_mixable, mb_id } in artists">
+     <a href="javascript:Sing.ctl.add('artist',${Int.toString id})" class="addbutton"> </a><a
+        href="javascript:Sing.ctl.play('artist',${Int.toString id})" class="playbutton"> </a>
+     <a href="/browse/artists/${Int.toString id}/" class="item">${name}</a>
+    </li>
+   </ul>
+  </div>
+
+  <div t:if="case albums of nil => false | _ => true" t:strip="">
+   <p>Albums matching "${q}": ${Int.toString (length albums)}</p>
+   <ul class="browselist">
+    <li t:for="{ id, name, compilation, mm_mixable, mb_id } in albums">
+     <a href="javascript:Sing.ctl.add('album',${Int.toString id})" class="addbutton"> </a><a
+        href="javascript:Sing.ctl.play('album',${Int.toString id})" class="playbutton"> </a>
+     <a href="/browse/albums/${Int.toString id}/" class="item">${name}</a>
+    </li>
+   </ul>
+  </div>
+
+  <div t:if="case songs of nil => false | _ => true">
+   <p>Songs matching "${q}": ${Int.toString (length songs)}</p>
+   <ul class="browselist">
+    <li t:for="{ id, tracknum, title, albumId, albumTitle, artistId, artistName, mm_mixable, mb_id } in songs">
+     <a href="javascript:Sing.ctl.add('song',${Int.toString id})" class="addbutton"> </a><a
+        href="javascript:Sing.ctl.play('song',${Int.toString id})" class="playbutton"> </a>
+     <a href="/browse/song/${Int.toString id}/" class="item">${title}</a>
+    </li>
+   </ul>
+  </div>
+
+  <div t:if="case (artists, albums, songs) of (nil, nil, nil) => true | _ => false">
+   No search results.
+  </div>
+
+  <p>
+   Time: ${Real.toString ((Time.toReal itime) * 1000.0)} ms index,
+         ${Real.toString ((Time.toReal ttime) * 1000.0)} ms total
+  </p>
+
+ </div>
+
+</div>
+
+<div id="browsefooter">...</div>
+
+</body>
+</html>

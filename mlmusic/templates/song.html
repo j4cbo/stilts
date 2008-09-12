@@ -1,0 +1,31 @@
+<?template TSong { title, year, albumId, albumTitle } ?>
+<html>
+<head>
+<link rel="stylesheet" href="${Conf.static}/css/sing-browse.css" type="text/css" />
+</head>
+<body>
+
+<div id="browseheader">
+ ${valOf title}
+</div>
+
+<p id="browsepath">
+ <a href="/browse/home">Home</a>
+ &gt;
+ <a href=".">Song Info</a>
+</p>
+
+<div id="browsecontent" class="pathbar">
+
+ <ul id="browselist">
+  <li>
+   Stuff here.
+  </li>
+ </ul>
+
+ </div>
+
+ <div id="browsefooter">...</div>
+
+</body>
+</html>

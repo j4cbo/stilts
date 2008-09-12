@@ -1,0 +1,40 @@
+<?template TIndex { players: { id: string, name: string } list } ?>
+<html>
+<head>
+<link rel="stylesheet" href="${Conf.static}/css/sing.css" type="text/css"/>
+<title>Sing</title>
+</head>
+<body>
+
+<img src="${Conf.static}/images/background.png" id="background" />
+
+<div id="header">
+ Player:
+ <select name="player" id="player">
+  <option t:for="p in players" value="${#id p}">${#name p}</option>
+ </select>
+</div>
+
+<div id="leftpanel">
+ <iframe src="/browse/home"> </iframe>
+</div>
+
+<div id="rightpanel">
+ <a href="#" id="prevbutton" class="disabled"> </a><a
+    href="#" id="playbutton" class="disabled pause"> </a><a
+    href="#" id="nextbutton" class="disabled"> </a><a
+    href="#" id="repeatbutton" class="disabled"> </a><a
+    href="#" id="shufflebutton" class="disabled"> </a>
+
+ <div id="playlist">
+  Playlist
+  <div id="playlist-filler"> </div>
+ </div>
+</div>
+
+<script type="text/javascript" src="${Conf.static}/js/jquery-1.2.6.min.js"> </script>
+<script type="text/javascript" src="${Conf.static}/js/sing.js"> </script>
+
+</body>
+</html>
+

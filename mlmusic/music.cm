@@ -1,0 +1,24 @@
+Group is
+	$/basis.cm
+	$/regexp-lib.cm
+	$/inet-lib.cm
+	$/smlnj-lib.cm
+
+	../../stilts/db/libmysqlclient/libmysqlclient.cm
+	../../stilts/db/squall/squall-tool.cm : tool
+	music.squall
+
+	../../stilts/web/web.cm
+
+	db.sml
+
+	cli.sml
+	command.sml
+
+	templates/templates.cm
+	pagebar.sml
+	browser.sml
+	search.sml
+	music.sml
+
+	index/search.sml

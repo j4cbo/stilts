@@ -1,0 +1,11 @@
+Group is
+	$/basis.cm
+	../../../stilts/smelt/smelt-tool.cm : tool
+	../../../stilts/web/web.cm
+	../conf.sml
+        index.html
+	item.html
+	list.html
+	home.html
+	song.html
+	search.html

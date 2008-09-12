@@ -1,0 +1,147 @@
+html {
+	background: #666;
+	height: 100%;
+}
+
+body {
+	-moz-border-radius:25px;
+	-webkit-border-radius:25px;
+	-opera-border-radius:25px;
+	border-radius:25px;
+	margin: 0; 
+	padding: 0;
+	border: 0 solid black;
+	color: white;
+	top: -5px;
+	bottom: -5px;
+	left: -5px;
+	right: -5px;
+	position: absolute;
+	border: 10px solid #666;
+	overflow: hidden;
+
+	font-size: 12px;
+	font-family: sans-serif;
+}
+
+#background {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -1000;
+}
+
+#header {
+	margin: 0;
+	padding: 10px 0 0 10px;
+}
+	
+#leftpanel, #rightpanel {
+	-moz-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	-opera-border-radius: 11px;
+	border-radius: 11px;
+
+	background: #404040;
+	padding: 0;
+	margin: 10px;
+	position: absolute;
+	top: 30px;
+	bottom: 27px;
+}
+
+
+#leftpanel {
+	left: 0;
+	right: 495px;
+	padding: 10px 0 10px 0;
+}
+
+#leftpanel iframe {
+	border: 0px none;
+	width: 100%;
+	height: 100%;
+}
+
+#rightpanel {
+	right: 0;
+	width: 480px;
+	float: right;
+	padding: 0;
+}
+
+#playlist {
+	background: white;
+	color: black;
+	overflow: auto;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 135.5px;
+	bottom: 30px;
+	width: 100%;
+}
+
+#playlist-filler {
+	height: 1000px;
+}
+
+#prevbutton, #playbutton, #nextbutton, #repeatbutton, #shufflebutton {
+	display: inline-block;
+	width: 31px;
+	height: 22px;
+	margin: 12px 0 0 0;
+	padding: 0;
+	background-image: url(../images/controls.gif);
+	background-repeat: no-repeat;
+}
+
+#prevbutton { margin-left: 12px; }
+#nextbutton { margin-right: 8px; }
+
+#prevbutton {			background-position: 0px 0px; }
+#prevbutton:hover {		background-position: 0px -22px; }
+#prevbutton:active {		background-position: 0px -44px; }
+#prevbutton.disabled {		background-position: 0px -66px; }
+#playbutton {			background-position: -62px 0px; }
+#playbutton:hover {		background-position: -62px -22px; }
+#playbutton:active {		background-position: -62px -44px; }
+#playbutton.disabled {		background-position: -62px -66px; }
+#playbutton.pause {		background-position: -93px 0px; }
+#playbutton.pause:hover {	background-position: -93px -22px; }
+#playbutton.pause:active {	background-position: -93px -44px; }
+#playbutton.pause.disabled {	background-position: -93px -66px; }
+#nextbutton {			background-position: -31px 0px; }
+#nextbutton:hover {		background-position: -31px -22px; }
+#nextbutton:active {		background-position: -31px -44px; }
+#nextbutton.disabled {		background-position: -31px -66px; }
+#repeatbutton {			background-position: -124px 0px; }
+#repeatbutton:hover {		background-position: -124px -22px; }
+#repeatbutton:active {		background-position: -124px -44px; }
+#repeatbutton.disabled {	background-position: -124px -66px; }
+#repeatbutton.r1 {		background-position: -155px 0px; }
+#repeatbutton.r1:hover {	background-position: -155px -22px; }
+#repeatbutton.r1:active {	background-position: -155px -44px; }
+#repeatbutton.r1.disabled {	background-position: -155px -66px; }
+#repeatbutton.r2 {		background-position: -186px 0px; }
+#repeatbutton.r2:hover {	background-position: -186px -22px; }
+#repeatbutton.r2:active {	background-position: -186px -44px; }
+#repeatbutton.r2.disabled {	background-position: -186px -66px; }
+#shufflebutton {		background-position: -217px 0px; }
+#shufflebutton:hover {		background-position: -217px -22px; }
+#shufflebutton:active {		background-position: -217px -44px; }
+#shufflebutton.disabled {	background-position: -217px -66px; }
+#shufflebutton.s1 {		background-position: -248px 0px; }
+#shufflebutton.s1:hover {	background-position: -248px -22px; }
+#shufflebutton.s1:active {	background-position: -248px -44px; }
+#shufflebutton.s1.disabled {	background-position: -248px -66px; }
+#shufflebutton.s2 {		background-position: -279px 0px; }
+#shufflebutton.s2:hover {	background-position: -279px -22px; }
+#shufflebutton.s2:active {	background-position: -279px -44px; }
+#shufflebutton.s2.disabled {	background-position: -279px -66px; }
+
+a:active {
+	border: 0px none;
+	outline: 0px none;
+}
+

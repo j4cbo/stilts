@@ -1,0 +1,51 @@
+--- tracksTitle: unit -> (int * string) list
+
+select id, titlesearch from tracks
+where tracks.audio = 1 
+
+--- tracksTitleAlbum: unit -> (int * string) list
+
+select tracks.id, concat(tracks.titlesearch, " ", albums.titlesearch) as ta
+from tracks
+left join albums on tracks.album = albums.id
+where tracks.audio = 1 
+
+--- tracksTitleArtist: unit -> (int * string) list
+
+select tracks.id, concat(tracks.titlesearch, " ",
+                         group_concat(contributors.namesearch separator " ")) as ta 
+from tracks
+inner join contributor_track ct on (ct.track = tracks.id and ct.role = 1)
+inner join contributors on contributors.id = ct.contributor
+where tracks.audio = 1
+group by tracks.id
+
+--- tracksTitleAlbumArtist: unit -> (int * string) list
+
+select tracks.id, concat(tracks.titlesearch, " ",
+                         albums.titlesearch, " ",
+                         group_concat(contributors.namesearch separator " ")) as ta 
+from tracks
+inner join contributor_track ct on (ct.track = tracks.id and ct.role = 1)
+inner join contributors on contributors.id = ct.contributor
+inner join albums on tracks.album = albums.id
+where tracks.audio = 1
+group by tracks.id
+
+--- artists: unit -> (int * string) list
+
+select distinct id, namesearch from contributors
+left join contributor_album ca on (ca.contributor = contributors.id)
+where ca.role in ('1', '5', '6')
+
+--- albums: unit -> (int * string) list
+
+select id, titlesearch from albums
+
+--- albumsArtist: unit -> (int * string) list
+
+select albums.id, concat(albums.titlesearch, " ", contributors.namesearch) ta
+from albums
+left join contributors on contributors.id = albums.contributor
+where albums.contributor is not null
+

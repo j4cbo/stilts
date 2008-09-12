@@ -1,0 +1,23 @@
+Index Format
+
+The output file contains the following:
+
+- Magic: "SearchDB"
+- Version number: one byte, 3
+- Endianness tag: one byte, 0 for little-endian, 1 for big-endian
+- Number of subindexes: one byte
+- Reserved: one byte
+- Jump table length: four byte integer, number of _bytes_
+- Data segment length: four byte integer, number of _bytes_
+- Reserved: four bytes, all zeroes
+
+- Jump table: N fields of: four bytes of string prefix;
+                           four bytes of byte offset into data segment
+- Data segment N fields of:
+  - Four byte total length
+  - Four byte string length
+  - String, null-terminated, padded to be a multiple of four bytes
+  - For each of the subindexes:
+    - Four byte number of IDs
+    - IDs
+
