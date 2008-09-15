@@ -59,7 +59,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
               path = [ ( "Artists", "/browse/artists/" ) ],
               nextPrefix = SOME "",
               title = "All Artists",
-              cmdId = "artist",
+              cmdPrefix = "artist.id=",
+              allCmd = NONE,
               list = list,
               pb = pb,
               start = start
@@ -76,7 +77,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
                      ( title, "/browse/artists/" ^ id ^ "/") ],
             list = SQL.albumsByArtist id',
             title = title,
-            cmdId = "album",
+            cmdPrefix = "artist.id=" ^ id ^ " album.id=",
+            allCmd = SOME ("artist.id=" ^ id),
             pb = pb,
             start = 0
         }
@@ -92,7 +94,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
                      ( albumTitle, "/browse/artists/" ^ artistId ^ "/" ^ albumId ^ "/") ],
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
-            cmdId = "song",
+            cmdPrefix = "track.id=",
+            allCmd = SOME ("artist.id=" ^ artistId ^ " album.id=" ^ albumId),
             pb = NONE, start = 0
         }
         end
@@ -106,7 +109,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
             path = [ ( "Albums", "/browse/albums/" ) ],
             list = list,
             title = "All Albums",
-            cmdId = "album",
+            cmdPrefix = "album.id=",
+            allCmd = NONE,
             pb = pb,
             start = start
           }
@@ -120,7 +124,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
                      ( albumTitle, "/browse/artists/" ^ albumId ^ "/") ],
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
-            cmdId = "song",
+            cmdPrefix = "track.id=",
+            allCmd = SOME ("album.id=" ^ albumId),
             pb = NONE, start = 0
         }
         end

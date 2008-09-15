@@ -55,14 +55,17 @@
 		);
 	}
 
+	function handleStatusObject(obj) {
+		parseStatusObject(obj[0]);
+		updateCurSong(obj[1][0]);
+	}
+
 	function updateStatus(postdata) {
 		$.post(
 			"/player/" + curPlayer() + "/status",
 			postdata,	
 			function(resp) {
-				var j = eval("(" + resp + ")");
-				parseStatusObject(j[0]);
-				updateCurSong(j[1][0]);
+				handleStatusObject(eval("(" + resp + ")"));
 			}
 		);
 	}
@@ -80,7 +83,19 @@
 		});
 	});
 
-	updateStatus("");
+	function doCommand (cmd, selectors) {
+		updateStatus(cmd + " " + selectors);
+	}
 
-	$("#playlistul").load("/player/" + curPlayer() + "/playlist");
+	handleStatusObject(initialStatus);
+
+	/* $("#playlistul").load("/player/" + curPlayer() + "/playlist");
+	*/
+
+	top.Sing = {
+		ctl: {
+			add: function(s) { doCommand ("add", s); },
+			play: function(s) { doCommand ("play", s); }
+		}
+	};
 }());

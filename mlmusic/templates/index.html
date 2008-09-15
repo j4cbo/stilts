@@ -1,4 +1,4 @@
-<?template TIndex { players: { id: string, name: string } list } ?>
+<?template TIndex { players, initialPlaylist, initialStatus } ?>
 <html>
 <head>
 <link rel="stylesheet" href="${Conf.static}/css/sing.css" type="text/css"/>
@@ -11,7 +11,7 @@
 <div id="header">
  Player:
  <select name="player" id="player">
-  <option t:for="p in players" value="${#id p}">${#name p}</option>
+  <option t:for="{ id, name } in players" value="${id}">${name}</option>
  </select>
 </div>
 
@@ -33,9 +33,11 @@
  <span id="csartist"> </span>
 
  <div id="playlist">
-  <ul id="playlistul"> </ul>
+  <ul id="playlistul">$H{initialPlaylist}</ul>
  </div>
 </div>
+
+<script type="text/javascript">var initialStatus = $H{initialStatus};</script>
 
 <script type="text/javascript" src="${Conf.static}/js/jquery-1.2.6.min.js"> </script>
 <script type="text/javascript" src="${Conf.static}/js/sing.js"> </script>
