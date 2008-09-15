@@ -1,0 +1,14 @@
+<?template TPlaylist (prologue, tracks) ?>
+<t:for exp="tracks" pattern="track">
+ <li>
+  <a target="browseframe" href='/browse/song/${valOf (Command.Map.find (track, "id"))}/'>${
+        case Command.Map.find (track, "tracknum") of
+               NONE => ""
+             | SOME s => s ^ ". "
+    }${ valOf (Command.Map.find (track, "title")) }</a><br/>
+  <a target="browseframe" href='/browse/albums/${valOf (Command.Map.find (track, "album_id"))}/'>${
+        valOf (Command.Map.find (track, "album")) }</a><br/>
+  <a target="browseframe" href='/browse/albums/${valOf (Command.Map.find (track, "artist_id"))}/'>${
+        valOf (Command.Map.find (track, "artist")) }</a><br/>
+ </li>
+</t:for>
