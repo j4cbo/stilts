@@ -71,13 +71,13 @@ body {
 }
 
 #playlist {
-	background: white;
+	background: #eeeeee;
 	color: black;
 	overflow: auto;
 	margin: 0;
 	padding: 0;
 	position: absolute;
-	top: 135.5px;
+	top: 151px;
 	bottom: 30px;
 	width: 100%;
 }
@@ -145,3 +145,84 @@ a:active {
 	outline: 0px none;
 }
 
+#cscover {
+	display: block;
+	float: left;
+	clear: left;
+	background: #382214;
+	width: 96px;
+	height: 96px;
+	border: 0px none;
+	margin: 9px 6px 0 12px;
+}
+
+#cstitle, #csartist, #csalbum {
+	display: block;
+	color: #dddddd;
+	font-size: 12px;
+	text-decoration: none;
+}
+
+#cstitle a, #csartist a, #csalbum a {
+	color: #dddddd;
+	text-decoration: none;
+}
+
+#cstitle a:hover, #csartist a:hover, #csalbum a:hover {
+	text-decoration: underline;
+}
+
+#cstitle {
+	margin: 9px 0 0 12px;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+#csalbum {
+	font-size: 11px;
+	margin: 20px 0 0 12px;
+}
+
+#csartist {
+	font-size: 11px;
+	margin: 0 0 0 12px;
+}
+
+
+
+
+#playlist ul {
+	margin: 0 6px;
+	padding: 0;
+	border: 0;
+}
+
+#playlist ul li {
+        list-style: none inside;
+        margin: 0;
+        border: 0px solid #eeeeee;
+	padding: 7px 5px 3px 76px;
+	height: 50px;
+        
+        -moz-border-radius:5px;
+        -webkit-border-radius: 5px;
+        -opera-border-radius: 5px;
+        border-radius: 5px;
+	font-size: 11px;
+}   
+
+#playlist ul li:hover {
+        background: #999999;
+}
+#playlist ul li:hover a {
+	color: white;
+}
+
+#playlist ul li a {
+	text-decoration: none;
+	color: #333333;
+}
+
+#playlist ul li a:hover {
+	text-decoration: underline;
+}

@@ -56,8 +56,8 @@ structure Command = struct
   end
 
   fun status p = let
-        val resp = case CLI.command c [ p, "status", "-", "1" ] of 
-                     (_::"status"::"-"::"1"::rest) => rest
+        val resp = case CLI.command c [ p, "status", "-", "1", "tags:asledity" ] of 
+                     (_::"status"::"-"::"1"::"tags:asledity"::rest) => rest
                    | _ => raise Fail "unexpected result" 
         val (prologue, tracks) = mapMulti "playlist index" resp
       in
@@ -65,4 +65,13 @@ structure Command = struct
             ^ ",[" ^ String.concatWith "," (map JSON.object tracks) ^ "]]"
       end
 
+  fun playlist p start len = let
+        val resp = case CLI.command c [ p, "status", Int.toString start,
+                                        Int.toString len, "tags:asledity" ] of 
+                     (_::"status"::_::_::"tags:asledity"::rest) => rest
+                   | _ => raise Fail "unexpected result" 
+        val (prologue, tracks) = mapMulti "playlist index" resp
+      in
+        (prologue, tracks)
+      end
 end

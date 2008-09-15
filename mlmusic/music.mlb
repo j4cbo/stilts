@@ -18,6 +18,7 @@ search.sml
 db.sml
 cli.sml
 command.sml
+templates/playlist.html.sml
 player.sml
 music.sml
 main.sml

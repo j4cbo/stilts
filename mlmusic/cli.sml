@@ -55,6 +55,7 @@ structure CLI :> CLI = struct
     end
 
   fun command c ins = let
+        val timer = Timer.startRealTimer ()
         val () = print ("CLI: sending: " ^ String.concatWith " " ins ^ "\n")
         fun hex2 i = StringCvt.padLeft #"0" 2 (Int.fmt StringCvt.HEX i)
         fun quote #"-" = "-"
@@ -69,6 +70,8 @@ structure CLI :> CLI = struct
         val () = SockUtil.sendVec (c, Byte.stringToBytes (out ^ "\n"))
         val fields = String.fields (fn c => c = #" ") (readline c)
         val () = print ("CLI: got: " ^ String.concatWith " " fields ^ "\n")
+        val cmdMS = (Time.toReal (Timer.checkRealTimer timer)) * 1000.0
+        val () = print ("CLI: command took " ^ Real.toString cmdMS ^ " ms\n")
       in
         map unquote fields
       end

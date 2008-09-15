@@ -1,4 +1,7 @@
 (function() {
+	function escapeHTML(s) {
+		return s.replace("&", "&amp;").replace("<", "&gt;");
+	}
 
 	function curPlayer() {
 		return $("#player").val();
@@ -23,6 +26,35 @@
 		$("#shufflebutton").addClass("s" + status["playlist shuffle"]);
 	}
 
+	function updateCurSong(song) {
+		if (song.tracknum) {
+			st = song.tracknum + ". " + song.title;
+		} else {
+			st = song.title;
+		}
+
+		$("#cstitle").html(
+			"<a target=\"browseframe\" href=\"/browse/song/" + song.id
+			+ "/\">" + escapeHTML(st) + "</a>"
+		);
+
+		var alb = "<a target=\"browseframe\" href=\"/browse/albums/"
+			+ song.album_id + "/\">" + escapeHTML(song.album) + "</a>";
+
+		if (song.year) {
+			y = Number(song.year);
+			alb += " (<a target=\"browseframe\" href=\"/browse/years/"
+			+ y + "/\">" + y + "</a>)";
+		}
+
+		$("#csalbum").html(alb);
+
+		$("#csartist").html(
+			"<a target=\"browseframe\" href=\"/browse/artists/"
+			+ song.artist_id + "/\">" + escapeHTML(song.artist) + "</a>"
+		);
+	}
+
 	function updateStatus(postdata) {
 		$.post(
 			"/player/" + curPlayer() + "/status",
@@ -30,7 +62,7 @@
 			function(resp) {
 				var j = eval("(" + resp + ")");
 				parseStatusObject(j[0]);
-				curSong = j[1][0];
+				updateCurSong(j[1][0]);
 			}
 		);
 	}
@@ -49,4 +81,6 @@
 	});
 
 	updateStatus("");
+
+	$("#playlistul").load("/player/" + curPlayer() + "/playlist");
 }());

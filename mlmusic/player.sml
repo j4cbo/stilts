@@ -5,7 +5,7 @@ structure PlayerApp :> sig val playerApp: Web.app end = struct
   fun playerApp (req: Web.request) = let
         val path = U.postpath req
       in
-        U.resp "text/plain" (case path of
+        (case path of
 
           [ player, "status" ] => let
               val cmdStr = Byte.bytesToString (#content req ())
@@ -28,11 +28,18 @@ structure PlayerApp :> sig val playerApp: Web.app end = struct
               val _ = case cmd of SOME cmd => CLI.command Command.c cmd
                                 | NONE => nil
             in
-              Command.status player
+              U.resp "text/plain" (Command.status player)
             end 
+
+        | [ player, "playlist" ] => let
+              val (prologue, tracks) = Command.playlist player 0 9999
+            in
+              U.htmlResp (TPlaylist.render (prologue, tracks))
+            end
 
         | _ => raise U.notFound
     )
     end
+
 
 end

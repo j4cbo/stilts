@@ -11,11 +11,22 @@ Group is
 	../../stilts/web/web.cm
 
 	db.sml
+	conf.sml
 
 	cli.sml
 	command.sml
 
-	templates/templates.cm
+	../../stilts/smelt/smelt-tool.cm : tool
+	templates/index.html
+	templates/item.html
+	templates/list.html
+	templates/home.html
+	templates/song.html
+	templates/search.html
+	templates/playlist.html
+
+
+
 	pagebar.sml
 	browser.sml
 	search.sml
