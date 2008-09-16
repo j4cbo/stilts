@@ -119,6 +119,17 @@ struct
     | genNode (X.XElementNode (X.XElement ("t:if", _, _))) =
         raise ParseError "invalid attributes on t:if node"
 
+    | genNode (X.XElementNode (X.XElement ("t:ifOption", [ ("exp", exp),
+                                                      ("pattern", p) ], ch))) =
+        GenCaseOf (exp, [ (("SOME(" ^ p ^ ")"), GenConcat (map genNode ch)),
+                           ("NONE", GenConcat nil) ])
+    | genNode (X.XElementNode (X.XElement ("t:ifOption", [ ("pattern", p),
+                                                      ("exp", exp) ], ch))) =
+        GenCaseOf (exp, [ (("SOME(" ^ p ^ ")"), GenConcat (map genNode ch)),
+                           ("NONE", GenConcat nil) ])
+    | genNode (X.XElementNode (X.XElement ("t:ifOption", _, _))) =
+        raise ParseError "invalid attributes on t:ifOption node"
+
     | genNode (X.XElementNode (X.XElement ("t:case", [ ("exp", exp) ], ch))) =
         GenCaseOf (exp, List.mapPartial genOfNode ch)
     | genNode (X.XElementNode (X.XElement ("t:case", _, _))) =
