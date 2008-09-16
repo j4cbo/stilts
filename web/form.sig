@@ -10,4 +10,6 @@ signature FORM = sig
 
   val dump: form -> string
 
+  val unquote: string -> string
+
 end

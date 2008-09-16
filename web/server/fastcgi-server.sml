@@ -101,8 +101,14 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
     in
       Word8Array.update (dest, 0, Word8.fromInt version);
       Word8Array.update (dest, 1, Word8.fromInt rectype);
+(*
       PackWord16Big.update (dest, 1, LargeWord.fromInt reqId);
       PackWord16Big.update (dest, 2, LargeWord.fromInt contentLen);
+*)
+      Word8Array.update (dest, 2, Word8.fromInt (reqId div 256));
+      Word8Array.update (dest, 3, Word8.fromInt reqId);
+      Word8Array.update (dest, 4, Word8.fromInt (contentLen div 256));
+      Word8Array.update (dest, 5, Word8.fromInt contentLen);
       Word8Array.update (dest, 6, Word8.fromInt padding);
       Word8Array.copyVec { src = content, dst = dest, di = 8 };
       SockUtil.sendArr (conn, dest)
@@ -136,7 +142,7 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
    *
    * Parse the 'role' and 'flags' fields from a FCGI_BEGIN_REQUEST record.
    *)
-  fun parseBeginRequest v = ( LargeWord.toInt (PackWord16Big.subVec (v, 0)),
+  fun parseBeginRequest v = ( 256 * Word8.toInt (W8V.sub (v, 0)) + Word8.toInt (W8V.sub (v, 1)),
                               W8V.sub (v, 2) )
                             handle Subscript => raise ProtocolError 
 
