@@ -1,4 +1,7 @@
 (function() {
+
+	var lastStatusObject = initialStatus;
+
 	function escapeHTML(s) {
 		return s.replace("&", "&amp;").replace("<", "&gt;");
 	}
@@ -58,6 +61,12 @@
 	function handleStatusObject(obj) {
 		parseStatusObject(obj[0]);
 		updateCurSong(obj[1][0]);
+
+		if (obj[0].playlist_timestamp != lastStatusObject[0].playlist_timestamp) {
+			$("#playlistul").load("/player/" + curPlayer() + "/playlist");
+		}
+
+		lastStatusObject = obj;
 	}
 
 	function updateStatus(postdata) {
@@ -86,6 +95,10 @@
 	function doCommand (cmd, selectors) {
 		updateStatus(cmd + " " + selectors);
 	}
+
+	setInterval(function() {
+		updateStatus("");
+	}, 5000);
 
 	handleStatusObject(initialStatus);
 
