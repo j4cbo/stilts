@@ -12,23 +12,23 @@ where tracks.audio = 1
 
 --- tracksTitleArtist: unit -> (int * string) list
 
-select tracks.id, concat(tracks.titlesearch, " ",
-                         group_concat(contributors.namesearch separator " ")) as ta 
+select tracks.id, concat(tracks.titlesearch, " ", 
+                         ifnull(group_concat(contributors.namesearch separator " "), "")) as ta
 from tracks
-inner join contributor_track ct on (ct.track = tracks.id and ct.role = 1)
-inner join contributors on contributors.id = ct.contributor
-where tracks.audio = 1
+left outer join contributor_track ct on (ct.track = tracks.id and ct.role in (1, 5, 6))
+left outer join contributors on contributors.id = ct.contributor
+where tracks.audio = 1 
 group by tracks.id
 
 --- tracksTitleAlbumArtist: unit -> (int * string) list
 
 select tracks.id, concat(tracks.titlesearch, " ",
-                         albums.titlesearch, " ",
-                         group_concat(contributors.namesearch separator " ")) as ta 
+                         ifnull(albums.titlesearch, ""), " ",
+                         ifnull(group_concat(contributors.namesearch separator " "), "")) as ta
 from tracks
-inner join contributor_track ct on (ct.track = tracks.id and ct.role = 1)
-inner join contributors on contributors.id = ct.contributor
-inner join albums on tracks.album = albums.id
+left outer join contributor_track ct on (ct.track = tracks.id and ct.role in (1, 5, 6))
+left outer join contributors on contributors.id = ct.contributor
+left outer join albums on tracks.album = albums.id
 where tracks.audio = 1
 group by tracks.id
 
@@ -36,7 +36,7 @@ group by tracks.id
 
 select distinct id, namesearch from contributors
 left join contributor_album ca on (ca.contributor = contributors.id)
-where ca.role in ('1', '5', '6')
+where ca.role in (1, 5, 6)
 
 --- albums: unit -> (int * string) list
 

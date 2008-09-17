@@ -69,8 +69,9 @@ end = struct
               val jtStr = W8VS.slice (jt, start * 4 + 8, SOME 4)
             in
               case W8VS.collate Word8.compare (query', jtStr) of
-                LESS => start
-              | _ => searchJT (start + 2)
+                EQUAL => start
+              | LESS => start
+              | GREATER => searchJT (start + 2)
             end
             handle Subscript => start
 
