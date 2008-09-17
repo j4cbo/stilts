@@ -5,7 +5,6 @@ $(SML_LIB)/basis/basis.mlb
 index.html.sml
 item.html.sml
 list.html.sml
-home.html.sml
 song.html.sml
 search.html.sml
 playlist.html.sml

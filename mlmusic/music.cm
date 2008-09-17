@@ -20,7 +20,6 @@ Group is
 	templates/index.html
 	templates/item.html
 	templates/list.html
-	templates/home.html
 	templates/song.html
 	templates/search.html
 	templates/playlist.html

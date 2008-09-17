@@ -49,9 +49,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
       in
         U.htmlResp (case path of
 
-          [ "home" ] => THome.render () 
-
-        | [ "artists", "" ] => let
+          [ "artists", "" ] => let
             val (pb, list, start) = pbSubApp (req, SQL.allArtistsNamesort,
                                                    SQL.allArtistsRange)
           in
