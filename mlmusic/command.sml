@@ -65,6 +65,17 @@ structure Command = struct
             ^ ",[" ^ String.concatWith "," (map JSON.object tracks) ^ "]]"
       end
 
+  fun extractTrack m = let
+        fun get key = case Map.find (m, key) of SOME s => s
+                                              | NONE => ""
+      in {
+        id = get "id", tracknum = Map.find (m, "tracknum"), title = get "title",
+        album = case (Map.find (m, "album_id"), Map.find (m, "album")) of
+                  (SOME i, SOME a) => SOME (i, a) | _ => NONE,
+        artist = case (Map.find (m, "artist_id"), Map.find (m, "artist")) of
+                  (SOME i, SOME a) => SOME (i, a) | _ => NONE
+      } end
+
   fun playlist p start len = let
         val resp = case CLI.command c [ p, "status", Int.toString start,
                                         Int.toString len, "tags:asledity" ] of 
@@ -72,6 +83,6 @@ structure Command = struct
                    | _ => raise Fail "unexpected result" 
         val (prologue, tracks) = mapMulti "playlist index" resp
       in
-        (prologue, tracks)
+        (prologue, map extractTrack tracks)
       end
 end

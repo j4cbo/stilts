@@ -30,7 +30,7 @@ structure SearchApp :> sig val searchApp: Web.app end = struct
 
         val opts = { artists = artists,
                      albums = albums,
-                     songs = songs,
+                     songs = DB.fold_tracks songs,
                      itime = time,
                      ttime = ttime }
       in

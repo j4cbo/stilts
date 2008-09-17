@@ -6,6 +6,8 @@
 <body>
 
 <div id="browseheader">
+ <div id="searchbox"><form method="post" action="/search/"><input type="text" name="q" value="${q}"/></form></div>
+
  Search
 </div>
 
@@ -26,32 +28,38 @@
   <div t:if="case artists of nil => false | _ => true" t:strip="">
    <p>Artists matching "${q}": ${Int.toString (length artists)}</p>
    <ul class="browselist">
-    <li t:for="{ id, name, mm_mixable, mb_id } in artists">
-     <a href="javascript:Sing.ctl.add('artist',${Int.toString id})" class="addbutton"> </a><a
-        href="javascript:Sing.ctl.play('artist',${Int.toString id})" class="playbutton"> </a>
-     <a href="/browse/artists/${Int.toString id}/" class="item">${name}</a>
-    </li>
+    <t:for exp="artists" pattern="{ id, name, mm_mixable, mb_id }">$H{
+      TListItem.render (Int.toString id, name, SOME "/browse/artists/", "artist.id=")
+    }</t:for>
    </ul>
   </div>
 
   <div t:if="case albums of nil => false | _ => true" t:strip="">
    <p>Albums matching "${q}": ${Int.toString (length albums)}</p>
    <ul class="browselist">
-    <li t:for="{ id, name, compilation, mm_mixable, mb_id } in albums">
-     <a href="javascript:Sing.ctl.add('album',${Int.toString id})" class="addbutton"> </a><a
-        href="javascript:Sing.ctl.play('album',${Int.toString id})" class="playbutton"> </a>
-     <a href="/browse/albums/${Int.toString id}/" class="item">${name}</a>
-    </li>
+    <t:for exp="albums" pattern="{ id, name, compilation, mm_mixable, mb_id }">$H{
+      TListItem.render (Int.toString id, name, SOME "/browse/albums/", "album.id=")
+    }</t:for>
    </ul>
   </div>
 
   <div t:if="case songs of nil => false | _ => true">
    <p>Songs matching "${q}": ${Int.toString (length songs)}</p>
    <ul class="browselist">
-    <li t:for="{ id, tracknum, title, albumId, albumTitle, artistId, artistName, mm_mixable, mb_id } in songs">
-     <a href="javascript:Sing.ctl.add('song',${Int.toString id})" class="addbutton"> </a><a
-        href="javascript:Sing.ctl.play('song',${Int.toString id})" class="playbutton"> </a>
-     <a href="/browse/song/${Int.toString id}/" class="item">${title}</a>
+    <li t:for="{ id, tracknum, title, album, artists } in songs">
+     <a href="javascript:top.Sing.ctl.add('track.id=${Int.toString id}')" class="addbutton"> </a><a
+        href="javascript:top.Sing.ctl.play('track.id=${Int.toString id}')" class="playbutton"> </a>
+     <a href="/browse/song/${Int.toString id}/">${title}</a>
+     <t:ifOption exp="album" pattern="{id = aId, title = aTitle}">
+      from <a href="/browse/albums/${Int.toString aId}/">${aTitle}</a>
+     </t:ifOption>
+     <t:case exp="artists">
+      <t:of pattern="nil" />
+      <t:of pattern="_">
+       by <t:for exp="artists" pattern="{ id, name }" sep=", "><a
+             href="/browse/artists/${Int.toString id}/">${name}</a></t:for>
+      </t:of>
+     </t:case>
     </li>
    </ul>
   </div>

@@ -30,6 +30,13 @@
 	}
 
 	function updateCurSong(song) {
+		if (!song) {
+			$("#cstitle").html("");
+			$("#csartist").html("");
+			$("#csalbum").html("");
+			return;
+		}
+
 		if (song.tracknum) {
 			st = song.tracknum + ". " + song.title;
 		} else {
@@ -37,25 +44,29 @@
 		}
 
 		$("#cstitle").html(
-			"<a target=\"browseframe\" href=\"/browse/song/" + song.id
-			+ "/\">" + escapeHTML(st) + "</a>"
+			"<a target=\"browseframe\" href=\"/browse/song/"
+			+ song.id + "/\">" + escapeHTML(st) + "</a>"
 		);
 
-		var alb = "<a target=\"browseframe\" href=\"/browse/albums/"
-			+ song.album_id + "/\">" + escapeHTML(song.album) + "</a>";
+		if (song.album) {
+			var alb = "<a target=\"browseframe\" href=\"/browse/albums/"
+				+ song.album_id + "/\">" + escapeHTML(song.album) + "</a>";
 
-		if (song.year) {
-			y = Number(song.year);
-			alb += " (<a target=\"browseframe\" href=\"/browse/years/"
-			+ y + "/\">" + y + "</a>)";
+			if (song.year) {
+				y = Number(song.year);
+				alb += " (<a target=\"browseframe\" href=\"/browse/years/"
+				+ y + "/\">" + y + "</a>)";
+			}
+
+			$("#csalbum").html(alb);
 		}
 
-		$("#csalbum").html(alb);
-
-		$("#csartist").html(
-			"<a target=\"browseframe\" href=\"/browse/artists/"
-			+ song.artist_id + "/\">" + escapeHTML(song.artist) + "</a>"
-		);
+		if (song.artist) {
+			$("#csartist").html(
+				"<a target=\"browseframe\" href=\"/browse/artists/"
+				+ song.artist_id + "/\">" + escapeHTML(song.artist) + "</a>"
+			);
+		}
 	}
 
 	function handleStatusObject(obj) {

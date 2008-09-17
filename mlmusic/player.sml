@@ -19,7 +19,9 @@ structure PlayerApp :> sig val playerApp: Web.app end = struct
                 | [ "pause" ] => SOME [ player, "pause" ]
                 | [ "prev" ] => SOME [ player, "playlist", "index", "-1" ]
                 | [ "next" ] => SOME [ player, "playlist", "index", "+1" ]
-                | nil => NONE
+                | "add" :: cmds => SOME (player :: "playlist" :: "addtracks" :: cmds)
+                | "play" :: cmds => SOME (player :: "playlist" :: "loadtracks" :: cmds)
+                | [ "" ] => NONE
                 | _ => (print "Command: unknown command!\n"; NONE)
 
               val _ = case cmd of SOME cmd => CLI.command Command.c cmd

@@ -66,16 +66,15 @@ WHERE tracks.id = ?
 
 
 
---- trackMulti: int list -> { id: int, tracknum: int option, title: string, albumId: int option, albumTitle: string option, artistId: int option, artistName: string option, mm_mixable: int option, mb_id: string option } list
+--- trackMulti: int list -> { id: int, tracknum: int option, title: string, albumId: int option, albumTitle: string option, artistId: int option, artistName: string option } list
 
 SELECT
         tr.id, tr.tracknum, tr.title,
         tr.album album_id, albums.title album_title,
-        contributors.id artist_id, contributors.name artist_name,
-        tr.musicmagic_mixable, tr.musicbrainz_id
+        contributors.id artist_id, contributors.name artist_name
 FROM tracks tr
 LEFT OUTER JOIN albums ON albums.id = tr.album
-LEFT OUTER JOIN contributor_track ct ON (ct.track = tr.id and ct.role = 1)
+LEFT OUTER JOIN contributor_track ct ON (ct.track = tr.id and ct.role in (1, 6))
 LEFT JOIN contributors ON contributors.id = ct.contributor
 WHERE tr.id IN ?
 ORDER BY tr.album, tr.disc, tr.tracknum, tr.titlesort 

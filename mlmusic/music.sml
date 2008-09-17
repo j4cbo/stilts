@@ -20,8 +20,10 @@ structure Wiki = struct
       end
 
   fun index req = let
+        val () = print "index\n"
         fun process p = { id = valOf (Command.Map.find (p, "playerid")),
                           name = valOf (Command.Map.find (p, "name")) }
+        val () = print "index done\n"
 
         val (_, playerMap) = Command.players ()
         val players = map process playerMap

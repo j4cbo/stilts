@@ -1,14 +1,11 @@
 <?template TPlaylist (prologue, tracks) ?>
-<t:for exp="tracks" pattern="track">
+<t:for exp="tracks" pattern="{ id, tracknum, title, album, artist }">
  <li>
-  <a target="browseframe" href='/browse/song/${valOf (Command.Map.find (track, "id"))}/'>${
-        case Command.Map.find (track, "tracknum") of
-               NONE => ""
-             | SOME s => s ^ ". "
-    }${ valOf (Command.Map.find (track, "title")) }</a><br/>
-  <a target="browseframe" href='/browse/albums/${valOf (Command.Map.find (track, "album_id"))}/'>${
-        valOf (Command.Map.find (track, "album")) }</a><br/>
-  <a target="browseframe" href='/browse/albums/${valOf (Command.Map.find (track, "artist_id"))}/'>${
-        valOf (Command.Map.find (track, "artist")) }</a><br/>
+  <a target="browseframe" href='/browse/song/${id}/'>${
+        case tracknum of NONE => "" | SOME s => s ^ ". " }${title}</a><br/>
+  <a t:ifOption="album as (id, name)" target="browseframe"
+     href='/browse/albums/${id}/'>${name}</a><br/>
+  <a t:ifOption="artist as (id, name)" target="browseframe"
+     href='/browse/albums/${id}/'>${name}</a>
  </li>
 </t:for>
