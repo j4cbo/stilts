@@ -1,24 +1,27 @@
 $(SML_LIB)/basis/basis.mlb
 $(SML_LIB)/smlnj-lib/RegExp/regexp-lib.mlb
 ../../stilts/db/libmysqlclient/libmysqlclient.mlb
-music.squall.sml
-conf.sml
-../../stilts/smelt/tinyxml/tinyxml.mlb
-../../stilts/web/web.mlb
-templates/index.html.sml
-templates/item.html.sml
-templates/list.html.sml
-templates/home.html.sml
-templates/song.html.sml
-templates/search.html.sml
-pagebar.sml
-browser.sml
-index/search.sml
-search.sml
-db.sml
-cli.sml
-command.sml
-templates/playlist.html.sml
-player.sml
-music.sml
-main.sml
+
+ann
+	"sequenceNonUnit warn"
+in
+	music.squall.sml
+	conf.sml
+	../../stilts/smelt/tinyxml/tinyxml.mlb
+	../../stilts/web/web.mlb
+
+	templates/templates.mlb
+
+	pagebar.sml
+	browser.sml
+	db.sml
+	index/search.sml
+	search.sml
+	cli.sml
+	db.sml
+	command.sml
+	templates/playlist.html.sml
+	player.sml
+	music.sml
+	main.sml
+end

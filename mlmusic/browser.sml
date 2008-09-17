@@ -59,7 +59,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
               path = [ ( "Artists", "/browse/artists/" ) ],
               nextPrefix = SOME "",
               title = "All Artists",
-              cmdPrefix = "artist.id=",
+              cmdPrefix = "contributor.id=",
               allCmd = NONE,
               list = list,
               pb = pb,
@@ -77,15 +77,15 @@ structure Browser :> sig val browseApp: Web.app end = struct
                      ( title, "/browse/artists/" ^ id ^ "/") ],
             list = SQL.albumsByArtist id',
             title = title,
-            cmdPrefix = "artist.id=" ^ id ^ " album.id=",
-            allCmd = SOME ("artist.id=" ^ id),
+            cmdPrefix = "contributor.id=" ^ id ^ " album.id=",
+            allCmd = SOME ("contributor.id=" ^ id),
             pb = pb,
             start = 0
         }
         end
 
       | [ "artists", artistId, albumId, "" ] => let
-	    val (artistId', artistName) = artistInfo artistId
+	    val (_, artistName) = artistInfo artistId
             val (albumId', albumTitle) = albumInfo albumId
           in TList.render {
             nextPrefix = SOME "/browse/song/",
@@ -95,7 +95,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
             cmdPrefix = "track.id=",
-            allCmd = SOME ("artist.id=" ^ artistId ^ " album.id=" ^ albumId),
+            allCmd = SOME ("contributor.id=" ^ artistId ^ " album.id=" ^ albumId),
             pb = NONE, start = 0
         }
         end
@@ -121,7 +121,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
           in TList.render {
             nextPrefix = SOME "/browse/song/",
             path = [ ( "Albums", "/browse/albums/" ),
-                     ( albumTitle, "/browse/artists/" ^ albumId ^ "/") ],
+                     ( albumTitle, "/browse/albums/" ^ albumId ^ "/") ],
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
             cmdPrefix = "track.id=",

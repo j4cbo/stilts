@@ -20,12 +20,9 @@ end = struct
 
   val state : state option ref = ref NONE
 
-  fun s () = case !state of SOME s => s
-                          | NONE => raise Fail "search before init"
-
   fun init filename = let
 
-        val () = case !state of SOME s => raise Fail "already opened"
+        val () = case !state of SOME _ => raise Fail "already opened"
                               | NONE => ()
 
         val fd = FS.openf (filename, FS.O_RDONLY, FS.O.flags nil)

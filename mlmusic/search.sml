@@ -13,7 +13,7 @@ structure SearchApp :> sig val searchApp: Web.app end = struct
 
         val { artists as artistIds,
               albums as albumIds,
-              tracks as songIds, time }= Search.search q
+              tracks as songIds, time } = Search.search q
 
         val artists = case artistIds of nil => nil
                                       | _ => SQL.artistMulti artistIds
