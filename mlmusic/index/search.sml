@@ -75,7 +75,7 @@ end = struct
         val jtOffset = searchJT 0
 
         val dsStart = LargeWord.toInt (unpack (jt, jtOffset + 1))
-        val dsLength = LargeWord.toInt (unpack (jt, jtOffset + 3)) - dsStart
+        val dsLength = LargeWord.toInt (unpack (jt, jtOffset + 5)) - dsStart
                        handle Subscript => dataLength - dsStart
 
         val _ = PIO.lseek (file,
