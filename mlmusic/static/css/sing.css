@@ -86,7 +86,7 @@ body {
 	height: 1000px;
 }
 
-#prevbutton, #playbutton, #nextbutton, #repeatbutton, #shufflebutton {
+#prevbutton, #playbutton, #nextbutton, #repeatbutton, #shufflebutton, #volupbutton, #voldownbutton {
 	display: inline-block;
 	width: 31px;
 	height: 22px;
@@ -96,8 +96,24 @@ body {
 	background-repeat: no-repeat;
 }
 
+#volupbutton, #voldownbutton {
+	width: 27px;
+}
 #prevbutton { margin-left: 12px; }
 #nextbutton { margin-right: 8px; }
+#voldownbutton {
+	margin-left: 50px;
+}
+
+#volumebar {
+	display: inline-block;
+	width: 91px;
+	height: 22px;
+	margin: 12px 0 0 0;
+	padding: 0;
+	background-image: url(../images/volume_levels.gif);
+	background-repeat: no-repeat;
+}
 
 #prevbutton {			background-position: 0px 0px; }
 #prevbutton:hover {		background-position: 0px -22px; }
@@ -139,7 +155,14 @@ body {
 #shufflebutton.s2:hover {	background-position: -279px -22px; }
 #shufflebutton.s2:active {	background-position: -279px -44px; }
 #shufflebutton.s2.disabled {	background-position: -279px -66px; }
-
+#voldownbutton {		background-position: -310px 0px; }
+#voldownbutton:hover {		background-position: -310px -22px; }
+#voldownbutton:active {		background-position: -310px -44px; }
+#voldownbutton.disabled {	background-position: -310px -66px; }
+#volupbutton {			background-position: -337px 0px; }
+#volupbutton:hover {		background-position: -337px -22px; }
+#volupbutton:active {		background-position: -337px -44px; }
+#volupbutton.disabled {		background-position: -337px -66px; }
 a:active {
 	border: 0px none;
 	outline: 0px none;

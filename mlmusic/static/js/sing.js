@@ -14,6 +14,8 @@
 		$("#prevbutton").removeClass("disabled");
 		$("#nextbutton").removeClass("disabled");
 		$("#playbutton").removeClass("disabled");
+		$("#voldownbutton").removeClass("disabled");
+		$("#volupbutton").removeClass("disabled");
 
 		/* Play/pause */
 		if (status.mode == "play") {
@@ -27,6 +29,12 @@
 		$("#repeatbutton").addClass("r" + status["playlist repeat"]);
 		$("#shufflebutton").removeClass();
 		$("#shufflebutton").addClass("s" + status["playlist shuffle"]);
+
+		var volumeBars = Math.floor(status["mixer volume"] / 10.0);
+		$("#volumebar").css(
+			"background-position",
+			"0 -" + (volumeBars * 22) + "px"
+		);
 	}
 
 	function updateCurSong(song) {
@@ -95,7 +103,9 @@
 		"#shufflebutton":	"shuffle",
 		"#playbutton":		"pause",
 		"#prevbutton":		"prev",
-		"#nextbutton":		"next"
+		"#nextbutton":		"next",
+		"#volupbutton":		"volup",
+		"#voldownbutton":	"voldown"
 	}, function(k, v) {
 		$(k).bind("click", function() {
 			updateStatus(v);
