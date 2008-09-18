@@ -1,1 +1,1 @@
-Index.run ()
+val () = Index.run ()

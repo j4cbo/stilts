@@ -24,8 +24,8 @@ structure Index = struct
          W8A.update (prologue, 8, 0w3);
          W8A.update (prologue, 9, if PW.isBigEndian then 0w1 else 0w0);
          W8A.update (prologue, 10, Word8.fromInt numIndexes);
-         PW.update (prologue, 3, Word32.fromInt jumpTableLength);
-         PW.update (prologue, 4, Word32.fromInt dataLength);
+         PW.update (prologue, 3, LargeWord.fromInt jumpTableLength);
+         PW.update (prologue, 4, LargeWord.fromInt dataLength);
          W8A.vector prologue
        end
 
@@ -35,7 +35,7 @@ structure Index = struct
         val record = Word8Array.array (8, 0w0)
       in
         W8A.copyVec { src = Byte.stringToBytes key', dst = record, di = 0 };
-        PW.update (record, 1, Word32.fromInt offset);
+        PW.update (record, 1, LargeWord.fromInt offset);
         W8A.vector record
       end
 
@@ -86,18 +86,18 @@ structure Index = struct
 
               val record = W8A.array (recordLength, 0w0)
 
-              val () = PW.update (record, 0, Word32.fromInt recordLength)
-              val () = PW.update (record, 1, Word32.fromInt (size key))
+              val () = PW.update (record, 0, LargeWord.fromInt recordLength)
+              val () = PW.update (record, 1, LargeWord.fromInt (size key))
 
               val () = W8A.copyVec { src = Byte.stringToBytes key,
                                      dst = record, di = 8 }
 
               fun setIds (ids, index) = let
                     fun setId (id, index) = (
-                          PW.update (record, index, Word32.fromInt id);
+                          PW.update (record, index, LargeWord.fromInt id);
                           index + 1)
                   in
-                    PW.update (record, index, Word32.fromInt (length ids));
+                    PW.update (record, index, LargeWord.fromInt (length ids));
                     foldr setId (index + 1) ids
                   end
 
