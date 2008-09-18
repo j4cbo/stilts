@@ -324,17 +324,38 @@ structure MySQLClient :> MYSQLCLIENT = struct
   val use_result = mk_store_use_result F_mysql_use_result.f'
 
 
-  fun query_and_result (conn, q) = (print q; real_query conn q;
-                                    case store_result conn of
-                                      NONE => []
-                                    | SOME res => let
-                                        fun get () = case fetch_row res of
-                                                       NONE => nil
-                                                     | SOME r => (r::(get ()))
-                                      in
-                                        (get () before free_result res)
-                                        handle e => (free_result res; raise e)
-                                      end)
+  fun query_and_result (conn, q) = let
+        val sp = String.translate (fn #"\n" => "\n       " | c => String.str c)
+        val () = print ("MySQL: Running query: \n       " ^ sp q ^ "\n")
 
+        val timer = Timer.startRealTimer ()
+        val () = real_query conn q
+        val queryTime = Time.toReal (Timer.checkRealTimer timer)
+        val queryTS = Real.toString (queryTime * 1000.0)
 
+        val res = store_result conn
+        val storeTime = Time.toReal (Timer.checkRealTimer timer)
+        val storeTS = Real.toString ((storeTime - queryTime) * 1000.0)
+
+        fun get res = case fetch_row res of NONE => nil
+                                          | SOME r => (r::(get res))
+      in
+        case res of NONE => (print ("MySQL: done; query " ^ queryTS
+                                    ^ " ms, store " ^ storeTS ^ " ms\n");
+                             [])
+                  | SOME res => let
+                      val resultSet = (
+                        (get res before free_result res)
+                        handle e => (free_result res; raise e)
+                      )
+                      val loadTime = Time.toReal (Timer.checkRealTimer timer)
+                      val loadTS = Real.toString ((loadTime-storeTime)*1000.0)
+                      val totalTS = Real.toString (loadTime * 1000.0)
+                    in
+                      print ("MySQL: done; query " ^ queryTS ^ " ms, store "
+                             ^ storeTS ^ " ms, load " ^ loadTS ^ " ms, total "
+                             ^ totalTS ^ " ms\n");
+                      resultSet
+                    end
+      end
 end
