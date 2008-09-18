@@ -6,7 +6,7 @@ sig
   datatype gen = GenText of string
                | GenSubst of string * expr
                | GenConcat of gen list
-               | GenIterate of expr * expr * gen
+               | GenIterate of expr * expr * gen * string
                | GenCaseOf of expr * (expr * gen) list
 
   val generate: TinyXML.document -> string * string * gen 

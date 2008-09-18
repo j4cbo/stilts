@@ -23,8 +23,10 @@ struct
           "String.concat[", 
           String.concat (mix "," (map compileGen gens)),
           "]" ] 
-    | compileGen (TG.GenIterate (var, src, tree)) = String.concat [
-          "String.concat(map(fn ", var, "=>",
+    | compileGen (TG.GenIterate (var, src, tree, sep)) = String.concat [
+          case sep of "" => "String.concat"
+                    | _ => "String.concatWith" ^ compileGen (TG.GenText sep),
+          "(map(fn ", var, "=>",
           compileGen tree,
           ")(", src, "))" ]
     | compileGen (TG.GenCaseOf (var, terms)) = String.concat [

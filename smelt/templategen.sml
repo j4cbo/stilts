@@ -9,7 +9,7 @@ struct
   datatype gen = GenText of string
                | GenSubst of string * expr
                | GenConcat of gen list
-               | GenIterate of expr * expr * gen
+               | GenIterate of expr * expr * gen * string
                | GenCaseOf of expr * (expr * gen) list
 
   structure TA = TemplateAttr
@@ -86,6 +86,31 @@ struct
                                            ("false", GenText "") ])
 
 
+  (* val getExpPattern: TinyXML.attribute list -> string * string
+   *
+   * Assert that the given attributes contain only "exp" and "pattern",
+   * and return a tuple of exp and pattern.
+   *)
+  fun getExpPattern [ ("exp", exp), ("pattern", pat) ] = (exp, pat)
+    | getExpPattern [ ("pattern", pat), ("exp", exp) ] = (exp, pat)
+    | getExpPattern _ = raise ParseError "invalid attributes on t: node"
+
+
+  (* fun getExpPatSep: TinyXML.attribute list
+   *                                     -> string * string * string option
+   * Assert that the given attributes contain only "exp", "pattern", and
+   * optionally "sep", and return a corresponding tuple.
+   *)
+  fun getExpPatSep attrs = let
+        val attrs' = ListMergeSort.sort (fn ((a, _), (b, _)) => a > b) attrs
+      in
+        case attrs' of [ ("exp", exp), ("pattern", pat), ("sep", sep) ] =>
+                                                           (exp, pat, SOME sep)
+                     | [ ("exp", exp), ("pattern", pat) ] => (exp, pat, NONE)
+                     | _ => raise ParseError "invalid attributes on t: node"
+      end
+
+
   (* val genOfNode: TinyXML.node -> (expr * gen) option
    *
    * Confirm that each node contains a t:of option, and then return a list of
@@ -107,7 +132,6 @@ struct
     | genOfNode (X.XPINode (X.XProcInst (k, v))) =
         raise ParseError ("unexpected processing instruction: " ^ k ^ " " ^ v) 
 
-
   (* val genNode: TinyXML.node -> gen
    *
    * Recursively generate the specified XML node.
@@ -119,16 +143,10 @@ struct
     | genNode (X.XElementNode (X.XElement ("t:if", _, _))) =
         raise ParseError "invalid attributes on t:if node"
 
-    | genNode (X.XElementNode (X.XElement ("t:ifOption", [ ("exp", exp),
-                                                      ("pattern", p) ], ch))) =
-        GenCaseOf (exp, [ (("SOME(" ^ p ^ ")"), GenConcat (map genNode ch)),
-                           ("NONE", GenConcat nil) ])
-    | genNode (X.XElementNode (X.XElement ("t:ifOption", [ ("pattern", p),
-                                                      ("exp", exp) ], ch))) =
-        GenCaseOf (exp, [ (("SOME(" ^ p ^ ")"), GenConcat (map genNode ch)),
-                           ("NONE", GenConcat nil) ])
-    | genNode (X.XElementNode (X.XElement ("t:ifOption", _, _))) =
-        raise ParseError "invalid attributes on t:ifOption node"
+    | genNode (X.XElementNode (X.XElement ("t:ifOption", attrs, ch))) =
+        let val (exp, p) = getExpPattern attrs
+         in GenCaseOf (exp, [ ("SOME(" ^ p ^ ")", GenConcat (map genNode ch)),
+                              ("NONE", GenConcat nil) ]) end
 
     | genNode (X.XElementNode (X.XElement ("t:case", [ ("exp", exp) ], ch))) =
         GenCaseOf (exp, List.mapPartial genOfNode ch)
@@ -138,14 +156,10 @@ struct
     | genNode (X.XElementNode (X.XElement ("t:of", _, _))) =
         raise ParseError "t:of node outside t:case"
 
-    | genNode (X.XElementNode (X.XElement ("t:for", [ ("exp", exp),
-                                                      ("pattern", p) ], ch))) =
-        GenIterate (p, exp, GenConcat (map genNode ch))
-    | genNode (X.XElementNode (X.XElement ("t:for", [ ("pattern", p),
-                                                      ("exp", exp) ], ch))) =
-        GenIterate (p, exp, GenConcat (map genNode ch))
-    | genNode (X.XElementNode (X.XElement ("t:for", _, _))) =
-        raise ParseError "invalid attributes on t:for node"
+    | genNode (X.XElementNode (X.XElement ("t:for", attrs, ch))) =
+        let val (exp, pat, sep) = getExpPatSep attrs
+            val sep' = case sep of SOME s => s | NONE => ""
+         in GenIterate (pat, exp, GenConcat (map genNode ch), sep') end
 
     | genNode (X.XElementNode (X.XElement (name, attrs, children))) =
       let
@@ -157,7 +171,7 @@ struct
                              nil => NONE
                            | c => SOME (GenConcat (map genNode children)))
           | attrLoop ((TA.TAFor (bindVar, iterVar)) :: rest) =
-              GenIterate (bindVar, iterVar, attrLoop rest)
+              GenIterate (bindVar, iterVar, attrLoop rest, "")
           | attrLoop ((TA.TAIf exp) :: rest) = genIf (exp, attrLoop rest)
           | attrLoop ((TA.TAIfOption (exp, binding)) :: rest) =
               GenCaseOf (exp, [ (("SOME(" ^ binding ^ ")"), attrLoop rest),
@@ -204,7 +218,8 @@ struct
     in
       trim (GenConcat (optConcat l))
     end
-    | optimizeGen (GenIterate (k, v, t)) = GenIterate (k, v, optimizeGen t)
+    | optimizeGen (GenIterate (k, v, t, sep)) =
+        GenIterate (k, v, optimizeGen t, sep)
     | optimizeGen (GenCaseOf (e, opts)) =
         GenCaseOf (e, map (fn (e, g) => (e, optimizeGen g)) opts)
     | optimizeGen g = g
