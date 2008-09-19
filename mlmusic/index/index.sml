@@ -138,7 +138,7 @@ structure Index = struct
                          SQL.tracksTitleAlbumArtist,
                          SQL.artists,
                          SQL.albums,
-                         SQL.albumsArtist ] "db.idx"
+                         SQL.albumsArtist ] "searchdb.idx"
     in
       ()
     end 

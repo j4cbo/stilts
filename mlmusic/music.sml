@@ -76,7 +76,7 @@ structure Wiki = struct
       }
 *)
   val () = DB.connect ()
-  val () = SearchFile.init "index/db.idx"
+  val () = SearchFile.init "searchdb.idx"
 
   fun timer app req = let
         val realTimer = Timer.startRealTimer ()
