@@ -31,7 +31,7 @@ $(OUTPUT): $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(DEPS) $(MLB)
 
 dist: sing-$(DATE)
 
-sing-$(DATE): default
+sing-$(DATE): all
 	rm -rf $@
 	mkdir $@
 	cp -a sing index/index mysql-mods.sql lighttpd.conf $@/
