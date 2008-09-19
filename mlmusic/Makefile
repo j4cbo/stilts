@@ -1,5 +1,5 @@
 MLB = music.mlb
-OUTPUT = music
+OUTPUT = sing
 
 MLTON = mlton
 
@@ -11,7 +11,7 @@ DATE=$(shell date +%Y%m%d)
 
 # ---
 
-all: $(MYSQL_PATH)/FFI-mlton/ffi.mlb music index/index
+all: $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(OUTPUT) index/index
 
 $(MYSQL_PATH)/FFI-mlton/ffi.mlb:
 	make -C $(MYSQL_PATH) FFI-mlton/ffi.mlb
@@ -27,15 +27,14 @@ include $(SQUALL_PATH)/squall.mk
 include $(SMELT_PATH)/smelt.mk
 
 $(OUTPUT): $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(DEPS) $(MLB)
-	mlton -link-opt -ldl $(MLB)
+	mlton -link-opt -ldl -output $@ $(MLB)
 
 dist: sing-$(DATE)
 
 sing-$(DATE): default
 	rm -rf $@
 	mkdir $@
-	cp -a index/index mysql-mods.sql lighttpd.conf $@/
-	cp music $@/sing
+	cp -a sing index/index mysql-mods.sql lighttpd.conf $@/
 	strip $@/index
 	strip $@/sing
 	svn export static $@/static

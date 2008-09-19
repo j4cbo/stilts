@@ -1,4 +1,4 @@
-structure Wiki = struct
+structure Music = struct
 
   structure U = WebUtil
 
@@ -65,16 +65,6 @@ structure Wiki = struct
                          ( [ "player" ], U.PREFIX, PlayerApp.playerApp ),
                          ( nil, U.PREFIX, rootHandler ) ]
 
-  val conn_info : MySQLClient.connect_info = {
-        host = SOME "127.0.0.1", port = 0w3306, unix_socket = NONE,
-        user = SOME "root", password = NONE, db = SOME "slimserver"
-      }
-(*
-  val conn_info : MySQLClient.connect_info = {
-        host = SOME "localhost", port = 0w0, unix_socket = NONE,
-        user = SOME "root", password = NONE, db = SOME "slimserver"
-      }
-*)
   val () = DB.connect ()
   val () = SearchFile.init "searchdb.idx"
 

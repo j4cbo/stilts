@@ -1,1 +1,1 @@
-val _ = Wiki.main ()
+val _ = Music.main ()
