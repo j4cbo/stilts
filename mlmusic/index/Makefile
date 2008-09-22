@@ -14,4 +14,4 @@ default: $(OUTPUT)
 include $(SQUALL_PATH)/squall.mk
 
 $(OUTPUT): $(DEPS) $(MLB)
-	mlton -link-opt -ldl $(MLB)
+	mlton -link-opt -lmysqlclient $(MLB)

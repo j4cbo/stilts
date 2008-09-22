@@ -1,11 +1,15 @@
+ann
+	"allowFFI true"
+in
 local
 	$(SML_LIB)/basis/basis.mlb
-	$(SML_LIB)/mlnlffi-lib/c.mlb
-	FFI-mlton/ffi.mlb
+	$(SML_LIB)/basis/mlton.mlb
+	$(SML_LIB)/basis/unsafe.mlb
+	$(SML_LIB)/basis/c-types.mlb
 	libmysqlclient.sig
-	uchar-mlton.sml
-	libmysqlclient.sml
+	libmysqlclient-mlton.sml
 in
 	signature MYSQLCLIENT
 	structure MySQLClient
+end
 end

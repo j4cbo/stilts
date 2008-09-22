@@ -27,7 +27,7 @@ include $(SQUALL_PATH)/squall.mk
 include $(SMELT_PATH)/smelt.mk
 
 $(OUTPUT): $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(DEPS) $(MLB)
-	mlton -link-opt -ldl -output $@ $(MLB)
+	mlton -link-opt -lmysqlclient -output $@ $(MLB)
 
 dist: sing-$(DATE)
 
