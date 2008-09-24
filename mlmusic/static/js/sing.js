@@ -130,6 +130,10 @@
 		ctl: {
 			add: function(s) { doCommand ("add", s); },
 			play: function(s) { doCommand ("play", s); }
+		},
+		pl: {
+			play: function(s) { doCommand ("pljump", s); },
+			del: function(s) { doCommand ("pldel", s); }
 		}
 	};
 }());

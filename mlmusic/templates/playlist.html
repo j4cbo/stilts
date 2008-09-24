@@ -1,11 +1,15 @@
 <?template TPlaylist (prologue, tracks) ?>
-<t:for exp="tracks" pattern="{ id, tracknum, title, album, artist }">
+<t:for exp="rev (#2 (foldl (fn (i, (n, rest)) => (n + 1, (n, i)::rest)) (0, nil) tracks))"
+   pattern="(index, { id, tracknum, title, album, artist })">
  <li>
+  <a href="javascript:top.Sing.pl.del(${Int.toString index})" class="delbutton" onclick="event.stopPropagation()"> </a><a
+    href="javascript:top.Sing.pl.play(${Int.toString index})" class="playbutton" onclick="event.stopPropagation()"> </a>
+
   <a target="browseframe" href='/browse/song/${id}/'>${
         case tracknum of NONE => "" | SOME s => s ^ ". " }${title}</a><br/>
   <a t:ifOption="album as (id, name)" target="browseframe"
      href='/browse/albums/${id}/'>${name}</a><br/>
   <a t:ifOption="artist as (id, name)" target="browseframe"
-     href='/browse/albums/${id}/'>${name}</a>
+     href='/browse/artists/${id}/'>${name}</a>
  </li>
 </t:for>

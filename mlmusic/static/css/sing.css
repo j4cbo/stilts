@@ -249,3 +249,42 @@ a:active {
 #playlist ul li a:hover {
 	text-decoration: underline;
 }
+
+.delbutton, .delbutton:active, .playbutton, .playbutton:active {
+        width: 17px;
+        height: 17px;
+        border-color: transparent;
+        border-style: solid;
+        -webkit-background-clip: padding;
+        -moz-background-clip: padding;
+        background-clip: padding;
+        margin: 0;
+        padding: 0;
+        float: right;
+        position: relative;
+        top: -6px;
+        left: 6px;
+        background-repeat: no-repeat;
+        background-image: url(../images/browse.gif);
+}
+
+.delbutton, .delbutton:active {
+        background-position: -51px -25px;
+        border-width: 4px 3px 4px 2px;
+	margin-right: 3px;
+}
+
+.playbutton, .playbutton:active {
+        background-position: -17px -25px;
+        border-width: 4px 2px 4px 2px;
+}
+
+
+#playlistul li .delbutton, #playlistul li .playbutton {
+        display: none;
+}
+
+#playlistul li:hover .delbutton, #playlistul li:hover .playbutton {
+        display: inline-block;
+}
+

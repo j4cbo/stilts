@@ -23,6 +23,8 @@ structure PlayerApp :> sig val playerApp: Web.app end = struct
                 | [ "voldown" ] => SOME [ player, "mixer", "volume", "-10" ]
                 | "add" :: cmds => SOME (player :: "playlist" :: "addtracks" :: cmds)
                 | "play" :: cmds => SOME (player :: "playlist" :: "loadtracks" :: cmds)
+                | "pljump" :: cmds => SOME (player :: "playlist" :: "index" :: cmds)
+                | "pldel" :: cmds => SOME (player :: "playlist" :: "delete" :: cmds)
                 | [ "" ] => NONE
                 | _ => (print "Command: unknown command!\n"; NONE)
 
