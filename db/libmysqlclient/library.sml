@@ -5,7 +5,7 @@
 
 structure Library = struct
   local
-    val libs = [ "libmysqlclient.so", "libmysqlclient.dylib" ]
+    val libs = [ "libmysqlclient.so", "libmysqlclient.so.15", "libmysqlclient.dylib" ]
 
     fun tryLib nil = raise Fail ("could not load any of "
                                  ^ (String.concatWith ", " libs))

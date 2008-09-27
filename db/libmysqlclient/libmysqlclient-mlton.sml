@@ -326,6 +326,12 @@ structure MySQLClient :> MYSQLCLIENT = struct
   val store_result = mk_store_use_result _import "mysql_store_result": ptr -> ptr;
   val use_result = mk_store_use_result _import "mysql_use_result": ptr -> ptr;
 
+  val set_reconnect = conn_wrapper_v (fn (c', v: bool) => let
+          val f = _import "mysql_options": ptr * C_Int.t * Word8.word ref -> unit;
+        in
+          f (c', 20, ref 0w1)
+        end)
+
   fun query_and_result (conn, q) = let
         val sp = String.translate (fn #"\n" => "\n       " | c => String.str c)
         val () = print ("MySQL: Running query: \n       " ^ sp q ^ "\n")

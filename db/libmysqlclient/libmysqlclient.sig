@@ -85,6 +85,8 @@ signature MYSQLCLIENT = sig
   val thread_id: conn -> Word32.word
   val use_result: conn -> result option
 
+  val set_reconnect: conn -> bool -> unit
+
   val query_and_result: conn * string -> string option list list
 
 end
