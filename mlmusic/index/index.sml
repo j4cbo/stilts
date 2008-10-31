@@ -29,12 +29,14 @@ structure Index = struct
          W8A.vector prologue
        end
 
-  fun mkJumpTableEntry (offset, key) = let
-        val key' = if (size key) <= 4 then key
-                                      else String.extract (key, 0, SOME 4)
+  fun keyPrefix key = if (size key) <= 4 then key
+                                         else String.extract (key, 0, SOME 4)
+
+  fun mkJumpTableEntry (offset, prefix) = let
         val record = Word8Array.array (8, 0w0)
       in
-        W8A.copyVec { src = Byte.stringToBytes key', dst = record, di = 0 };
+print ("Adding JT entry: \"" ^ prefix ^ "\" at " ^ Int.toString offset ^ "\n");
+        W8A.copyVec { src = Byte.stringToBytes prefix, dst = record, di = 0 };
         PW.update (record, 1, LargeWord.fromInt offset);
         W8A.vector record
       end
@@ -73,8 +75,10 @@ structure Index = struct
 
         val jtMod = Real.floor (Math.sqrt (Real.fromInt (Map.numItems outMap)))
 
-        fun outputFold (key, idss, (index, outBytes, outRecords, outJT)) = let
+        fun outputFold (key, idss, (index, outBytes, outRecords, outJT,
+                                    lastPrefix, lastBytes)) = let
 
+              val prefix = keyPrefix key
               val keyLen = (size key) + 1
               val keyPaddedLen = if keyLen mod 4 = 0
                                  then keyLen
@@ -103,16 +107,20 @@ structure Index = struct
 
               val _ = foldr setIds (keyPaddedLen div 4 + 2) idss
 
+              val (lastPrefix, lastBytes) = if prefix = lastPrefix
+                                            then (prefix, lastBytes)
+                                            else (prefix, outBytes)
+
               val outJT' = if index mod jtMod = 0
-                           then (mkJumpTableEntry (outBytes, key)) :: outJT
+                           then (mkJumpTableEntry (lastBytes, prefix)) :: outJT
                            else outJT
             in
               (index + 1, outBytes + recordLength,
-               (W8A.vector record) :: outRecords, outJT')
+               (W8A.vector record) :: outRecords, outJT', lastPrefix, lastBytes)
             end
 
-          val (_, outBytes, outRecords, outJT) =
-                Map.foldli outputFold (0, 0, nil, nil) outMap
+          val (_, outBytes, outRecords, outJT, _, _) =
+                Map.foldli outputFold (0, 0, nil, nil, "", 0) outMap
 
           val () = print ("Done. " ^ Int.toString (length outRecords)
                         ^ " records, " ^ Int.toString outBytes

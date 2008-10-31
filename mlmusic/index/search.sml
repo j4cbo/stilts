@@ -55,6 +55,8 @@ end = struct
                         unpack = unpack, dataLength = dataLength }
       end
 
+  fun trace f = print (f ())
+
   fun search query = let
         val { file, jt, numSubs, unpack, dataLength } =
                 case !state of SOME s => s
@@ -77,6 +79,10 @@ end = struct
         val dsStart = LargeWord.toInt (unpack (jt, jtOffset + 1))
         val dsLength = LargeWord.toInt (unpack (jt, jtOffset + 5)) - dsStart
                        handle Subscript => dataLength - dsStart
+
+        val () = trace (fn () => "Scanning " ^ Int.toString dsLength
+                               ^ " bytes starting at " ^ Int.toString dsStart
+                               ^ "\n")
 
         val _ = PIO.lseek (file,
                            Position.fromInt (dsStart + W8V.length jt + 24),
@@ -134,14 +140,12 @@ structure Search = struct
           artists = ar, albums = al, albumsArtist = alAr }
     | unpack l = raise Fail ("unexpected result section count: "
 ^ Int.toString (length l))
-          
 
-  fun search str = let
 
-        val timer = Timer.startRealTimer ()
+  val stopwords = [ "THE", "EL", "LA", "LOS", "LAS" ]
 
-        val strSplit = String.tokens (fn c => c = #" ") str
-        val words = map (String.map Char.toUpper) strSplit
+  fun searchWords nil = (nil, nil, nil)
+    | searchWords words = let 
 
         val searchResults = map (unpack o SearchFile.search) words
 
@@ -163,6 +167,17 @@ structure Search = struct
                         | (_, _) => #tracksTitle
         val trackResults = map trackFold searchResults
         val tracks = foldl intersection (hd trackResults) (tl trackResults)             
+      in
+        (artists, albums, tracks)
+      end
+
+  fun search str = let
+        val timer = Timer.startRealTimer ()
+        val strSplit = String.tokens (fn c => c = #" ") str
+        val words = map (String.map Char.toUpper) strSplit
+        fun notStop word = not (List.exists (fn w => w = word) stopwords)
+        val words = List.filter notStop words
+        val (artists, albums, tracks) = searchWords words
       in
         { artists = artists,
           albums = albums,
