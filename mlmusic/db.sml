@@ -12,6 +12,7 @@ structure DB = struct
 
   fun connect () = let
     val conn = MySQLClient.init ()
+    val () = MySQLClient.set_reconnect conn true
     val () = MySQLClient.real_connect conn conn_info_root
              handle MySQLClient.MySQLException _ =>
                MySQLClient.real_connect conn conn_info_sock
