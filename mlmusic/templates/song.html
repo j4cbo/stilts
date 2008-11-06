@@ -5,17 +5,32 @@
 </head>
 <body>
 
-<div id="browseheader">
+<table id="btable">
+<thead>
+
+<tr id="browseheader">
+<td>
+
+<div id="browseheadertop">
  ${valOf title}
 </div>
 
-<p id="browsepath">
+<div id="browsepath">
  <a href="${Conf.static}/home.html">Home</a>
  &gt;
  <a href=".">Song Info</a>
-</p>
+</div>
 
-<div id="browsecontent" class="pathbar">
+</td>
+</tr>
+
+</thead>
+<tbody>
+
+<tr id="browsecontent">
+<td>
+<div id="bcd1">
+<div id="bcd2">
 
  <ul id="browselist">
   <li>
@@ -23,9 +38,12 @@
   </li>
  </ul>
 
- </div>
-
- <div id="browsefooter">...</div>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
 
 </body>
 </html>

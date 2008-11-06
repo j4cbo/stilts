@@ -4,13 +4,25 @@
 </head>
 <body>
 
-<div id="browseheader">
+<table id="btable">
+<thead>
+
+<tr id="browseheader">
+<td>
+
+<div id="browseheadertop">
  <div id="searchbox"><form method="post" action="/search/"><input type="text" name="q"/></form></div>
  Home
 </div>
 
-<div id="browsecontent">
+</td>
+</tr>
 
+</thead>
+<tbody>
+
+<tr id="browsecontent">
+<td>
  <ul class="browselist homelist">
   <li id="homeartists"><a href="/browse/artists/"><span class="i"> </span><span>Artists</span></a></li>
   <li id="homealbums"><a href="/browse/albums/"><span class="i"> </span><span>Albums</span></a></li>
@@ -22,10 +34,11 @@
   <li id="homeplaylists"><a href="/browse/playlists/"><span class="i"> </span><span>Playlists</span></a></li>
   <li id="homesearch"><a href="/search/"><span class="i"> </span><span>Search Music</span></a></li>
  </ul>
+</td>
+</tr>
 
-</div>
-
-<div id="browsefooter">...</div>
+</tbody>
+</table>
 
 </body>
 </html>

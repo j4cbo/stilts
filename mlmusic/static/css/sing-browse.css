@@ -1,11 +1,31 @@
-html {
+html, body, table, thead, tbody, tr, td, form {
+	margin: 0;
+	padding: 0;
+	border: 0px none;
+	border-collapse: collapse;
+}
+
+body {
+	font-size: 12px;
+	font-family: sans-serif;
+}
+
+#btable {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	margin: 0;
 	padding: 0;
 }
 
-#browseheader {
+#browseheader td {
+	height: 1px;
+}
+
+#browseheadertop {
 	background: #404040;
-	height: 20px;
 	margin: 0;
 	padding: 2px 0 7px 10px;
 	font-weight: bold;
@@ -14,15 +34,19 @@ html {
 	color: #dddddd;
 }
 
-body {
+#searchbox {
+	float: right;
+	padding: 0 5px 0 0;
 	margin: 0;
-	padding: 0;
+	position: relative;
+	top: -2px;
+}
+
+#searchbox input {
 	font-size: 12px;
-	font-family: sans-serif;
 }
 
 #browsepath {
-	height: 15px;
 	margin: 0;
 	padding: 6px 0 5px 10px;
 	background: #888888;
@@ -39,25 +63,63 @@ body {
 	text-decoration: underline;
 }
 
+
+#pagebar {
+	background: #bfbfbf;
+	font-size: 11px;
+}
+
+#pagebar a {
+	color: #333333;
+	text-decoration: none;
+	display: inline-block;
+	padding: 2px;
+}
+
+#pagebar a.pbCur {
+	background: #888888;
+	font-weight: bold;
+	color: #ffffff;
+}
+
+#pagebar a:hover {
+	text-decoration: underline;
+}
+
+
+#browsecontent {
+	position: relative;
+}
+
+#browsecontent td {
+	top: 0;
+	vertical-align: top;
+	position: relative;
+	width: 100%;
+}
+
+#bcd1 {
+	height: 100%;
+	width: 100%;
+	position: relative;
+}
+
+#bcd2 {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+}
 #browsecontent {
 	font-size: 11px;
 	background: #eeeeee;
 	margin: 0;
 	padding: 0;
-	position: absolute;
-	width: 100%;
-	top: 25px;
-	bottom: 20px;
-	overflow: auto;
 }
 
 #browsecontent p {
 	margin: 15px 0 5px 12px;
 	color: #333333;
-}
-
-#browsecontent.pathbar {
-	top: 54px;
 }
 
 .browselist {
@@ -184,23 +246,5 @@ body {
 #homeplaylists a span.i {	background-position: -175px 0; }
 #homesearch a span.i {		background-position: -200px 0; }
 
-#pagebar a {
-	padding: 2px;
-}
 
-.pbCur {
-	background: #aaaaaa;
-}
 
-#searchbox {
-	float: right;
-	padding: 0 5px 0 0;
-	margin: 0;
-	position: relative;
-	top: -2px;
-}
-
-#searchbox input {
-	font-size: 12px;
-	border: 1px solid black;
-}

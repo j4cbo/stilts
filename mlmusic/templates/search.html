@@ -5,17 +5,31 @@
 </head>
 <body>
 
-<div id="browseheader">
- <div id="searchbox"><form method="post" action="/search/"><input type="text" name="q" value="${q}"/></form></div>
+<table id="btable">
+<thead>
 
+<tr id="browseheader">
+<td>
+
+<div id="browseheadertop">
+ <div id="searchbox"><form method="post" action="/search/"><input type="text" name="q" value="${q}"/></form></div>
  Search
 </div>
 
-<p id="browsepath">
+<div id="browsepath">
  <a href="${Conf.static}/home.html">Home</a> &gt; <a href="/search/">Search</a>
-</p>
+</div>
 
-<div id="browsecontent" class="pathbar">
+</td>
+</tr>
+
+</thead>
+<tbody>
+
+<tr id="browsecontent">
+<td>
+<div id="bcd1">
+<div id="bcd2">
 
  <form method="post" action="/search/">
   <input type="text" name="q" value="${q}" />
@@ -73,11 +87,14 @@
          ${Real.toString ((Time.toReal ttime) * 1000.0)} ms total
   </p>
 
- </div>
-
+  </div>
 </div>
+</div>
+</td>
+</tr>
 
-<div id="browsefooter">...</div>
+</tbody>
+</table>
 
 </body>
 </html>
