@@ -1,4 +1,5 @@
 $(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/basis/mlton.mlb
 $(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
 web.sml
 web-util.sig
@@ -8,4 +9,6 @@ form.sig
 form.sml
 server/cgi.sml
 server/scgi-server.sml
-server/fastcgi-server.sml
+server/http-server.sml
+server/fastcgi-common.sml
+server/fastcgi-mlton.sml
