@@ -123,6 +123,21 @@
 
 	handleStatusObject(initialStatus);
 
+	$("#playlistul").sortable({
+		axis: "y",
+/*		containment: "parent",
+*/
+		forcePlaceholderSize: true,
+		opacity: 0.8,
+		update: function(e, ui) {
+			var item = $(ui.item);
+			var newidx = item.parent().children().index(ui.item);
+			var oldidx = Number(item.attr("id").substring(2));
+			var offset = newidx - oldidx;
+			if (offset >= 0) offset = "+" + offset;
+			updateStatus("plmove " + oldidx + " " + offset);
+		}
+	});
 	/* $("#playlistul").load("/player/" + curPlayer() + "/playlist");
 	*/
 

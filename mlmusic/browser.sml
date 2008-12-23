@@ -58,6 +58,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
               nextPrefix = SOME "",
               title = "All Artists",
               cmdPrefix = "contributor.id=",
+              cmdSuffix = "",
               allCmd = NONE,
               list = list,
               pb = pb,
@@ -75,7 +76,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
                      ( title, "/browse/artists/" ^ id ^ "/") ],
             list = SQL.albumsByArtist id',
             title = title,
-            cmdPrefix = "contributor.id=" ^ id ^ " album.id=",
+            cmdPrefix = "album.id=",
+            cmdSuffix = " contributor.id=" ^ id,
             allCmd = SOME ("contributor.id=" ^ id),
             pb = pb,
             start = 0
@@ -93,7 +95,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
             cmdPrefix = "track.id=",
-            allCmd = SOME ("contributor.id=" ^ artistId ^ " album.id=" ^ albumId),
+            cmdSuffix = "",
+            allCmd = SOME ("album.id=" ^ albumId ^ " contributor.id=" ^ artistId),
             pb = NONE, start = 0
         }
         end
@@ -108,6 +111,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
             list = list,
             title = "All Albums",
             cmdPrefix = "album.id=",
+            cmdSuffix = "",
             allCmd = NONE,
             pb = pb,
             start = start
@@ -123,6 +127,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
             cmdPrefix = "track.id=",
+            cmdSuffix = "",
             allCmd = SOME ("album.id=" ^ albumId),
             pb = NONE, start = 0
         }

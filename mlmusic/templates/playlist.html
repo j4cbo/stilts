@@ -1,7 +1,7 @@
 <?template TPlaylist (prologue, tracks) ?>
 <t:for exp="rev (#2 (foldl (fn (i, (n, rest)) => (n + 1, (n, i)::rest)) (0, nil) tracks))"
    pattern="(index, { id, tracknum, title, album, artist })">
- <li>
+ <li id="pl${Int.toString index}">
   <a href="javascript:top.Sing.pl.del(${Int.toString index})" class="delbutton" onclick="event.stopPropagation()"> </a><a
     href="javascript:top.Sing.pl.play(${Int.toString index})" class="playbutton" onclick="event.stopPropagation()"> </a>
 

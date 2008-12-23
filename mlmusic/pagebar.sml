@@ -1,14 +1,14 @@
 structure PageBar :> sig
 
-  type item = int * int * int * char
+  type item = int * int * int * string
 
   val pagebar: Web.pathsec * (unit -> string list) -> item list option
 
 end = struct
 
-  type item = int * int * int * char
+  type item = int * int * int * string
 
-  (* val paginate: int -> string list -> (int * int * int * char) list option
+  (* val paginate: int -> string list -> (int * int * int * string) list option
    *
    * Given a list of items, calculate page boundaries.
    *
@@ -27,19 +27,23 @@ end = struct
    * XXX: This does not properly deal with Unicode.
    *)
   fun paginate pageMaxSize titles = let
-        fun firstChar s = case s of "" => #" " | _ => String.sub (s, 0)
+        fun firstChar "" = NONE
+          | firstChar s = let val b = String.sub (s, 0)
+                           in if Char.isAlphaNum b then SOME (String.str b)
+                                                   else NONE end
 
         (* First, aggregate the input into a list of (firstChar, count) *)
 
-        fun aggregate (str, nil) = [ (firstChar str, 1) ]
-          | aggregate (str, (char, num) :: rest) = let
-                val c' = firstChar str
-              in
-                if char = c' then (char, num + 1) :: rest
-                             else (c', 1) :: (char, num) :: rest
-              end
+        fun aggregate (str, (nil, pc)) = (case firstChar str of
+                                            SOME c => ([ (c, pc + 1) ], 0)
+                                          | NONE => (nil, pc + 1)) 
+          | aggregate (str, ((char, num) :: rest, _)) =
+              (case firstChar str of
+                 SOME c' => (if char = c' then (char, num + 1) :: rest
+                                          else (c', 1) :: (char, num) :: rest)
+               | NONE => (char, num + 1) :: rest, 0)
 
-        val startChars : (char * int) list = foldr aggregate nil titles
+        val (startChars, _) = foldr aggregate (nil, 0) titles
 
         (* Then, place the characters into pages no larger than pageMaxSize.
          * Since this uses foldr, the list of pages will be reversed, as will
@@ -52,13 +56,12 @@ end = struct
               then (pageSize + n, (c, n) :: chars) :: rest
               else (n, [ (c, n) ]) :: (pageSize, chars) :: rest
 
-        val pages : (int * (char * int) list) list =
+        val pages : (int * (string * int) list) list =
               (foldl buildPages nil startChars)
 
       in
  
         (* Only continue if we need more than one page. *)
-
         case pages of
           nil => NONE
         | _::nil => NONE

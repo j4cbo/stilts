@@ -43,7 +43,7 @@
    <p>Artists matching "${q}": ${Int.toString (length artists)}</p>
    <ul class="browselist">
     <t:for exp="artists" pattern="{ id, name, mm_mixable, mb_id }">$H{
-      TListItem.render (Int.toString id, name, SOME "/browse/artists/", "artist.id=")
+      TListItem.render (Int.toString id, name, SOME "/browse/artists/", "artist.id=", "")
     }</t:for>
    </ul>
   </div>
@@ -52,7 +52,7 @@
    <p>Albums matching "${q}": ${Int.toString (length albums)}</p>
    <ul class="browselist">
     <t:for exp="albums" pattern="{ id, name, compilation, mm_mixable, mb_id }">$H{
-      TListItem.render (Int.toString id, name, SOME "/browse/albums/", "album.id=")
+      TListItem.render (Int.toString id, name, SOME "/browse/albums/", "album.id=", "")
     }</t:for>
    </ul>
   </div>

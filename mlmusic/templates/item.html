@@ -1,7 +1,7 @@
-<?template TListItem (id, name, nextPrefix, cmdPrefix) ?>
+<?template TListItem (id, name, nextPrefix, cmdPrefix, cmdSuffix) ?>
 <li onclick='${case nextPrefix of SOME p => "window.location.href=\"" ^ p ^ id ^ "/\"" | NONE => ""}'>
- <a href="javascript:top.Sing.ctl.add('${cmdPrefix}${id}')" class="addbutton" onclick="event.stopPropagation()"> </a><a
-    href="javascript:top.Sing.ctl.play('${cmdPrefix}${id}')" class="playbutton" onclick="event.stopPropagation()"> </a>
+ <a href="javascript:top.Sing.ctl.add('${cmdPrefix ^ id ^ cmdSuffix}')" class="addbutton" onclick="event.stopPropagation()"> </a><a
+    href="javascript:top.Sing.ctl.play('${cmdPrefix ^ id ^ cmdSuffix}')" class="playbutton" onclick="event.stopPropagation()"> </a>
  <t:case exp="nextPrefix">
   <a t:of="SOME p" href="${p}${id}/">${name}</a>
   <span t:of="NONE">${name}</span>
