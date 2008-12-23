@@ -8,6 +8,7 @@ Group is
 	form.sig
 	form.sml
 	server/cgi.sml
+	server/http-server.sml
 	server/scgi-server.sml
 	server/fastcgi-server.sml
 #if (SMLNJ_VERSION = 110) andalso (SMLNJ_MINOR_VERSION < 57)
