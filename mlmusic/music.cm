@@ -13,6 +13,7 @@ Group is
 	db.sml
 	conf.sml
 
+	../util/linereader.sml
 	cli.sml
 	command.sml
 
