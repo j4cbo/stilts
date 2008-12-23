@@ -16,8 +16,11 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
         String.implode (rev (readline' nil))
       end
 
+  val server_name = "Stilts-HTTPd/0.1"
+
   val bad_request_msg = Byte.stringToBytes (
-                          "400 Bad Request\r\nContent-type: text/plain\r\n\r\n"
+                          "400 Bad Request\r\nContent-type: text/plain\r\n"
+                        ^ "Server: " ^ server_name ^ "\r\n\r\n"
                         ^ "400 Bad Request")
 
   fun bad_request conn = (
@@ -25,9 +28,7 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
         Socket.close conn
       )
 
-  val server_name = "Stilts-HTTPd/0.1"
-
-  fun serveConn (sname, sbind, shdrs) application (conn, conn_addr) = let
+  fun serveConn (sname, sbind, shdrs) application (conn, conn_addr) = (let
 
         val reqline = String.tokens (fn c => c = #" ") (readline conn)
 
@@ -35,11 +36,37 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
                                                (r::u::v::nil) => (r, u, v)
                                              | _ => raise BadRequest
 
-        fun read_headers acc = case readline conn of
-                                      "" => acc
-                                    | line => read_headers (line::acc)
+        fun read_headers acc = (
+              case readline conn of
+                "" => acc
+              | line => let
+                          val (sk, sv) = Substring.splitl (fn c => c <> #":")
+                                                          (Substring.full line)
+                          fun dropf #":" = true
+                            | dropf c = Char.isSpace c
+                          val v = Substring.dropl dropf sv
+                        in
+                          read_headers ((Substring.string sk,
+                                         Substring.string v) :: acc)
+                        end)
 
         val headers = rev (read_headers nil)
+
+        val content_len = ref 0
+
+        fun i_or_zero s = case Int.fromString s of SOME i => i | NONE => 0
+
+        fun proc_header (k, v) = let
+              val k' = String.map (Char.toUpper o (fn #"-" => #"_" | c => c)) k
+val _ = print ("processing header: \"" ^ k' ^ "\" = \"" ^ v ^ "\"\n"); 
+              val () = case k' of "CONTENT_LENGTH" => content_len := i_or_zero v
+                                | _ => ()
+            in
+              ("HTTP_" ^ k', v)
+            end
+
+        val headers = map proc_header headers
+        val content_length = !content_len
 
         (* Convert client addr to the string and int that Web.request wants *)
         val (client_host, client_port) = INetSock.fromAddr conn_addr
@@ -53,14 +80,26 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
                                     (Substring.tokens (fn c => c = #"/") spath)
                            of nil => [ "" ] | sections => sections
 
+      val content_cache : Word8Vector.vector option ref = ref NONE
+
+      fun reader () =
+            case !content_cache of
+              SOME c => c
+            | NONE => let
+                        val c = SockUtil.recvVec (conn, content_length)
+                      in
+                        content_cache := SOME c;
+                        c
+                      end
+
         (* Build the request *)
         val req : Web.request = { client = cbind,
                                   method = request_method,
                                   path = (nil, pathsections),
                                   query_string = Substring.string squery,
                                   http_headers = nil,
-                                  content_length = 0,
-                                  content = (fn () => raise Fail "no content"),
+                                  content_length = content_length,
+                                  content = reader,
                                   doc_root = "",
                                   server_name = sname,
                                   server_bind = sbind,
@@ -93,19 +132,9 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
         ignore (SockUtil.sendVec (conn, response));
         Socket.close conn
       end
+      handle BadRequest => bad_request conn)
 
 (*
-      val content_cache : Word8Vector.vector option ref = ref NONE
-
-      fun reader () =
-            case !content_cache of
-              SOME c => c
-            | NONE => let
-                        val c = SockUtil.recvVec (conn, content_length)
-                      in
-                        content_cache := SOME c;
-                        c
-                      end
 *)
 
   type opts = INetSock.sock_addr
