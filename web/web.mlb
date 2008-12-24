@@ -7,6 +7,7 @@ web-util.sml
 $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
 form.sig
 form.sml
+static-server.sml
 server/cgi.sml
 server/scgi-server.sml
 server/http-server.sml
