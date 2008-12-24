@@ -58,7 +58,6 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
         fun proc_header (k, v) = let
               val k' = String.map (Char.toUpper o (fn #"-" => #"_" | c => c)) k
-val _ = print ("processing header: \"" ^ k' ^ "\" = \"" ^ v ^ "\"\n"); 
               val () = case k' of "CONTENT_LENGTH" => content_len := i_or_zero v
                                 | _ => ()
             in
@@ -97,7 +96,7 @@ val _ = print ("processing header: \"" ^ k' ^ "\" = \"" ^ v ^ "\"\n");
                                   method = request_method,
                                   path = (nil, pathsections),
                                   query_string = Substring.string squery,
-                                  http_headers = nil,
+                                  http_headers = headers,
                                   content_length = content_length,
                                   content = reader,
                                   doc_root = "",
