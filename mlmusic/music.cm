@@ -13,7 +13,6 @@ Group is
 	db.sml
 	conf.sml
 
-	../util/linereader.sml
 	../util/timer.sml
 	cli.sml
 	command.sml

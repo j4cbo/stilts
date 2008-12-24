@@ -2,6 +2,8 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
   exception BadRequest
 
+  structure LR = LineReader
+
   fun readline sock = let
         fun getc () = case SockUtil.recvStr (sock, 1) of
                         "" => NONE
@@ -30,14 +32,17 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
   fun serveConn (sname, sbind, shdrs) application (conn, conn_addr) = (let
 
-        val reqline = String.tokens (fn c => c = #" ") (readline conn)
+        val reader = LR.new (conn, { increment = 8192, stripCR = true })
+
+        val reqline = String.tokens (fn c => c = #" ")
+                                    (Byte.bytesToString (LR.readline reader))
 
         val (request_method, url, version) = case reqline of
                                                (r::u::v::nil) => (r, u, v)
                                              | _ => raise BadRequest
 
         fun read_headers acc = (
-              case readline conn of
+              case Byte.bytesToString (LR.readline reader) of
                 "" => acc
               | line => let
                           val (sk, sv) = Substring.splitl (fn c => c <> #":")
@@ -81,11 +86,11 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
       val content_cache : Word8Vector.vector option ref = ref NONE
 
-      fun reader () =
+      fun contentreader () =
             case !content_cache of
               SOME c => c
             | NONE => let
-                        val c = SockUtil.recvVec (conn, content_length)
+                        val c = LR.readbytes reader content_length
                       in
                         content_cache := SOME c;
                         c
@@ -98,7 +103,7 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
                                   query_string = Substring.string squery,
                                   http_headers = headers,
                                   content_length = content_length,
-                                  content = reader,
+                                  content = contentreader,
                                   doc_root = "",
                                   server_name = sname,
                                   server_bind = sbind,
@@ -133,8 +138,6 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
       end
       handle BadRequest => bad_request conn)
 
-(*
-*)
 
   type opts = INetSock.sock_addr
 

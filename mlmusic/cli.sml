@@ -23,7 +23,7 @@ structure CLI :> CLI = struct
         val s = INetSock.TCP.socket ()
         val () = S.connect (s, target)
       in
-        (s, LineReader.new (s, 16384))
+        (s, LineReader.new (s, { increment = 8192, stripCR = true }))
       end
 
   fun unquote v = let

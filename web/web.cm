@@ -9,6 +9,7 @@ Group is
 	form.sml
 	http-date.sml
 	static-server.sml
+	../util/linereader.sml
 	server/cgi.sml
 	server/http-server.sml
 	server/scgi-server.sml
