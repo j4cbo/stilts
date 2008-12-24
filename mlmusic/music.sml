@@ -60,7 +60,9 @@ structure Music = struct
       | _ => raise U.notFound
     )
 
-  val staticApp = StaticServer.server "static"
+  val staticApp = StaticServer.server { basepath = "static",
+                                        expires = SOME (60*60*24*365),
+                                        headers = nil }
 
   val app = U.dispatch [ ( [ "browse" ], U.PREFIX, Browser.browseApp ),
                          ( [ "search", "" ], U.EXACT, SearchApp.searchApp ),
