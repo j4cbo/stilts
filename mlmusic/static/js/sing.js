@@ -121,6 +121,8 @@
 		updateStatus("");
 	}, 5000);
 
+	$("#player").change(function() { updateStatus(""); });
+
 	handleStatusObject(initialStatus);
 
 	$("#playlistul").sortable({
