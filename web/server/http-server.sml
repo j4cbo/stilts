@@ -4,20 +4,6 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
   structure LR = LineReader
 
-  fun readline sock = let
-        fun getc () = case SockUtil.recvStr (sock, 1) of
-                        "" => NONE
-                      | s => SOME (String.sub (s, 0))
-
-        fun readline' acc = case getc () of
-                              NONE => acc
-                            | SOME #"\n" => (case acc of #"\r"::rest => rest
-                                                      | _ => acc) 
-                            | SOME c => readline' (c::acc)
-      in
-        String.implode (rev (readline' nil))
-      end
-
   val server_name = "Stilts-HTTPd/0.1"
 
   val bad_request_msg = Byte.stringToBytes (
