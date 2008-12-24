@@ -7,6 +7,7 @@ Group is
 	web-util.sml
 	form.sig
 	form.sml
+	http-date.sml
 	static-server.sml
 	server/cgi.sml
 	server/http-server.sml
