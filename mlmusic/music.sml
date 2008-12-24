@@ -60,9 +60,12 @@ structure Music = struct
       | _ => raise U.notFound
     )
 
+  val staticApp = StaticServer.server "static"
+
   val app = U.dispatch [ ( [ "browse" ], U.PREFIX, Browser.browseApp ),
                          ( [ "search", "" ], U.EXACT, SearchApp.searchApp ),
                          ( [ "player" ], U.PREFIX, PlayerApp.playerApp ),
+                         ( [ "static" ], U.PREFIX, staticApp ),
                          ( nil, U.PREFIX, rootHandler ) ]
 
   val () = DB.connect ()
@@ -86,7 +89,7 @@ structure Music = struct
 
   fun main _ = let
       val () = print "Listening...\n"
-      val () = FastCGIServer.serve (INetSock.any 5124) app
+      val () = HTTPServer.serve (INetSock.any 8888) app
     in
       0
     end
