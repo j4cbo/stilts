@@ -9,6 +9,8 @@ in
 	conf.sml
 	../../stilts/smelt/tinyxml/tinyxml.mlb
 	../../stilts/web/web.mlb
+	../util/linereader.sml
+	../util/timer.sml
 
 	templates/templates.mlb
 
