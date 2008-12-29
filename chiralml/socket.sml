@@ -1,13 +1,18 @@
-structure ChiralSocket :> SOCKET = struct
+functor ChiralSocket (R: REACTOR) :> SOCKET
+                            where type ('af, 'st) sock = ('af, 'st) Socket.sock
+                              and type 'mode stream = 'mode Socket.stream
+                              and type dgram = Socket.dgram
+                              and type passive = Socket.passive
+                              and type active = Socket.active
+                              and type 'af sock_addr = 'af Socket.sock_addr
+= struct
 
   structure S = Socket
+  structure C = ChiralCommon
 
   exception Unimplemented
 
-  datatype block_cond = BLOCK_RD | BLOCK_WR
-
-  fun block (sock: ('af, 'st) Socket.sock,
-             typ: block_cond, cont: unit -> 'a) : 'a = raise Unimplemented
+  fun block (sock, typ, cont) = (R.block (sock, typ); cont ())
 
   fun wrapper (f, args, sock, typ) = case f args of
           SOME res => res
@@ -38,7 +43,7 @@ structure ChiralSocket :> SOCKET = struct
   val acceptNB = S.acceptNB
   val connectNB = S.connectNB
 
-  fun accept s = wrapper (S.acceptNB, s, s, BLOCK_RD)
+  fun accept s = wrapper (S.acceptNB, s, s, C.BLOCK_RD)
 
   (* Connect doesn't use wrapper, because unlike all the other functions, we
    * don't want to retry the connect once it's writeable; we just want to
@@ -46,7 +51,7 @@ structure ChiralSocket :> SOCKET = struct
 
   fun connect (sock, dest) = case S.connectNB (sock, dest) of
           true => ()
-        | false => block (sock, BLOCK_WR, fn () => ())
+        | false => block (sock, C.BLOCK_WR, fn () => ())
 
   val close = S.close
 
@@ -82,24 +87,24 @@ structure ChiralSocket :> SOCKET = struct
   val recvVecFromNB' = S.recvVecFromNB'
   val recvArrFromNB' = S.recvArrFromNB'
 
-  fun sendVec (a as (s,_)) = wrapper (S.sendVecNB, a, s, BLOCK_WR)
-  fun sendArr (a as (s,_)) = wrapper (S.sendArrNB, a, s, BLOCK_WR)
-  fun sendVec' (a as (s,_,_)) = wrapper (S.sendVecNB', a, s, BLOCK_WR)
-  fun sendArr' (a as (s,_,_)) = wrapper (S.sendArrNB', a, s, BLOCK_WR)
+  fun sendVec (a as (s,_)) = wrapper (S.sendVecNB, a, s, C.BLOCK_WR)
+  fun sendArr (a as (s,_)) = wrapper (S.sendArrNB, a, s, C.BLOCK_WR)
+  fun sendVec' (a as (s,_,_)) = wrapper (S.sendVecNB', a, s, C.BLOCK_WR)
+  fun sendArr' (a as (s,_,_)) = wrapper (S.sendArrNB', a, s, C.BLOCK_WR)
 
-  fun recvVec (a as (s,_)) = wrapper (S.recvVecNB, a, s, BLOCK_RD)
-  fun recvArr (a as (s,_)) = wrapper (S.recvArrNB, a, s, BLOCK_RD)
-  fun recvVec' (a as (s,_,_)) = wrapper (S.recvVecNB', a, s, BLOCK_RD)
-  fun recvArr' (a as (s,_,_)) = wrapper (S.recvArrNB', a, s, BLOCK_RD)
+  fun recvVec (a as (s,_)) = wrapper (S.recvVecNB, a, s, C.BLOCK_RD)
+  fun recvArr (a as (s,_)) = wrapper (S.recvArrNB, a, s, C.BLOCK_RD)
+  fun recvVec' (a as (s,_,_)) = wrapper (S.recvVecNB', a, s, C.BLOCK_RD)
+  fun recvArr' (a as (s,_,_)) = wrapper (S.recvArrNB', a, s, C.BLOCK_RD)
 
-  fun sendVecTo (a as (s,_,_)) = wrapper_b (S.sendVecToNB, a, s, BLOCK_WR)
-  fun sendArrTo (a as (s,_,_)) = wrapper_b (S.sendArrToNB, a, s, BLOCK_WR)
-  fun sendVecTo' (a as (s,_,_,_)) = wrapper_b (S.sendVecToNB', a, s, BLOCK_WR)
-  fun sendArrTo' (a as (s,_,_,_)) = wrapper_b (S.sendArrToNB', a, s, BLOCK_WR)
+  fun sendVecTo (a as (s,_,_)) = wrapper_b (S.sendVecToNB, a, s, C.BLOCK_WR)
+  fun sendArrTo (a as (s,_,_)) = wrapper_b (S.sendArrToNB, a, s, C.BLOCK_WR)
+  fun sendVecTo' (a as (s,_,_,_)) = wrapper_b (S.sendVecToNB', a, s, C.BLOCK_WR)
+  fun sendArrTo' (a as (s,_,_,_)) = wrapper_b (S.sendArrToNB', a, s, C.BLOCK_WR)
 
-  fun recvVecFrom (a as (s,_)) = wrapper (S.recvVecFromNB, a, s, BLOCK_RD)
-  fun recvArrFrom (a as (s,_)) = wrapper (S.recvArrFromNB, a, s, BLOCK_RD)
-  fun recvVecFrom' (a as (s,_,_)) = wrapper (S.recvVecFromNB', a, s, BLOCK_RD)
-  fun recvArrFrom' (a as (s,_,_)) = wrapper (S.recvArrFromNB', a, s, BLOCK_RD)
+  fun recvVecFrom (a as (s,_)) = wrapper (S.recvVecFromNB, a, s, C.BLOCK_RD)
+  fun recvArrFrom (a as (s,_)) = wrapper (S.recvArrFromNB, a, s, C.BLOCK_RD)
+  fun recvVecFrom' (a as (s,_,_)) = wrapper (S.recvVecFromNB', a, s, C.BLOCK_RD)
+  fun recvArrFrom' (a as (s,_,_)) = wrapper (S.recvArrFromNB', a, s, C.BLOCK_RD)
 
 end
