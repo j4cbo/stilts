@@ -25,11 +25,9 @@ functor Reactor(structure T: THREAD_COMMON
 
   fun schedule () =
         case !runnable_threads of
-          t :: rest => (runnable_threads := rest; t)
+          t :: rest => (print "Schedule: using next runnable thread\n"; runnable_threads := rest; t)
          | nil => let
-(*
-             val () = print "No runnable threads; checking sleep queue\n"
-*)
+             val () = print "Schedule: no runnable threads; checking sleep queue\n"
              val now = Time.now ()
              fun get_delayed (sq, acc) =
                    case PQ.next sq of
@@ -43,15 +41,15 @@ functor Reactor(structure T: THREAD_COMMON
                                  NONE => NONE
                                | SOME ((thr, t), _) => SOME (Time.- (t, now))
 
+val () = print "get_delayed\n";
              val (new_sleepq, delayed_threads) = get_delayed (!sleepq, nil) 
+val () = print "Done\n";
              val () = sleepq := new_sleepq
            in
              case delayed_threads of
-               t::rest => (runnable_threads := rest; t)
+               t::rest => (print "Found some delayed threads; moving those to the runqueue.\n"; runnable_threads := rest; t)
              | nil => let
-(*
                    val () = print "Invoking reactor core\n"
-*)
                    val nt = RC.wait rcstate sleep_time
                  in
                    case nt of nil => schedule ()
@@ -75,10 +73,14 @@ functor Reactor(structure T: THREAD_COMMON
             T.prepare (schedule (), ())
           end)
 
-  fun new thrfun = let val t = T.new thrfun
-                    in runnable_threads := t :: (!runnable_threads);
-                       t 
-                    end
+  fun new thrfun = let
+        fun thrfun' () = (thrfun ();
+                          T.switch (fn _ => T.prepare (schedule (), ())))
+        val thread = T.new thrfun'
+      in
+        runnable_threads := thread :: (!runnable_threads);
+        thread 
+      end
 
   fun kill _ = raise Fail "x"
 

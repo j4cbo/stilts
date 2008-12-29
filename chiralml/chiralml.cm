@@ -1,7 +1,11 @@
 Group is
 	$/basis.cm
 	$/smlnj-lib.cm
+	$/inet-lib.cm
 	reactor.sig
 	threadbase-smlnj.sml
 	reactorcore.sml
 	reactor.sml
+	socket.sml
+	sock-util.sml
+	../util/linereader.sml

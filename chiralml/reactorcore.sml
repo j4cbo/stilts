@@ -18,11 +18,23 @@ structure SelectReactorCore :> REACTOR_CORE = struct
 
         val (rd, wr) = foldl foldf (nil, nil) bt
 
+
+        val tstr = case timeout of
+                      NONE => "no"
+                    | SOME t => IntInf.toString (Time.toMilliseconds t) ^ " ms"
+
+        val () = print ("select(): waiting on " ^ Int.toString (length rd)
+                        ^ " read, " ^ Int.toString (length wr) ^ " write, "
+                        ^ tstr ^ " timeout.\n");
+
         val sparam = { rds = rev rd, wrs = rev wr,
                        exs = nil, timeout = timeout }
 
         val { rds, wrs, exs } = (Socket.select sparam
                                  handle e => raise e)
+
+        val () = print ("select(): returned " ^ Int.toString (length rds)
+                        ^ " read, " ^ Int.toString (length wrs) ^ " write\n");
 
         fun res_fold (i as (ent, CC.BLOCK_RD, sock), (nil, wrs, out, rem)) =
               (nil, wrs, out, i :: rem)
