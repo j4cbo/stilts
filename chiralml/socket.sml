@@ -1,110 +1,133 @@
-functor ChiralSocket (R: REACTOR) :> SOCKET
-                            where type ('af, 'st) sock = ('af, 'st) Socket.sock
-                              and type 'mode stream = 'mode Socket.stream
-                              and type dgram = Socket.dgram
-                              and type passive = Socket.passive
-                              and type active = Socket.active
-                              and type 'af sock_addr = 'af Socket.sock_addr
+functor ChiralSocketFn (R: REACTOR) :> CHIRAL_SOCKET
 = struct
 
-  structure S = Socket
-  structure C = ChiralCommon
+  structure Socket = struct
 
-  exception Unimplemented
+    structure S = Socket
+    structure C = ChiralCommon
 
-  fun block (sock, typ, cont) = (R.block (sock, typ); cont ())
+    exception Unimplemented
 
-  fun wrapper (f, args, sock, typ) = case f args of
-          SOME res => res
-        | NONE => block (sock, typ, fn () => wrapper (f, args, sock, typ))
+    fun block (sock, typ, cont) = (R.block (sock, typ); cont ())
 
-  fun wrapper_b (f, args, sock, typ) = case f args of
-          true => ()
-        | false => block (sock, typ, fn () => wrapper_b (f, args, sock, typ))
+    fun wrap (f, args, sock, typ) = case f args of
+            SOME res => res
+          | NONE => block (sock, typ, fn () => wrap (f, args, sock, typ))
 
-  (* ----------- *)
+    fun wrap_b (f, args, sock, typ) = case f args of
+            true => ()
+          | false => block (sock, typ, fn () => wrap_b (f, args, sock, typ))
 
-  type ('af, 'sock_type) sock = ('af, 'sock_type) S.sock
-  type 'af sock_addr = 'af S.sock_addr
-  type dgram = S.dgram
-  type 'mode stream = 'mode S.stream
-  type passive = S.passive
-  type active = S.active
+    (* ----------- *)
 
-  structure AF = S.AF
-  structure SOCK = S.SOCK
-  structure Ctl = S.Ctl
+    type ('af, 'sock_type) sock = ('af, 'sock_type) S.sock
+    type 'af sock_addr = 'af S.sock_addr
+    type dgram = S.dgram
+    type 'mode stream = 'mode S.stream
+    type passive = S.passive
+    type active = S.active
 
-  val sameAddr = S.sameAddr
-  val familyOfAddr = S.familyOfAddr
+    structure AF = S.AF
+    structure SOCK = S.SOCK
+    structure Ctl = S.Ctl
 
-  val bind = S.bind
-  val listen = S.listen
-  val acceptNB = S.acceptNB
-  val connectNB = S.connectNB
+    val sameAddr = S.sameAddr
+    val familyOfAddr = S.familyOfAddr
 
-  fun accept s = wrapper (S.acceptNB, s, s, C.BLOCK_RD)
+    val bind = S.bind
+    val listen = S.listen
+    val acceptNB = S.acceptNB
+    val connectNB = S.connectNB
 
-  (* Connect doesn't use wrapper, because unlike all the other functions, we
-   * don't want to retry the connect once it's writeable; we just want to
-   * return. *)
+    fun accept s = wrap (S.acceptNB, s, s, C.BLOCK_RD)
 
-  fun connect (sock, dest) = case S.connectNB (sock, dest) of
-          true => ()
-        | false => block (sock, C.BLOCK_WR, fn () => ())
+    (* Connect doesn't use wrap, because unlike all the other functions, we
+     * don't want to retry the connect once it's writeable; we just want to
+     * return. *)
 
-  val close = S.close
+    fun connect (sock, dest) = case S.connectNB (sock, dest) of
+            true => ()
+          | false => block (sock, C.BLOCK_WR, fn () => ())
 
-  datatype shutdown_mode = datatype S.shutdown_mode
-  val shutdown = S.shutdown
+    val close = S.close
 
-  type sock_desc = S.sock_desc
-  val sockDesc = S.sockDesc
-  val sameDesc = S.sameDesc
-  val select = S.select
-  val ioDesc = S.ioDesc
+    datatype shutdown_mode = datatype S.shutdown_mode
+    val shutdown = S.shutdown
 
-  type out_flags = S.out_flags
-  type in_flags = S.in_flags
+    type sock_desc = S.sock_desc
+    val sockDesc = S.sockDesc
+    val sameDesc = S.sameDesc
+    val select = S.select
+    val ioDesc = S.ioDesc
 
-  val sendVecNB = S.sendVecNB
-  val sendArrNB = S.sendArrNB
-  val sendVecNB' = S.sendVecNB'
-  val sendArrNB' = S.sendArrNB'
+    type out_flags = S.out_flags
+    type in_flags = S.in_flags
 
-  val recvVecNB = S.recvVecNB
-  val recvArrNB = S.recvArrNB
-  val recvVecNB' = S.recvVecNB'
-  val recvArrNB' = S.recvArrNB'
+    val sendVecNB = S.sendVecNB
+    val sendArrNB = S.sendArrNB
+    val sendVecNB' = S.sendVecNB'
+    val sendArrNB' = S.sendArrNB'
 
-  val sendVecToNB = S.sendVecToNB
-  val sendArrToNB = S.sendArrToNB
-  val sendVecToNB' = S.sendVecToNB'
-  val sendArrToNB' = S.sendArrToNB'
+    val recvVecNB = S.recvVecNB
+    val recvArrNB = S.recvArrNB
+    val recvVecNB' = S.recvVecNB'
+    val recvArrNB' = S.recvArrNB'
 
-  val recvVecFromNB = S.recvVecFromNB
-  val recvArrFromNB = S.recvArrFromNB
-  val recvVecFromNB' = S.recvVecFromNB'
-  val recvArrFromNB' = S.recvArrFromNB'
+    val sendVecToNB = S.sendVecToNB
+    val sendArrToNB = S.sendArrToNB
+    val sendVecToNB' = S.sendVecToNB'
+    val sendArrToNB' = S.sendArrToNB'
 
-  fun sendVec (a as (s,_)) = wrapper (S.sendVecNB, a, s, C.BLOCK_WR)
-  fun sendArr (a as (s,_)) = wrapper (S.sendArrNB, a, s, C.BLOCK_WR)
-  fun sendVec' (a as (s,_,_)) = wrapper (S.sendVecNB', a, s, C.BLOCK_WR)
-  fun sendArr' (a as (s,_,_)) = wrapper (S.sendArrNB', a, s, C.BLOCK_WR)
+    val recvVecFromNB = S.recvVecFromNB
+    val recvArrFromNB = S.recvArrFromNB
+    val recvVecFromNB' = S.recvVecFromNB'
+    val recvArrFromNB' = S.recvArrFromNB'
 
-  fun recvVec (a as (s,_)) = wrapper (S.recvVecNB, a, s, C.BLOCK_RD)
-  fun recvArr (a as (s,_)) = wrapper (S.recvArrNB, a, s, C.BLOCK_RD)
-  fun recvVec' (a as (s,_,_)) = wrapper (S.recvVecNB', a, s, C.BLOCK_RD)
-  fun recvArr' (a as (s,_,_)) = wrapper (S.recvArrNB', a, s, C.BLOCK_RD)
+    fun sendVec (a as (s,_)) = wrap (S.sendVecNB, a, s, C.BLOCK_WR)
+    fun sendArr (a as (s,_)) = wrap (S.sendArrNB, a, s, C.BLOCK_WR)
+    fun sendVec' (a as (s,_,_)) = wrap (S.sendVecNB', a, s, C.BLOCK_WR)
+    fun sendArr' (a as (s,_,_)) = wrap (S.sendArrNB', a, s, C.BLOCK_WR)
 
-  fun sendVecTo (a as (s,_,_)) = wrapper_b (S.sendVecToNB, a, s, C.BLOCK_WR)
-  fun sendArrTo (a as (s,_,_)) = wrapper_b (S.sendArrToNB, a, s, C.BLOCK_WR)
-  fun sendVecTo' (a as (s,_,_,_)) = wrapper_b (S.sendVecToNB', a, s, C.BLOCK_WR)
-  fun sendArrTo' (a as (s,_,_,_)) = wrapper_b (S.sendArrToNB', a, s, C.BLOCK_WR)
+    fun recvVec (a as (s,_)) = wrap (S.recvVecNB, a, s, C.BLOCK_RD)
+    fun recvArr (a as (s,_)) = wrap (S.recvArrNB, a, s, C.BLOCK_RD)
+    fun recvVec' (a as (s,_,_)) = wrap (S.recvVecNB', a, s, C.BLOCK_RD)
+    fun recvArr' (a as (s,_,_)) = wrap (S.recvArrNB', a, s, C.BLOCK_RD)
 
-  fun recvVecFrom (a as (s,_)) = wrapper (S.recvVecFromNB, a, s, C.BLOCK_RD)
-  fun recvArrFrom (a as (s,_)) = wrapper (S.recvArrFromNB, a, s, C.BLOCK_RD)
-  fun recvVecFrom' (a as (s,_,_)) = wrapper (S.recvVecFromNB', a, s, C.BLOCK_RD)
-  fun recvArrFrom' (a as (s,_,_)) = wrapper (S.recvArrFromNB', a, s, C.BLOCK_RD)
+    fun sendVecTo (a as (s,_,_)) = wrap_b (S.sendVecToNB, a, s, C.BLOCK_WR)
+    fun sendArrTo (a as (s,_,_)) = wrap_b (S.sendArrToNB, a, s, C.BLOCK_WR)
+    fun sendVecTo' (a as (s,_,_,_)) = wrap_b (S.sendVecToNB', a, s, C.BLOCK_WR)
+    fun sendArrTo' (a as (s,_,_,_)) = wrap_b (S.sendArrToNB', a, s, C.BLOCK_WR)
 
+    fun recvVecFrom (a as (s,_)) = wrap (S.recvVecFromNB, a, s, C.BLOCK_RD)
+    fun recvArrFrom (a as (s,_)) = wrap (S.recvArrFromNB, a, s, C.BLOCK_RD)
+    fun recvVecFrom' (a as (s,_,_)) = wrap (S.recvVecFromNB', a, s, C.BLOCK_RD)
+    fun recvArrFrom' (a as (s,_,_)) = wrap (S.recvArrFromNB', a, s, C.BLOCK_RD)
+
+  end
+
+  structure INetSock = struct
+    type inet = INetSock.inet
+    type 'sock_type sock = (inet, 'sock_type) Socket.sock
+    type dgram_sock = Socket.dgram sock
+    type 'mode stream_sock = 'mode Socket.stream sock
+    type sock_addr = inet Socket.sock_addr
+
+    val inetAF = INetSock.inetAF
+    val toAddr = INetSock.toAddr
+    val fromAddr = INetSock.fromAddr
+    val any = INetSock.any
+
+    structure UDP = struct
+      val socket = INetSock.UDP.socket
+      val socket' = INetSock.UDP.socket'
+    end
+
+    structure TCP = struct
+      val socket = INetSock.TCP.socket
+      val socket' = INetSock.TCP.socket'
+      val getNODELAY = INetSock.TCP.getNODELAY
+      val setNODELAY = INetSock.TCP.setNODELAY
+    end
+  end
 end
+

@@ -6,6 +6,7 @@ Group is
 	threadbase-smlnj.sml
 	reactorcore.sml
 	reactor.sml
+	socket.sig
 	socket.sml
 	sock-util.sml
 	../util/linereader.sml

@@ -11,10 +11,9 @@ val _ = R.run ()
 
 *)
 
-structure S = ChiralSocket(R)
-structure SU = ChiralSockUtil(S)
-structure LR = LineReader(S)
-
+structure CS = ChiralSocketFn(R)
+structure SU = ChiralSockUtil(CS)
+structure LR = LineReader(CS.Socket)
 
   fun serveConn (conn, conn_addr) () = let
         val r = LR.new (conn, { increment = 1024, stripCR = true })
@@ -32,24 +31,24 @@ structure LR = LineReader(S)
 
   fun serve addr () =
     let
-      val listener = INetSock.TCP.socket ()
+      val listener = CS.INetSock.TCP.socket ()
 
       val (server_host, server_port) = INetSock.fromAddr addr
       val sbind = (NetHostDB.toString server_host, server_port)
 
       fun accept () = let
-          val conn = S.accept listener
+          val conn = CS.Socket.accept listener
         in
           R.new (serveConn conn);
           accept ()
         end
     in
       (
-        S.Ctl.setREUSEADDR (listener, true);
-        S.bind (listener, addr);
-        S.listen (listener, 9);
+        CS.Socket.Ctl.setREUSEADDR (listener, true);
+        CS.Socket.bind (listener, addr);
+        CS.Socket.listen (listener, 9);
         accept ()
-      ) handle x => (S.close listener; raise x)
+      ) handle x => (CS.Socket.close listener; raise x)
     end
 
 val listent = R.new (serve (INetSock.any 1234))
