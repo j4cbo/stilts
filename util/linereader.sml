@@ -1,7 +1,7 @@
-structure LineReader :> sig
+functor LineReader (S: SOCKET) :> sig
 
   type reader
-  val new: Socket.active INetSock.stream_sock * { increment: int,
+  val new: (INetSock.inet, S.active S.stream) S.sock * { increment: int,
                                                   stripCR: bool } -> reader
 
   val readline: reader -> Word8Vector.vector
@@ -18,7 +18,7 @@ end = struct
   type config = { increment: int,
                   stripCR: bool }
 
-  type reader = Socket.active INetSock.stream_sock
+  type reader = (INetSock.inet, S.active S.stream) S.sock
               * config
               * (W8VS.slice list * int) ref
 
@@ -75,7 +75,7 @@ end = struct
 
   and getMore (sock, config as { increment, stripCR }, sliceref) cont = let
         val (slices, len) = !sliceref
-        val vec' = Socket.recvVec (sock, increment)
+        val vec' = S.recvVec (sock, increment)
         val newLen = W8V.length vec'
       in
         if newLen = 0 then emptyVec
