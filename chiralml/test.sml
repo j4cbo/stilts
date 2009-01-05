@@ -7,6 +7,7 @@ val mudt = R.new (blarg "Mud\n")
 val kipt = R.new (fn () => (R.sleep (Time.fromMilliseconds 500); blarg "Kip\n" ()))
 
 *)
+(*
 val bthr : R.thread option ref = ref NONE
 
 fun afun () = (print "Arg\n";
@@ -25,9 +26,8 @@ fun bfun () = (print "Blarg\n";
 
 val () = bthr := SOME (R.new bfun);
 
-(*
-
 val _ = R.run ()
+*)
 
 
 
@@ -80,8 +80,5 @@ val () = print "T: done\n"
     end
 
 val listent = R.new (serve (INetSock.any 1234))
-(*
 val _ = R.run();
-*)
 
-*)
