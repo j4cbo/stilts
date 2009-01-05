@@ -4,6 +4,7 @@ Group is
 	$/inet-lib.cm
 	reactor.sig
 	threadbase-smlnj.sml
+	reactorcore.sig
 	reactorcore.sml
 	reactor.sml
 	socket.sig

@@ -5,6 +5,7 @@ $(SML_LIB)/smlnj-lib/Inet/inet-lib.mlb
 
 reactor.sig
 threadbase-mlton.sml
+reactorcore.sig
 reactorcore.sml
 reactor.sml
 socket.sig

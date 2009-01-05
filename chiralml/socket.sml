@@ -10,9 +10,16 @@ functor ChiralSocketFn (R: REACTOR) :> CHIRAL_SOCKET
 
     fun block (sock, typ, cont) = (R.block (sock, typ); cont ())
 
-    fun wrap (f, args, sock, typ) = case f args of
+    fun wrap (f, args, sock, typ) = let
+          val () = print "trying\n"
+          val res = f args
+                    handle e => (print "well that didn't go so well\n"; raise e)
+          val () = print "f done\n"
+        in
+          case res of
             SOME res => res
-          | NONE => block (sock, typ, fn () => wrap (f, args, sock, typ))
+          | NONE => (print "blocking!\n"; block (sock, typ, fn () => wrap (f, args, sock, typ)))
+        end
 
     fun wrap_b (f, args, sock, typ) = case f args of
             true => ()

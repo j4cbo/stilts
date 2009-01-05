@@ -10,14 +10,15 @@ structure SelectReactorCore :> REACTOR_CORE = struct
   fun add_sock state (e, cond, desc) = 
         state := (e, cond, desc) :: !state
 
-  fun wait state timeout = let
-        fun foldf ((_, CC.BLOCK_RD, sock), (rd, wr)) = (sock::rd, wr)
-          | foldf ((_, CC.BLOCK_WR, sock), (rd, wr)) = (rd, sock::wr)
+  fun rdwr_fold ((_, CC.BLOCK_RD, sock), (rd, wr)) = (sock :: rd, wr)
+    | rdwr_fold ((_, CC.BLOCK_WR, sock), (rd, wr)) = (rd, sock :: wr)
+
+  fun wait (ref nil) NONE = NONE
+    | wait state timeout = let
 
         val bt = !state
 
-        val (rd, wr) = foldl foldf (nil, nil) bt
-
+        val (rd, wr) = foldl rdwr_fold (nil, nil) bt
 
         val tstr = case timeout of
                       NONE => "no"
@@ -55,7 +56,7 @@ structure SelectReactorCore :> REACTOR_CORE = struct
 
         val () = state := rev rem
       in
-        out
+        SOME out
       end
 
 end

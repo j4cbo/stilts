@@ -15,20 +15,10 @@ signature THREAD_COMMON = sig
 
 end
 
-signature REACTOR_CORE = sig
-
-  type 'a state
-
-  val init: unit -> 'a state
-
-  val add_sock: 'a state -> 'a * ChiralCommon.block_cond * Socket.sock_desc
-                -> unit
-
-  val wait: 'a state -> Time.time option -> 'a list
-
-end
-
 signature REACTOR = sig
+
+  exception NotRunning
+  exception AlreadyRunnable
 
   val block: ('af, 't) Socket.sock * ChiralCommon.block_cond -> unit
   val sleep: Time.time -> unit
@@ -37,6 +27,10 @@ signature REACTOR = sig
 
   val new: (unit -> unit) -> thread
   val kill: thread -> exn -> unit
+
+  val deschedule: unit -> unit
+  val make_runnable: thread -> unit
+  val self: unit -> thread
 
   val run: unit -> unit
 
