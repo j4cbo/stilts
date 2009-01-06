@@ -15,7 +15,7 @@ signature THREAD_COMMON = sig
 
 end
 
-signature REACTOR = sig
+signature THREAD = sig
 
   exception NotRunning
   exception AlreadyRunnable

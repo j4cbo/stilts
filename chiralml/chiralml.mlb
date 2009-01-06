@@ -3,12 +3,12 @@ $(SML_LIB)/basis/mlton.mlb
 $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
 $(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
 
-reactor.sig
+thread.sig
 threadbase-mlton.sml
 reactorcore.sig
 reactorcore.sml
 sigpipe-mlton.sml
-reactor.sml
+thread.sml
 socket.sig
 socket.sml
 sock-util.sml

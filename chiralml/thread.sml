@@ -1,5 +1,5 @@
-functor Reactor(structure T: THREAD_COMMON
-                structure RC: REACTOR_CORE) :> REACTOR = struct
+functor Thread (structure T: THREAD_COMMON
+                structure RC: REACTOR_CORE) :> THREAD = struct
 
   val () = SIGPIPE.ignore ()
 

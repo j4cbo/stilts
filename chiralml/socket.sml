@@ -1,4 +1,4 @@
-functor ChiralSocketFn (R: REACTOR) :> CHIRAL_SOCKET
+functor ChiralSocketFn (T: THREAD) :> CHIRAL_SOCKET
 = struct
 
   structure Socket = struct
@@ -8,7 +8,7 @@ functor ChiralSocketFn (R: REACTOR) :> CHIRAL_SOCKET
 
     exception Unimplemented
 
-    fun block (sock, typ, cont) = (R.block (sock, typ); cont ())
+    fun block (sock, typ, cont) = (T.block (sock, typ); cont ())
 
     fun wrap (f, args, sock, typ) = let
           val () = print "trying\n"

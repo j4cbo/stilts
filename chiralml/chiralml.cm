@@ -2,13 +2,15 @@ Group is
 	$/basis.cm
 	$/smlnj-lib.cm
 	$/inet-lib.cm
-	reactor.sig
+	thread.sig
 	threadbase-smlnj.sml
 	reactorcore.sig
 	reactorcore.sml
 	sigpipe-smlnj.sml
-	reactor.sml
+	thread.sml
 	socket.sig
 	socket.sml
 	sock-util.sml
+	condvar.sig
+	condvar.sml
 	../util/linereader.sml
