@@ -6,6 +6,7 @@ Group is
 	threadbase-smlnj.sml
 	reactorcore.sig
 	reactorcore.sml
+	sigpipe-smlnj.sml
 	reactor.sml
 	socket.sig
 	socket.sml

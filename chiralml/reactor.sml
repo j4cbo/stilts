@@ -1,6 +1,8 @@
 functor Reactor(structure T: THREAD_COMMON
                 structure RC: REACTOR_CORE) :> REACTOR = struct
 
+  val () = SIGPIPE.ignore ()
+
   exception NotRunning
   exception AlreadyRunnable
 
