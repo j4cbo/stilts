@@ -32,7 +32,7 @@ structure Command = struct
         (prologue, map (foldl foldMap Map.empty) items)
       end
 
-  val c = CLI.connect ("localhost", 9090)
+  val c = CLI.connect ("blackbox.res.cmu.edu", 9090)
 
   fun players () = let
         val resp = case CLI.command c [ "players", "0", "9999" ] of
