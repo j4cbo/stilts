@@ -42,7 +42,7 @@ functor Thread (structure T: THREAD_COMMON
   fun get v = case !v of NONE => raise NotRunning | SOME t => t
 
   fun bail () = (
-        print "Reactor: no runnable or blocked threads; exiting.";
+        print "Reactor: no runnable or blocked threads; exiting.\n";
         ( T.prepare (get base_thread, ())
           before (base_thread := NONE; current_thread := NONE) )
       )
