@@ -12,19 +12,20 @@ structure WebUtil :> WEB_UTIL = struct
       val (prepath, postpath) = #path req
       val prepath = map (fn s => "\"" ^ s ^ "\"") prepath
       val postpath = map (fn s => "\"" ^ s ^ "\"") postpath
-      fun formatHeader (k, v) = String.concat [ "- ", k, ": ", v, "\n" ]
+      fun formatHeader (k, v) = String.concat [ "    - ", k, ": ", v, "\n" ]
     in
       String.concat [
-        "Remote address: ", remote_addr, ":", Int.toString remote_port, "\n",
-        "Request: ", #method req, " ", String.concatWith "/" prepath,
-        " / ", String.concatWith "/" postpath, "\nHTTP headers: \n",
+        "Request dump:\n  Remote address: ", remote_addr, ":",
+        Int.toString remote_port, "\n  Request: ", #method req, " ",
+        String.concatWith "/" prepath, " / ", String.concatWith "/" postpath,
+        "\n  HTTP headers: \n",
         String.concat (map formatHeader (#http_headers req)),
-        "Request content: ", Int.toString (#content_length req), " bytes\n",
-        "Server: \"", #server_name req, "\" at ", server_addr,
+        "  Request content: ", Int.toString (#content_length req), " bytes\n",
+        "  Server: \"", #server_name req, "\" at ", server_addr,
           ":", Int.toString server_port, ", docroot ", #doc_root req, "\n",
-        "Server headers:\n",
+        "  Server headers:\n",
         String.concat (map formatHeader (#server_headers req)),
-        "---\n"
+        "Running application...\n"
       ]
     end
 
