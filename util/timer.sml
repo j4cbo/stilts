@@ -13,11 +13,13 @@ end = struct
 
   fun print (real, cpu) = let
         val realTime = Timer.checkRealTimer real
-        val { usr, sys } = Timer.checkCPUTimer cpu
+        val { nongc, gc } = Timer.checkCPUTimes cpu
+        fun ms time = Real.toString ((Time.toReal time) * 1000.0)
       in
-          Real.toString ((Time.toReal realTime) * 1000.0) ^ " ms total, "
-        ^ Real.toString ((Time.toReal usr) * 1000.0) ^ " ms user, "
-        ^ Real.toString ((Time.toReal sys) * 1000.0) ^ " ms system"
+        String.concat [
+          ms realTime, " ms total, ", ms (#usr nongc), "+", ms (#usr gc),
+          " ms user, ", ms (#sys nongc), "+", ms (#sys gc), " ms system"
+        ]
       end
 
 end
