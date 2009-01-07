@@ -2,7 +2,7 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
   exception BadRequest
 
-  structure LR = LineReader
+  structure LR = LineReader(Socket)
 
   val server_name = "Stilts-HTTPd/0.1"
 

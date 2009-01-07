@@ -10,10 +10,10 @@ end
 
 structure CLI :> CLI = struct
 
+  structure LR = LineReader(Socket)
   structure S = Socket
 
-  type conn = (INetSock.inet, S.active S.stream) S.sock
-              * LineReader.reader
+  type conn = (INetSock.inet, S.active S.stream) S.sock * LR.reader
 
   fun connect (hostname, port) = let
         val host = case NetHostDB.getByName hostname of
@@ -23,7 +23,7 @@ structure CLI :> CLI = struct
         val s = INetSock.TCP.socket ()
         val () = S.connect (s, target)
       in
-        (s, LineReader.new (s, { increment = 8192, stripCR = true }))
+        (s, LR.new (s, { increment = 8192, stripCR = true }))
       end
 
   fun unquote v = let
@@ -65,7 +65,7 @@ structure CLI :> CLI = struct
 
         val () = SockUtil.sendVec (s, Byte.stringToBytes (out ^ "\n"))
         val () = print ("CLI: sent: " ^ PrettyTimer.print timer ^ "\n")
-        val resp = Byte.bytesToString (LineReader.readline r)
+        val resp = Byte.bytesToString (LR.readline r)
         val () = print ("CLI: read response: " ^ Int.toString (size resp) ^ " bytes, " ^ PrettyTimer.print timer ^ "\n")
         val fields = Substring.fields (fn c => c = #" ") (Substring.full resp)
         val () = print ("CLI: parsed fields: " ^ PrettyTimer.print timer ^ "\n")
