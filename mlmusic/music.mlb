@@ -14,8 +14,13 @@ in
 
 	templates/templates.mlb
 
+	../util/json.sml
+	../chiralml/socket.sig
+	../chiralml/sock-util.sml
+	../chiralml/simplehttp.sml
+
 	pagebar.sml
-	browser.sml
+	clibrowser.sml
 	db.sml
 	index/search.sml
 	search.sml
