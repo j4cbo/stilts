@@ -67,8 +67,10 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
                                                (Substring.full url)
 
         val pathsections = case map (Form.unquote o Substring.string)
-                                    (Substring.tokens (fn c => c = #"/") spath)
-                           of nil => [ "" ] | sections => sections
+                                    (Substring.fields (fn c => c = #"/") spath)
+                           of nil => [ "" ]
+                            | ""::sections => sections
+                            | sections => sections
 
       val content_cache : Word8Vector.vector option ref = ref NONE
 

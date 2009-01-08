@@ -34,4 +34,7 @@ signature WEB_UTIL = sig
   val dispatch: (Web.pathsec * dispatchmode * Web.app) list -> Web.app
   val forceSlash: Web.app -> Web.app
 
+  (* URL-encoding *)
+  val urlencode: string -> string
+
 end

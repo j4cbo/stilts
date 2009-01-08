@@ -266,4 +266,16 @@ structure WebUtil :> WEB_UTIL = struct
         nil => raise (redirect (flattenPath (#path req) ^ "/"))
       | _ => (app req)
 
+
+  (* val urlencode: string -> string
+   *
+   * Perform URL encoding.
+   *)
+  val urlencode = String.translate (
+        fn c => if Char.isAlphaNum c
+                then String.str c
+                else "%" ^ StringCvt.padLeft #"0" 2
+                           (Int.fmt StringCvt.HEX (Char.ord c))
+      )
+
 end
