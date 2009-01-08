@@ -25,12 +25,16 @@ Group is
 	templates/search.html
 	templates/playlist.html
 
-
+	../util/json.sml
+	../chiralml/socket.sig
+	../chiralml/sock-util.sml
+	../chiralml/simplehttp.sml
 
 	pagebar.sml
 	browser.sml
 	search.sml
 	player.sml
 	music.sml
+	clibrowser.sml
 
 	index/search.sml
