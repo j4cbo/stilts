@@ -49,12 +49,12 @@ structure JSON = struct
 
         fun hex4 reader state = let
               fun loop (0, acc, state) = SOME (acc, state)
-                 | loop (n, acc, state) = case reader state of
+                 | loop (i, acc, state) = case reader state of
                             NONE => NONE
                           | SOME (c, state) =>
                               case Int.fromString (String.str c) of
                                 NONE => NONE
-                              | SOME n => loop (n - 1, n + acc * 16, state)
+                              | SOME n => loop (i - 1, n + acc * 16, state)
             in
               loop (4, 0, state)
             end
