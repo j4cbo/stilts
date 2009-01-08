@@ -9,6 +9,7 @@ form.sig
 form.sml
 http-date.sml
 static-server.sml
+../util/linereader.sml
 server/cgi.sml
 server/scgi-server.sml
 server/http-server.sml
