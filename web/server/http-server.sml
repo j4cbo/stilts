@@ -84,6 +84,10 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
                         c
                       end
 
+        val squery = if Substring.isEmpty squery
+                     then squery 
+                     else Substring.slice (squery, 1, NONE)
+
         (* Build the request *)
         val req : Web.request = { client = cbind,
                                   method = request_method,

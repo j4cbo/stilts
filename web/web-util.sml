@@ -18,7 +18,7 @@ structure WebUtil :> WEB_UTIL = struct
         "Request dump:\n  Remote address: ", remote_addr, ":",
         Int.toString remote_port, "\n  Request: ", #method req, " ",
         String.concatWith "/" prepath, " / ", String.concatWith "/" postpath,
-        "\n  HTTP headers: \n",
+        "\n  Query string: ", #query_string req, "\n  HTTP headers: \n",
         String.concat (map formatHeader (#http_headers req)),
         "  Request content: ", Int.toString (#content_length req), " bytes\n",
         "  Server: \"", #server_name req, "\" at ", server_addr,
