@@ -57,6 +57,7 @@ structure Music = struct
   fun rootHandler (req: Web.request) = (case U.postpath req of
         nil => index req
       | [ "" ] => index req
+      | [ "exit" ] => OS.Process.exit OS.Process.success
       | _ => raise U.notFound
     )
 
@@ -74,18 +75,13 @@ structure Music = struct
   val () = SearchFile.init "searchdb.idx"
 
   fun timer app req = let
-        val realTimer = Timer.startRealTimer ()
-        val cpuTimer = Timer.startCPUTimer ()
+        val t = PrettyTimer.start ()
         val resp = app req
-        val realTime = Timer.checkRealTimer realTimer
-        val { usr, sys } = Timer.checkCPUTimer cpuTimer
-        val () = print ("Request time: " 
-               ^ Real.toString ((Time.toReal realTime) * 1000.0) ^ " ms total, "
-               ^ Real.toString ((Time.toReal usr) * 1000.0) ^ " ms user, "
-               ^ Real.toString ((Time.toReal sys) * 1000.0) ^ " ms system\n")
+        val () = print ("Request time: " ^ PrettyTimer.print t ^ "\n")
+        val () = MLton.GC.collect ()
       in
         resp
-       end
+      end
 
   val app = timer (U.dumpRequestWrapper print (U.exnWrapper app))
 
