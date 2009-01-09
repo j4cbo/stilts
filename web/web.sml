@@ -97,4 +97,6 @@ signature WEB_SERVER = sig
 
   val serve : opts Web.server
 
+  val addCleanupCallback: (unit -> unit) -> unit
+
 end

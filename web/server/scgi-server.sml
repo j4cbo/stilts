@@ -2,6 +2,10 @@ structure SCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
   exception ProtocolError
 
+  val callbacks : (unit -> unit) list ref = ref nil
+
+  fun addCleanupCallback f = callbacks := (f :: !callbacks)
+
   (* val pairs: 'a list -> ('a * 'a) list 
 
      Combine a list of even length into pairs of adjacent elements:
@@ -70,10 +74,13 @@ structure SCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
       (* GO GO GO! *)
       val response = CGI.make_response (application request)
-    in
-      ignore (SockUtil.sendVec (conn, response));
-      Socket.close conn
 
+      val () = SockUtil.sendVec (conn, response)
+      val () = Socket.close conn
+
+      val () = List.app (fn f => f ()) (!callbacks)
+    in
+      ()
     end
     handle ProtocolError => Socket.close conn
     handle x => (Socket.close conn; raise x)

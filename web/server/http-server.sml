@@ -6,6 +6,10 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
 
   val server_name = "Stilts-HTTPd/0.1"
 
+  val callbacks : (unit -> unit) list ref = ref nil
+
+  fun addCleanupCallback f = callbacks := (f :: !callbacks)
+
   val bad_request_msg = Byte.stringToBytes (
                           "400 Bad Request\r\nContent-type: text/plain\r\n"
                         ^ "Server: " ^ server_name ^ "\r\n\r\n"
@@ -124,9 +128,13 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
                         Byte.stringToBytes ("HTTP/1.0 " ^ (!status) ^ "\r\n"),
                         CGI.make_response (rh_n, r_body)
                       ]
+
+        val () = SockUtil.sendVec (conn, response)
+        val () = Socket.close conn
+
+        val () = List.app (fn f => f ()) (!callbacks)
       in
-        ignore (SockUtil.sendVec (conn, response));
-        Socket.close conn
+        ()
       end
       handle BadRequest => bad_request conn)
 

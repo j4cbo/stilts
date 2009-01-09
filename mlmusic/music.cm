@@ -14,6 +14,8 @@ Group is
 	conf.sml
 
 	../util/timer.sml
+	../util/gc-smlnj.sml
+
 	cli.sml
 	command.sml
 

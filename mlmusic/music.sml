@@ -78,7 +78,6 @@ structure Music = struct
         val t = PrettyTimer.start ()
         val resp = app req
         val () = print ("Request time: " ^ PrettyTimer.print t ^ "\n")
-        val () = MLton.GC.collect ()
       in
         resp
       end
@@ -87,6 +86,7 @@ structure Music = struct
 
   fun main _ = let
       val () = print "Listening...\n"
+      val () = HTTPServer.addCleanupCallback GC.collectAll
       val () = HTTPServer.serve (INetSock.any 8888) app
     in
       0

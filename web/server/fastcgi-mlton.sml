@@ -4,6 +4,10 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
 
   type opts = INetSock.sock_addr
 
+  val callbacks : (unit -> unit) list ref = ref nil
+
+  fun addCleanupCallback f = callbacks := (f :: !callbacks)
+
   fun serve addr application =
     let
       val sock = case FS.ST.isSock (FS.fstat FS.stdin) of
@@ -19,6 +23,7 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
       fun acceptLoop () = let
             val conn = Socket.accept sock
             val () = FastCGICommon.serveConn application conn
+            val () = List.app (fn f => f ()) (!callbacks)
           in
             acceptLoop ()
           end

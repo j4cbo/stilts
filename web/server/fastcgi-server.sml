@@ -6,6 +6,10 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
   structure W8V = Word8Vector
   structure W32 = Word32
 
+  val callbacks : (unit -> unit) list ref = ref nil
+
+  fun addCleanupCallback f = callbacks := (f :: !callbacks)
+
   type rectype = int
 
   structure R = struct
@@ -241,13 +245,17 @@ structure FastCGIServer :> WEB_SERVER where type opts = INetSock.sock_addr = str
                                    content = W8VS.vector (W8VS.slice
                                                      (response, start, NONE)) }
 
+      val () = sendChunks 0
+      val () = sendRecord conn { version = 1,
+                                 rectype = FCGI_STDOUT,
+                                 reqId = reqId,
+                                 content = Byte.stringToBytes "" }
+      val () = sendRecord conn (encodeEndRequest (reqId, 0,
+                                                  FCGI_REQUEST_COMPLETE))
+
+      val () = List.app (fn f => f ()) (!callbacks)
     in
-      sendChunks 0;
-      sendRecord conn { version = 1,
-                        rectype = FCGI_STDOUT,
-                        reqId = reqId,
-                        content = Byte.stringToBytes "" };
-      sendRecord conn (encodeEndRequest (reqId, 0, FCGI_REQUEST_COMPLETE))
+      ()
     end
 
   fun serveConn app (conn, conn_addr) =

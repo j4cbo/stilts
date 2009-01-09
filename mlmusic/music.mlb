@@ -11,6 +11,7 @@ in
 	../../stilts/web/web.mlb
 	../util/linereader.sml
 	../util/timer.sml
+	../util/gc-mlton.sml
 
 	templates/templates.mlb
 
