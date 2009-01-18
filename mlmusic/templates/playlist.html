@@ -8,8 +8,8 @@
   <a target="browseframe" href='/browse/song/${id}/'>${
         case tracknum of NONE => "" | SOME s => s ^ ". " }${title}</a><br/>
   <a t:ifOption="album as (id, name)" target="browseframe"
-     href='/browse/albums/${id}/'>${name}</a><br/>
+     href='/browse/albums/${id}/${WebUtil.urlencode name}/'>${name}</a><br/>
   <a t:ifOption="artist as (id, name)" target="browseframe"
-     href='/browse/artists/${id}/'>${name}</a>
+     href='/browse/artists/${id}/${WebUtil.urlencode name}/'>${name}</a>
  </li>
 </t:for>
