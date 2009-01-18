@@ -2,8 +2,6 @@ structure CLIBrowser :> sig val browseApp: Web.app end = struct
 
   structure U = WebUtil
   structure J = JSON
-  structure HC = SimpleHTTPConnection(structure Socket = Socket
-                                      structure INetSock = INetSock)
 
   val pageLen = 200
 
@@ -18,58 +16,11 @@ structure CLIBrowser :> sig val browseApp: Web.app end = struct
     | pairs (_::nil) = nil
     | pairs (a::(b::r)) = (a, b)::(pairs r)
 
-  val id = ref 1 : IntInf.int ref
-
-  fun browseReq req = 
-        J.Object (foldl J.Map.insert' J.Map.empty [
-            ("id", J.Number (!id)),
-            ("method", J.String "slim.request"),
-            ("params", J.Array [ J.String "", J.Array req ])
-          ])
-        before id := (!id + 1)
-
-  fun rpc_request conn req = let
-        val timer = PrettyTimer.start ()
-        val body = HC.request conn ("/jsonrpc.js",
-                                    [("Content-Type", "text/json")],
-                                    SOME (J.fmt req))
-        val () = print ("JSONRPC: request " ^ PrettyTimer.print timer ^ "; "
-                        ^ Int.toString (size body) ^ " bytes\n")
-        val timer = PrettyTimer.start ()
-        val rjson = case JSON.fromString body of
-                       NONE => (print body; raise Fail "response not json")
-                     | SOME json => json
-        val () = print ("JSONRPC: JSON parse " ^ PrettyTimer.print timer ^ "\n")
-        val robj = case rjson of J.Object m => m
-                               | _ => raise Fail "response not a json object"
-      in
-        case J.Map.find (robj, "result") of SOME res => res
-                                          | _ => raise Fail "no result"
-    end
-
-  fun request rlist = let
-        val conn = HC.new "blackbox.res.cmu.edu:9000"
-      in
-        rpc_request conn (browseReq rlist)
-      end
-
-  fun unpack loopkey namekey (J.Object m) = (
-        case J.Map.find (m, loopkey) of
-          SOME (J.Array items) => List.mapPartial (
-            fn (J.Object om) => (
-              case (J.Map.find (om, "id"), J.Map.find (om, namekey)) of
-                  (SOME (J.String id), SOME (J.String name)) =>
-                      SOME { id=id, name=name }
-                | (SOME (J.Number id), SOME (J.String name)) =>
-                      SOME { id=IntInf.toString id, name=name }
-                | _ => NONE)
-             | _ => NONE) items
-        | _ => nil)
-  | unpack _ _ _ = nil
-
-  val hierarchy = [ ("genre", "Genres", "genre.id="),
-                    ("artist", "Artists", "contributor.id="),
-                    ("album", "Albums", "album.id=") ]
+  val hierarchy = [
+        ("genre", "Genres", "genre.id="),
+        ("artist", "Artists", "contributor.id="),
+        ("album", "Albums", "album.id=")
+      ]
 
   fun browseApp (req: Web.request) = let
         val path = U.postpath req
@@ -125,10 +76,11 @@ structure CLIBrowser :> sig val browseApp: Web.app end = struct
                         :: makeLinks (pathRev, nil)
 
         (* Produce our actual query *)
-        val (queryBase, cmdPrefix, cmdSuffix, nextPrefix) =
+        val (queryBase, cmdPrefix, cmdSuffix, nextPrefix, params) =
           case hierRemainder of
-                nil => ("title", "track.id=", "", SOME "/browse/tracks/")
-             | (qb, _, cp)::_ => (qb, cp, tags, SOME "")
+                nil => ("title", "track.id=", "",
+                        SOME "/browse/tracks/", [ "sort:tracknum" ])
+             | (qb, _, cp)::_ => (qb, cp, tags, SOME "", nil)
 
         val start = case (Form.get form "start") of
               NONE => 0
@@ -139,12 +91,12 @@ structure CLIBrowser :> sig val browseApp: Web.app end = struct
         val req = J.String (queryBase ^ "s")
                   :: J.Number start
                   :: J.Number (IntInf.fromInt pageLen)
-                  :: map J.String filters
+                  :: map J.String (params @ filters)
 
         val () = print ("Query: " ^ J.fmt (J.Array req) ^ "\n")
 
-        val resp = request req
-        val list = unpack (queryBase ^ "s_loop") queryBase resp
+        val resp = JSONRPC.request req
+        val list = JSONRPC.unpack (queryBase ^ "s_loop") queryBase resp
 
         fun page i = (i * pageLen, pageLen, 0, Int.toString (i + 1))
 
