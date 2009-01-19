@@ -75,12 +75,22 @@ structure CLIBrowser :> sig val browseApp: Web.app end = struct
         val backlinks = (startName, "/" ^ base ^ "/" ^ start ^ "/")
                         :: makeLinks (pathRev, nil)
 
+        (* Item render function *)
+        fun idName { id, name, map } = { id = id, name = name }
+        fun idNameTracknum { id, name, map } = (
+              case J.Map.find (map, "tracknum") of
+                SOME (J.String s) => { id = id, name = s ^ ". " ^ name }
+              | SOME (J.Number n) => { id = id, name = IntInf.toString n
+                                                     ^ ". " ^ name }
+              | _ => { id = id, name = name }
+            )        
+
         (* Produce our actual query *)
-        val (queryBase, cmdPrefix, cmdSuffix, nextPrefix, params) =
+        val (queryBase, cmdPrefix, cmdSuffix, nextPrefix, params, lmap) =
           case hierRemainder of
-                nil => ("title", "track.id=", "",
-                        SOME "/browse/tracks/", [ "sort:tracknum" ])
-             | (qb, _, cp)::_ => (qb, cp, tags, SOME "", nil)
+                nil => ("title", "track.id=", "", SOME "/browse/tracks",
+                        [ "sort:tracknum" ], idNameTracknum)
+             | (qb, _, cp)::_ => (qb, cp, tags, SOME "", nil, idName)
 
         val start = case (Form.get form "start") of
               NONE => 0
@@ -120,7 +130,7 @@ structure CLIBrowser :> sig val browseApp: Web.app end = struct
            title = #1 (hd (rev backlinks)),
            cmdPrefix = cmdPrefix,
            cmdSuffix = cmdSuffix,
-           list = list,
+           list = map lmap list,
            pb = pb,
            start = Int.fromLarge start,
            allCmd = NONE,
