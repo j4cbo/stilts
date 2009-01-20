@@ -117,11 +117,10 @@
 		updateStatus(cmd + " " + selectors);
 	}
 
-	setInterval(function() {
+	$("#player").change(function() {
+		document.cookie = "SqueezeCenter-player=" + escape(curPlayer());
 		updateStatus("");
-	}, 5000);
-
-	$("#player").change(function() { updateStatus(""); });
+	});
 
 	handleStatusObject(initialStatus);
 

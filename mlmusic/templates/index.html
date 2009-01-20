@@ -11,7 +11,10 @@
 <div id="header">
  Player:
  <select name="player" id="player">
-  <option t:for="{ id, name } in players" value="${id}">${name}</option>
+  <t:for pattern="{ id, name, cur }" exp="players">
+   <option t:if="cur" value="${id}" selected="selected">${name}</option>
+   <option t:if="not cur" value="${id}">${name}</option>
+  </t:for>
  </select>
 </div>
 

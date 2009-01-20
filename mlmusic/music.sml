@@ -33,13 +33,21 @@ structure Music = struct
 
         (* Find the player we're using *)
         val player = case (getCookie req "SqueezeCenter-player") of
-              SOME s => if List.exists (fn { id, ... } => id = s) players
-                        then SOME s
-                        else defaultPlayer
+              SOME s => let val s' = Form.unquote s
+                        in if List.exists (fn { id, ... } => id = s') players
+                           then SOME s'
+                           else defaultPlayer end
             | NONE => defaultPlayer
 
         val () = print ("Player: " ^ (case player of SOME s => s
                                                    | NONE => "NONE") ^ "\n")
+
+        fun isSel { id, name } = {
+              id = id, name = name,
+              cur = case player of SOME s => (id = s) | NONE => false
+            }
+
+        val players = map isSel players
 
         val initialPlaylist = case player of
               SOME s => TPlaylist.render (Command.playlist s 0 9999)
