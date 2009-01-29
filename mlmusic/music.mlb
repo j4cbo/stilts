@@ -20,8 +20,11 @@ in
 	../chiralml/sock-util.sml
 	../chiralml/simplehttp.sml
 
+	jsonrpc.sml
 	pagebar.sml
 	clibrowser.sml
+	clisonginfo.sml
+
 	db.sml
 	index/search.sml
 	search.sml

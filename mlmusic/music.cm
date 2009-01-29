@@ -32,11 +32,15 @@ Group is
 	../chiralml/sock-util.sml
 	../chiralml/simplehttp.sml
 
+	jsonrpc.sml
+
+	clibrowser.sml
+	clisonginfo.sml
+
 	pagebar.sml
 	browser.sml
 	search.sml
 	player.sml
 	music.sml
-	clibrowser.sml
 
 	index/search.sml
