@@ -67,7 +67,9 @@ structure Form : FORM = struct
    *)
   fun load (req: Web.request) = let
         val form = foldl add_value Map.empty (parseVars (#query_string req))
-        val content_type = WebUtil.server_header "CONTENT_TYPE" req
+        val content_type = case WebUtil.server_header "CONTENT_TYPE" req of
+              SOME ct => SOME ct
+            | NONE => WebUtil.http_header "HTTP_CONTENT_TYPE" req
         val postVars = case (#method req, content_type) of
                          ("POST", SOME "application/x-www-form-urlencoded") =>
                             parseVars (Byte.bytesToString (#content req ()))
