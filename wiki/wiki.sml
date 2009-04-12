@@ -81,7 +81,7 @@ structure Wiki = struct
 
   fun main _ = let
       val () = print "Listening...\n"
-      val () = FastCGIServer.serve (INetSock.any 5124) app
+      val () = HTTPServer.serve (INetSock.any 5124) app
     in
       0
     end
