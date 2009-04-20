@@ -34,17 +34,6 @@ end = struct
       end
 
 
-  (* val mlquote: string -> string
-   *
-   * Escape the given string for use as a literal in SML source.
-   * XXX: This is probably not complete.
-   *)
-  fun mlquote s = "\"" ^ (String.translate (fn #"\"" => "\\\""
-                                             | #"\\" => "\\\\"
-                                             | #"\n" => "\\n"
-                                             | c => String.str c) s) ^ "\""
-
-
   (* val generateEscapeFunc: vartype -> string
    *
    * generateEscapeFunc typ produces SML source for a function that
