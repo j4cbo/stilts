@@ -5,7 +5,7 @@ where tracks.audio = 1 and tracks.titlesearch is not null
 
 --- tracksTitleAlbum: unit -> (int * string) list
 
-select tracks.id, concat(tracks.titlesearch, " ", albums.titlesearch) as ta
+select tracks.id, concat(tracks.titlesearch, " ", ifnull(albums.titlesearch, "")) as ta
 from tracks
 left join albums on tracks.album = albums.id
 where tracks.audio = 1 and tracks.titlesearch is not null 
@@ -48,5 +48,5 @@ where titlesearch is not null
 select albums.id, concat(albums.titlesearch, " ", contributors.namesearch) ta
 from albums
 left join contributors on contributors.id = albums.contributor
-where albums.contributor is not null
+where albums.contributor is not null and albums.titlesearch is not null
 

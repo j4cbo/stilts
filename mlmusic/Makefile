@@ -29,6 +29,10 @@ include $(SMELT_PATH)/smelt.mk
 $(OUTPUT): $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(DEPS) $(MLB)
 	mlton -link-opt -lmysqlclient -output $@ $(MLB)
 
+$(OUTPUT)-arm: $(DEPS) $(MLB)
+	mlton -target arm-poky-linux-gnueabi -cc ~/bin/arm-poky-linux-gnueabi-gcc -output $@ $(MLB)
+	~/bin/arm-poky-linux-gnueabi-strip $@
+
 dist: sing-$(DATE)
 
 sing-$(DATE): all

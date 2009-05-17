@@ -90,7 +90,9 @@ structure Music = struct
         resp
       end
 
-  val app = timer (U.dumpRequestWrapper print (U.exnWrapper app))
+(*  val app = timer (U.dumpRequestWrapper print (U.exnWrapper app))
+*)
+  val app = timer (U.exnWrapper app)
 
   fun main _ = let
       val () = print "Listening...\n"

@@ -22,6 +22,7 @@ in
 
 	jsonrpc.sml
 	pagebar.sml
+	jsonrpc.sml
 	clibrowser.sml
 	clisonginfo.sml
 
