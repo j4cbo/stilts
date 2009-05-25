@@ -1,0 +1,15 @@
+ann
+	"allowFFI true"
+in
+local
+	$(SML_LIB)/basis/basis.mlb
+	$(SML_LIB)/basis/mlton.mlb
+	$(SML_LIB)/basis/unsafe.mlb
+	$(SML_LIB)/basis/c-types.mlb
+	sqlite.sig
+	sqlite.sml
+in
+	signature SQLITE
+	structure SQLite
+end
+end

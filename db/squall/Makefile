@@ -1,4 +1,4 @@
-squall: input.sml input.lex input.grm squall.sml squall-standalone.sml squall.mlb
+squall: input.sml input.lex input.grm squall-sqlite.sml squall-standalone.sml squall.mlb
 	mllex input.lex
 	mlyacc input.grm
 	mlton squall.mlb
