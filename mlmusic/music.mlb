@@ -1,6 +1,6 @@
 $(SML_LIB)/basis/basis.mlb
 $(SML_LIB)/smlnj-lib/RegExp/regexp-lib.mlb
-../../stilts/db/libmysqlclient/libmysqlclient.mlb
+../../stilts/db/sqlite/sqlite.mlb
 
 ann
 	"sequenceNonUnit warn"
@@ -26,7 +26,6 @@ in
 	clibrowser.sml
 	clisonginfo.sml
 
-	db.sml
 	index/search.sml
 	search.sml
 	cli.sml

@@ -61,36 +61,3 @@ FROM tracks
 LEFT JOIN albums ON ( albums.id = tracks.album )
 WHERE tracks.id = ?
 
---- trackMulti: int list -> { id: int, tracknum: int option, title: string, albumId: int option, albumTitle: string option, artistId: int option, artistName: string option } list
-
-SELECT
-        tr.id, tr.tracknum, tr.title,
-        tr.album album_id, albums.title album_title,
-        contributors.id artist_id, contributors.name artist_name
-FROM tracks tr
-LEFT OUTER JOIN albums ON albums.id = tr.album
-LEFT OUTER JOIN contributor_track ct ON (ct.track = tr.id and ct.role in (1, 6))
-LEFT JOIN contributors ON contributors.id = ct.contributor
-WHERE tr.id IN ?
-ORDER BY tr.album, tr.disc, tr.tracknum, tr.titlesort 
-
---- albumMulti: int list-> { id: int, name: string, compilation: int option, mm_mixable: int option, mb_id: string option } list
-
-SELECT me.id, me.title, me.compilation, me.musicmagic_mixable, me.musicbrainz_id
-FROM albums me
-WHERE me.id IN ?
-ORDER BY me.titlesort, me.disc
-LIMIT 200
-
---- artistMulti: int list -> { id: int, name: string, mm_mixable: int option, mb_id: string option } list
-
-SELECT DISTINCT me.id, me.name, me.musicmagic_mixable, me.musicbrainz_id
-FROM contributors me
-LEFT JOIN contributor_album ca ON ( ca.contributor = me.id )
-WHERE (
-        ca.role IN ( '1', '5', '6' )
-        AND me.id IN ?
-)
-ORDER BY me.namesort
-LIMIT 200
-
