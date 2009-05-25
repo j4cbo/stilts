@@ -5,8 +5,11 @@ structure Wiki = struct
                            structure E = BackTrackEngine)
 
   fun formatPage page = let
+
         fun getMatch (SOME { pos, len }) = Substring.string (Substring.slice (pos, 0, SOME len))
           | getMatch NONE = raise Option
+
+        fun getMatch { pos, len } = Substring.string (Substring.slice (pos, 0, SOME len))
 
         fun makeLink s = "<a href=\"" ^ s ^ "\">" ^ s ^ "</a>"
 

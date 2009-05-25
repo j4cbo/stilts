@@ -1,5 +1,9 @@
-functor Thread (structure T: THREAD_COMMON
-                structure RC: REACTOR_CORE) :> THREAD = struct
+functor Thread (
+  structure T: THREAD_COMMON
+  structure RC: REACTOR_CORE
+  structure C: THREAD_CONFIG
+) :> THREAD =
+struct
 
   val () = SIGPIPE.ignore ()
 
@@ -49,7 +53,9 @@ functor Thread (structure T: THREAD_COMMON
 
   fun t2s (_, id) = Int.toString id
 
-  fun trace f = print (f () ^ "\n")
+  val thtrace = C.trace C.THREAD
+  val sctrace = C.trace C.SCHEDULE
+  val etrace = C.trace C.ERROR
 
   (* val schedule: unit -> thread
    *
@@ -68,8 +74,7 @@ functor Thread (structure T: THREAD_COMMON
   fun schedule () =
         case !runnable_threads of
           (ctx, dsc, id) :: rest => (
-                trace (fn () => "Schedule: using next runnable: "
-                                 ^ Int.toString id);
+                sctrace (fn () => "Using next runnable: " ^ Int.toString id);
                 runnable_threads := rest;
                 current_thread := SOME (ctx, dsc, id);
                 T.prepare (!ctx, ())
@@ -92,24 +97,23 @@ functor Thread (structure T: THREAD_COMMON
            in
              case delayed_threads of
                t :: rest => (
-                     trace (fn () => "Schedule: "
-                                      ^ Int.toString (length rest + 1)
-                                      ^ " delayed threads now runnable");
+                     sctrace (fn () => Int.toString (length rest + 1)
+                                       ^ " delayed threads now runnable");
                      runnable_threads := (t :: rest);
                      schedule ()
                    )
              | nil => let
-                   val () = trace (fn () => "Schedule: invoking reactor core")
+                   val () = sctrace (fn () => "Invoking reactor core")
                    val nt = RC.wait rcstate sleep_time
                  in
                    case nt of
                      NONE => bail () 
                    | SOME nil => (
-                       trace (fn () => "Schedule: reactor returned early");
+                       sctrace (fn () => "Reactor returned early");
                        schedule ())
                    | SOME ts => (
-                       trace (fn () => "Schedule: " ^ Int.toString (length ts)
-                                        ^ " threads runnable from reactor");
+                       sctrace (fn () => Int.toString (length ts)
+                                         ^ " threads runnable from reactor");
                        runnable_threads := ts;
                        schedule ())
                  end
@@ -123,8 +127,8 @@ functor Thread (structure T: THREAD_COMMON
             ctx_ref := curctx;
             RC.add_sock rcstate (current, cond, Socket.sockDesc sock);
             schedule ()
-            handle e => (print ("Block prepare died with "
-                                ^ General.exnMessage e ^ "\n"); raise e)
+            handle e => (etrace (fn () => "Block prepare died with "
+                                 ^ General.exnMessage e); raise e)
           end)
 
   fun sleep time = 
@@ -135,18 +139,19 @@ functor Thread (structure T: THREAD_COMMON
             ctx_ref := curctx;
             sleepq := PQ.insert ((current, waketime), !sleepq);
             schedule ()
-            handle e => (print ("Sleep prepare died with "
-                                ^ General.exnMessage e ^ "\n"); raise e)
+            handle e => (etrace (fn () => "Sleep prepare died with "
+                                 ^ General.exnMessage e); raise e)
           end)
 
   fun new thrfun = let
+        val id = !next_id
         fun thrfun' () = (
               thrfun ()
-                handle e => print ("Thread died with "
-                                   ^ General.exnMessage e ^ "\n");
+                handle e => thtrace (fn () => "Thread " ^ Int.toString id
+                                     ^ " died with " ^ General.exnMessage e);
+                thtrace (fn () => "Thread " ^ Int.toString id ^ " terminated");
               T.switch (fn _ => schedule ())
             )
-        val id = !next_id
         val thread = (ref (T.new thrfun'), ref true, id)
       in
         next_id := id + 1;
@@ -156,7 +161,7 @@ functor Thread (structure T: THREAD_COMMON
 
   fun self () = get current_thread
 
-  fun kill _ = raise Fail "x"
+  fun kill _ = raise Fail "unimplementedx"
 
   fun run () =
         T.switch (fn curctx => (
@@ -172,13 +177,13 @@ functor Thread (structure T: THREAD_COMMON
             ctx_ref := curctx;
             sch_ref := false;
             schedule ()
-            handle e => (print ("Deschedule prepare died with "
+            handle e => (etrace (fn () => "Deschedule prepare died with "
                                 ^ General.exnMessage e ^ "\n"); raise e)
           end)
 
   fun make_runnable (_, ref true, _) = raise AlreadyRunnable
     | make_runnable (thread as (ctx_ref, sch_ref as ref false, id)) = (
-          trace (fn () => "Making thread " ^ Int.toString id ^ " runnable");
+          thtrace (fn () => "Making thread " ^ Int.toString id ^ " runnable");
           sch_ref := true;
           runnable_threads := thread :: (!runnable_threads);
           ()

@@ -2,6 +2,8 @@ Group is
 	$/basis.cm
 	$/smlnj-lib.cm
 	$/inet-lib.cm
+	config.sig
+	config.sml
 	thread.sig
 	threadbase-smlnj.sml
 	reactorcore.sig
@@ -13,4 +15,3 @@ Group is
 	sock-util.sml
 	condvar.sig
 	condvar.sml
-	../util/linereader.sml

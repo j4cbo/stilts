@@ -24,7 +24,7 @@ structure SelectReactorCore :> REACTOR_CORE = struct
                       NONE => "no"
                     | SOME t => IntInf.toString (Time.toMilliseconds t) ^ " ms"
 
-        val () = print ("select(): waiting on " ^ Int.toString (length rd)
+        val () = print ("  select(): waiting on " ^ Int.toString (length rd)
                         ^ " read, " ^ Int.toString (length wr) ^ " write, "
                         ^ tstr ^ " timeout.\n");
 
@@ -34,7 +34,7 @@ structure SelectReactorCore :> REACTOR_CORE = struct
         val { rds, wrs, exs } = (Socket.select sparam
                                  handle e => raise e)
 
-        val () = print ("select(): returned " ^ Int.toString (length rds)
+        val () = print ("  select(): returned " ^ Int.toString (length rds)
                         ^ " read, " ^ Int.toString (length wrs) ^ " write\n");
 
         fun res_fold (i as (ent, CC.BLOCK_RD, sock), (nil, wrs, out, rem)) =
