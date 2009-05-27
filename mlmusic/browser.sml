@@ -9,21 +9,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
       }
 
 
-  fun albumInfo albumId = let
-        val albumId' = valOf (Int.fromString albumId)
-        val albumTitle = case #title (SQL.albumDetail albumId') of
-                           NONE => "Album"
-                         | SOME t => t
-      in
-        (albumId', albumTitle)
-      end
-
-  fun artistInfo artistId = let
-        val artistId' = valOf (Int.fromString artistId)
-        val artist = #name (SQL.artistDetail artistId')
-      in
-        (artistId', artist)
-      end
+  val getInt = valOf o Int.fromString
 
 
   fun pbSubApp (req, ns, sublist) = let
@@ -66,14 +52,13 @@ structure Browser :> sig val browseApp: Web.app end = struct
             }
           end
 
-        | [ "artists", id, "" ] => let
-            val id' = valOf (Int.fromString id)
-            val title = #name (SQL.artistDetail id')
+        | [ "artists", id, title, "" ] => let
+            val id' = getInt id
             val pb = PageBar.pagebar (path, fn () => map #name (SQL.albumsByArtist id'))
           in TList.render {
             nextPrefix = SOME "",
             path = [ ( "Artists", "/browse/artists/" ),
-                     ( title, "/browse/artists/" ^ id ^ "/") ],
+                     ( title, "/browse/artists/" ^ id ^ "/" ^ U.urlencode title ^ "/") ],
             list = SQL.albumsByArtist id',
             title = title,
             cmdPrefix = "album.id=",
@@ -84,14 +69,15 @@ structure Browser :> sig val browseApp: Web.app end = struct
         }
         end
 
-      | [ "artists", artistId, albumId, "" ] => let
-	    val (_, artistName) = artistInfo artistId
-            val (albumId', albumTitle) = albumInfo albumId
+      | [ "artists", artistId, artistName, albumId, albumTitle, "" ] => let
+	    val _ = getInt artistId
+            val albumId' = getInt albumId
           in TList.render {
             nextPrefix = SOME "/browse/song/",
             path = [ ( "Artists", "/browse/artists/" ),
-                     ( artistName, "/browse/artists/" ^ artistId ^ "/"),
-                     ( albumTitle, "/browse/artists/" ^ artistId ^ "/" ^ albumId ^ "/") ],
+                     ( artistName, "/browse/artists/" ^ artistId ^ "/" ^ U.urlencode artistName ^ "/"),
+                     ( albumTitle, "/browse/artists/" ^ artistId ^ "/" ^ U.urlencode artistName
+                                   ^ "/" ^ albumId ^ "/" ^ U.urlencode albumTitle ^ "/") ],
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
             cmdPrefix = "track.id=",
@@ -118,12 +104,12 @@ structure Browser :> sig val browseApp: Web.app end = struct
           }
         end
 
-      | [ "albums", albumId, "" ] => let
-            val (albumId', albumTitle) = albumInfo albumId
+      | [ "albums", albumId, albumTitle, "" ] => let
+            val albumId' = getInt albumId
           in TList.render {
             nextPrefix = SOME "/browse/song/",
             path = [ ( "Albums", "/browse/albums/" ),
-                     ( albumTitle, "/browse/albums/" ^ albumId ^ "/") ],
+                     ( albumTitle, "/browse/albums/" ^ albumId ^ "/" ^ U.urlencode albumTitle ^ "/") ],
             list = map renderTrack (SQL.albumTracks albumId'),
             title = albumTitle,
             cmdPrefix = "track.id=",
@@ -133,8 +119,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
         }
         end
 
-      | [ "song", songId, "" ] => let
-            val songInfo = SQL.songInfo (valOf (Int.fromString songId))
+      | ( "song" :: songId :: _ ) => let
+            val songInfo = SQL.songInfo (getInt songId)
           in
             TSong.render songInfo
           end
