@@ -67,7 +67,7 @@ end = struct
    * will read out the given value from the statement "s".
    *)
   fun generateReader (idx, SI.Int) = "SQLite.column_int (s, " ^ Int.toString idx ^ ")"
-    | generateReader (idx, SI.String) = "SQLite.column_text (s, " ^ Int.toString idx ^ ")"
+    | generateReader (idx, SI.String) = "(case SQLite.column_text (s, " ^ Int.toString idx ^ ")of SOME s=>s|_=>raise(DataFormatError\""^Int.toString idx ^ "\"))"
 
   (* fun generateConv: int * varspec -> string
    *

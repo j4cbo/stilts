@@ -15,7 +15,11 @@ structure SQLite :> SQLITE = struct
   type value = unit
 
   exception SQLiteClosed
-  exception SQLiteError of int
+  exception SQLiteError of string * int
+
+  val () = MLton.Exn.addExnMessager (
+    fn SQLiteError (s, i) => SOME ("SQLiteError: " ^ s ^ " returned " ^ Int.toString i)
+     | _ => NONE)
 
   fun get (ref NONE) = raise SQLiteClosed
     | get (ref (SOME dbptr)) = dbptr
@@ -46,7 +50,7 @@ structure SQLite :> SQLITE = struct
       in
         free ptrcell;
         if pointer = P.null
-          then raise SQLiteError res
+          then raise SQLiteError ("sqlite3_open", res)
           else ref (SOME pointer)
       end
 
@@ -63,7 +67,7 @@ structure SQLite :> SQLITE = struct
       in
         free stmtcell;
         if pointer = P.null
-          then raise SQLiteError res
+          then raise SQLiteError ("sqlite3_prepare", res)
           else ref (SOME pointer)
       end
 

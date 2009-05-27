@@ -6,7 +6,7 @@ signature SQLITE = sig
   datatype column_type = INTEGER | FLOAT | TEXT | BLOB | NULL | UNKNOWN of int
 
   exception SQLiteClosed
-  exception SQLiteError of int
+  exception SQLiteError of string * int
 
   val errmsg : db -> string
   val errcode : db -> int
