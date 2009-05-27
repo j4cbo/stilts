@@ -131,11 +131,11 @@ structure SQLite :> SQLITE = struct
         (get stmt, num)
 
   fun column_int (stmt, num) =
-        (_import "sqlite3_column_double" : ptr * int -> Int32.int;)
+        (_import "sqlite3_column_int" : ptr * int -> Int32.int;)
         (get stmt, num)
 
   fun column_int64 (stmt, num) =
-        (_import "sqlite3_column_double" : ptr * int -> Int64.int;)
+        (_import "sqlite3_column_int64" : ptr * int -> Int64.int;)
         (get stmt, num)
 
   fun column_text (stmt, num) = let
