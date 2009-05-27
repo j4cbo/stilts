@@ -73,7 +73,7 @@ structure Music = struct
                                         expires = SOME (60*60*24*365),
                                         headers = nil }
 
-  val app = U.dispatch [ ( [ "browse" ], U.PREFIX, CLIBrowser.browseApp ),
+  val app = U.dispatch [ ( [ "browse" ], U.PREFIX, Browser.browseApp ),
 (*
                          ( [ "search", "" ], U.EXACT, SearchApp.searchApp ),
 *)
