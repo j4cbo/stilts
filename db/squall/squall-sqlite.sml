@@ -214,6 +214,7 @@ end = struct
         "  fun " ^ name ^ " " ^ prologue
       ^ " = let\n"
       ^ "      val s = case STMTS." ^ name ^ " of ref (SOME s) => s | _ => raise Fail \"statement not prepared\"\n"
+      ^ "      val _ = SQLite.reset s\n"
       ^ "      val () = checkAll ["
       ^ String.concatWith "," (map (fn g => "\n        " ^ g) gens)
       ^ "\n      ]\n"
