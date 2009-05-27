@@ -46,9 +46,9 @@ end = struct
    * Example: generateEscapeFunc SI.Int  =>  "Int.toString"
    *)
   fun generateEscapeFunc (ivar, pos, SI.Int) =
-        "SQLite3.bind_int (s, " ^ ivar ^ ", " ^ Int.toString pos ^ ")"
+        "SQLite.bind_int (s, " ^ Int.toString pos ^ ", " ^ ivar ^ ")"
     | generateEscapeFunc (ivar, pos, SI.String) =
-        "SQLite3.bind_text (s, " ^ ivar ^ ", " ^ Int.toString pos ^ ")"
+        "SQLite.bind_text (s, " ^ Int.toString pos ^ ", " ^ ivar ^ ")"
 
   (* val generateBind: string * int * varspec -> string
    *
