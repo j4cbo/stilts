@@ -222,7 +222,7 @@ end = struct
       ^ "      fun get acc = case SQLite.step s of\n"
       ^ "        101 => acc\n"
       ^ "      | 100 => get (" ^ rowFun ^ "::acc)\n"
-      ^ "      | i => raise Fail (\"unexpected step result \" ^ Int.toString i)\n"
+      ^ "      | i => raise Fail (\"unexpected step result \" ^ Int.toString i ^ \": \" ^ SQLite.errmsg (valOf (!STMTS.db)))\n"
       ^ "    in\n" ^ epilogue ^ "    end\n"
     end
 
@@ -251,11 +251,13 @@ end = struct
       in
           "structure SQL = struct\n"
         ^ "  structure STMTS = struct\n"
+        ^ "    val db : SQLite.db option ref = ref NONE\n"
         ^ String.concat (map makeStmtDecl funcs)
         ^ "  end\n"
         ^ "  val checkAll = List.app (fn i => if i=0 then()else raise Fail (\"bind: \" ^ Int.toString i))\n"
         ^ "  exception DataFormatError of string\n"
-        ^ "  fun prepare db = (" ^ String.concatWith ";" preps ^ "\n  )\n"
+        ^ "  fun prepare db = (\n"
+        ^ "    STMTS.db := SOME db;" ^ String.concatWith ";" preps ^ "\n  )\n"
         ^ (String.concat (map convertFunc funcs))
         ^ "end\n"
       end
