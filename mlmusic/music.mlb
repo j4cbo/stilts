@@ -20,17 +20,20 @@ in
 	../chiralml/sock-util.sml
 	../chiralml/simplehttp.sml
 
+	cli.sml
+	command.sml
+
 	jsonrpc.sml
 	pagebar.sml
 	jsonrpc.sml
-	clibrowser.sml
+	browser.sml
 	clisonginfo.sml
 
 	index/search.sml
+(*
 	search.sml
-	cli.sml
+*)
 	db.sml
-	command.sml
 	templates/playlist.html.sml
 	player.sml
 	music.sml

@@ -27,10 +27,10 @@ include $(SQUALL_PATH)/squall.mk
 include $(SMELT_PATH)/smelt.mk
 
 $(OUTPUT): $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(DEPS) $(MLB)
-	mlton -link-opt -lsqlite -output $@ $(MLB)
+	mlton -link-opt -lsqlite3 -output $@ $(MLB)
 
 $(OUTPUT)-arm: $(DEPS) $(MLB)
-	mlton -target arm-poky-linux-gnueabi -cc ~/bin/arm-poky-linux-gnueabi-gcc -output $@ $(MLB)
+	mlton -target arm-poky-linux-gnueabi -cc ~/bin2/arm-poky-linux-gnueabi-gcc -link-opt -lsqlite3 -verbose 2 -output $@ $(MLB)
 	~/bin/arm-poky-linux-gnueabi-strip $@
 
 dist: sing-$(DATE)

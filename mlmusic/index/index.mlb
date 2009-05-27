@@ -1,7 +1,12 @@
 $(SML_LIB)/basis/basis.mlb
 $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
-../../../stilts/db/libmysqlclient/libmysqlclient.mlb
-index.squall.sml
+$(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
+../../util/linereader.sml
+../../util/timer.sml
+../../../stilts/db/sqlite/sqlite.mlb
+index-sqlite.squall.sml
+../cli.sml
+../command.sml
 ../db.sml
 index.sml
 run.sml

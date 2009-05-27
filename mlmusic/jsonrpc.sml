@@ -39,7 +39,7 @@ end
     end
 
   fun request rlist = let
-        val conn = HC.new "blackbox.res.cmu.edu:9000"
+        val conn = HC.new "127.0.0.1:9000"
       in
         rpc_request conn (browseReq rlist)
       end

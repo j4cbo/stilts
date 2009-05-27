@@ -74,7 +74,9 @@ structure Music = struct
                                         headers = nil }
 
   val app = U.dispatch [ ( [ "browse" ], U.PREFIX, CLIBrowser.browseApp ),
+(*
                          ( [ "search", "" ], U.EXACT, SearchApp.searchApp ),
+*)
                          ( [ "player" ], U.PREFIX, PlayerApp.playerApp ),
                          ( [ "static" ], U.PREFIX, staticApp ),
                          ( nil, U.PREFIX, rootHandler ) ]
