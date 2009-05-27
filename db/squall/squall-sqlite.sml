@@ -215,9 +215,7 @@ end = struct
       ^ " = let\n"
       ^ "      val s = case STMTS." ^ name ^ " of ref (SOME s) => s | _ => raise Fail \"statement not prepared\"\n"
       ^ "      val () = checkAll ["
-(*
       ^ String.concatWith "," (map (fn g => "\n        " ^ g) gens)
-*)
       ^ "\n      ]\n"
       ^ "      fun get acc = case SQLite.step s of\n"
       ^ "        101 => acc\n"

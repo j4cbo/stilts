@@ -4,4 +4,4 @@ Group is
 	input.sml
 	input.grm
 	input.lex
-	squall.sml
+	squall-sqlite.sml
