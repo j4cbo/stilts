@@ -32,10 +32,13 @@ structure Command = struct
         (prologue, map (foldl foldMap Map.empty) items)
       end
 
-  val c = CLI.connect ("localhost", 9090)
+  val conn : CLI.conn option ref = ref NONE
+
+  fun command args = case conn of ref (SOME c) => CLI.command c args
+                                | _ => raise Fail "CLI not connected."
 
   fun players () = let
-        val resp = case CLI.command c [ "players", "0", "9999" ] of
+        val resp = case command [ "players", "0", "9999" ] of
                      ("players"::"0"::"9999"::rest) => rest
                    | _ => raise Fail "unexpected result" 
       in
@@ -43,7 +46,7 @@ structure Command = struct
       end
 
   fun cachedir () = 
-        case CLI.command c [ "pref", "server:cachedir", "?" ] of
+        case command [ "pref", "server:cachedir", "?" ] of
           [ "pref", "server:cachedir", dir ] => dir
         | _ => raise Fail "could not find server cachedir: unexpected result"
 
@@ -61,7 +64,7 @@ structure Command = struct
   end
 
   fun status p = let
-        val resp = case CLI.command c [ p, "status", "-", "1", "tags:asledity" ] of 
+        val resp = case command [ p, "status", "-", "1", "tags:asledity" ] of 
                      (_::"status"::"-"::"1"::"tags:asledity"::rest) => rest
                    | _ => raise Fail "unexpected result" 
         val (prologue, tracks) = mapMulti "playlist index" resp
@@ -82,7 +85,7 @@ structure Command = struct
       } end
 
   fun playlist p start len = let
-        val resp = case CLI.command c [ p, "status", Int.toString start,
+        val resp = case command [ p, "status", Int.toString start,
                                         Int.toString len, "tags:asledity" ] of 
                      (_::"status"::_::_::"tags:asledity"::rest) => rest
                    | _ => raise Fail "unexpected result" 

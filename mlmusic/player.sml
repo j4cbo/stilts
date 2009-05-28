@@ -29,7 +29,7 @@ structure PlayerApp :> sig val playerApp: Web.app end = struct
                 | [ "" ] => NONE
                 | _ => (print "Command: unknown command!\n"; NONE)
 
-              val _ = case cmd of SOME cmd => CLI.command Command.c cmd
+              val _ = case cmd of SOME cmd => Command.command cmd
                                 | NONE => nil
             in
               U.resp "text/plain" (Command.status player)

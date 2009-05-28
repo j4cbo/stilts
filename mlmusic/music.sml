@@ -79,8 +79,15 @@ structure Music = struct
                          ( [ "static" ], U.PREFIX, staticApp ),
                          ( nil, U.PREFIX, rootHandler ) ]
 
-  val () = DB.connect ()
-  val () = SearchFile.init "searchdb.idx"
+  fun startup () = let
+        val () = Command.conn := SOME (CLI.connect ("localhost", 9090))
+        val cachedir = Command.cachedir ()
+      in
+        SQL.prepare (SQLite.opendb (cachedir ^ "/squeezecenter.db"));
+        SearchFile.init "searchdb.idx"
+      end
+
+  val () = startup ()
 
   fun timer app req = let
         val t = PrettyTimer.start ()
