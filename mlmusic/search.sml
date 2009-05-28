@@ -34,7 +34,7 @@ structure SearchApp :> sig val searchApp: Web.app end = struct
                      itime = time,
                      ttime = ttime }
       in
-        U.htmlResp (TSearch.render (q, SOME opts))
+        U.htmlResp (TSearch.render (q, SOME opts, true))
       end
 
   fun searchApp (req: Web.request) = let
@@ -42,7 +42,7 @@ structure SearchApp :> sig val searchApp: Web.app end = struct
         in
           case Form.get form "q" of
             SOME q => search q
-          | NONE => U.htmlResp (TSearch.render ("", NONE))
+          | NONE => U.htmlResp (TSearch.render ("", NONE, true))
         end
 
 end
