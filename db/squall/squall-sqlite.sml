@@ -10,21 +10,27 @@ end = struct
    * will bind its input to be inserted into an SQL statement.
    * This takes place after any option type handling.
    *)
-  fun generateEscapeFunc (ivar, pos, SI.Int) =
+  fun generateBindFunc (ivar, pos, SI.Int) =
         "SQLite.bind_int (s, " ^ Int.toString (pos + 1) ^ ", " ^ ivar ^ ")"
-    | generateEscapeFunc (ivar, pos, SI.String) =
+    | generateBindFunc (ivar, pos, SI.String) =
         "SQLite.bind_text (s, " ^ Int.toString (pos + 1) ^ ", " ^ ivar ^ ")"
+
 
   (* val generateBind: string * int * varspec -> string
    *
-   * generateEscape (ivar, typ) produces SML source for an expression that will
+   * generateBind (ivar, typ) produces SML source for an expression that will
    * bind the given variable to the given position in the query.
    *)
-  fun generateEscape (ivar, pos, SI.Vrequired typ) = generateEscapeFunc (ivar, pos, typ)
-    | generateEscape (ivar, pos, SI.Voption typ) =
-          "(case " ^ ivar ^ " of NONE=>\"NULL\"|SOME " ^ ivar ^ "=>"
-        ^ generateEscapeFunc (ivar, pos, typ) ^ ")"
-    | generateEscape (ivar, pos, SI.Vlist typ) = raise Fail "h0no"
+  fun generateBind (ivar, pos, SI.Vrequired typ) =
+        generateBindFunc (ivar, pos, typ)
+    | generateBind (ivar, pos, SI.Voption typ) =
+          "(case " ^ ivar ^ " of NONE => SQLite.bind_null (s, "
+        ^ Int.toString (pos + 1) ^ ") | SOME " ^ ivar ^ " => "
+        ^ generateBindFunc (ivar, pos, typ) ^ ")"
+    | generateBind (ivar, pos, SI.Vlist typ) =
+        raise Fail ("The SQLite backend only supports list inputs if the sole"
+                  ^ " input into the statement is an 'int list'.")
+
 
   (* val generateReader: int * vartype -> string
    *
@@ -87,7 +93,7 @@ end = struct
 
       val (args', _) = index (rev args)
       
-      val sql_gens = map generateEscape args'
+      val sql_gens = map generateBind args'
     in
       (prologue, sql_gens)
     end
@@ -171,7 +177,27 @@ end = struct
    *     (map) row results                    <- depends on output type/reptype
    *   end
    *)
-  fun convertFunc { name, inb, outb, sql } =
+
+  fun convertFunc { name, inb as SI.IBtuple [ SI.Vlist SI.Int ], outb, sql } =
+    let
+      val (s1, s2) = case String.fields (fn c => c = #"?") sql of
+                       [ a, b ] => (a, b)
+                     | _ => raise Fail "expected exactly one ?"
+      val (rowFun, epilogue) = mkOutputProc outb
+    in
+        "  fun " ^ name ^ " vs = let\n"
+      ^ "      val db = case STMTS.db of ref (SOME db) => db | _ => raise Fail \"database not available\"\n"
+      ^ "      val s = SQLite.prepare (db, \"" ^ String.toString s1
+      ^ "(\" ^ String.concatWith \",\" (map Int.toString vs) ^ \")"
+      ^ String.toString s2 ^ "\")\n"
+      ^ "      fun get acc = case SQLite.step s of\n"
+      ^ "        101 => acc\n"
+      ^ "      | 100 => get (" ^ rowFun ^ "::acc)\n"
+      ^ "      | i => raise Fail (\"unexpected step result \" ^ Int.toString i ^ \": \" ^ SQLite.errmsg (valOf (!STMTS.db)))\n"
+      ^ "    in\n(" ^ epilogue ^ ") before SQLite.finalize s end\n"
+    end
+
+    | convertFunc { name, inb, outb, sql } =
     let
       val (prologue, gens) = mkSQLGen (inb, sql)
       val (rowFun, epilogue) = mkOutputProc outb
@@ -190,13 +216,13 @@ end = struct
       ^ "    in\n" ^ epilogue ^ "    end\n"
     end
 
-  fun makePrepare { name, inb, outb, sql } =
-        "\n    STMTS." ^ name ^ " := SOME (SQLite.prepare (db, \"" ^ String.toString sql ^ "\"))"
+  fun makePrepare { name, inb as SI.IBtuple [ SI.Vlist SI.Int ], outb, sql }=""
+    | makePrepare { name, inb, outb, sql } =
+        "\n    STMTS." ^ name ^ " := SOME (SQLite.prepare (db, \"" ^ String.toString sql ^ "\"));"
 
-  fun makeStmtDecl { name, inb, outb, sql } =
+  fun makeStmtDecl { name, inb as SI.IBtuple [ SI.Vlist SI.Int ], outb, sql }=""
+    | makeStmtDecl { name, inb, outb, sql } =
         "    val " ^ name ^ " : SQLite.stmt option ref = ref NONE\n"
-
-  fun makeRun { name, inb, outb, sql } = ""
 
   (* val convert: SI.sqlfunc list -> string
    *
@@ -211,7 +237,6 @@ end = struct
    *)
   fun convert funcs = let
         val preps = map makePrepare funcs
-        val runs = map makeRun funcs
       in
           "structure SQL = struct\n"
         ^ "  structure STMTS = struct\n"
@@ -220,8 +245,8 @@ end = struct
         ^ "  end\n"
         ^ "  val checkAll = List.app (fn i => if i=0 then()else raise Fail (\"bind: \" ^ Int.toString i))\n"
         ^ "  exception DataFormatError of string\n"
-        ^ "  fun prepare db = (\n"
-        ^ "    STMTS.db := SOME db;" ^ String.concatWith ";" preps ^ "\n  )\n"
+        ^ "  fun prepare db = ("
+        ^ String.concat preps ^ "\n    STMTS.db := SOME db\n  )\n"
         ^ (String.concat (map convertFunc funcs))
         ^ "end\n"
       end
