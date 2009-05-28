@@ -48,7 +48,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
               allCmd = NONE,
               list = list,
               pb = pb,
-              start = start
+              start = start,
+              appendName = true
             }
           end
 
@@ -65,7 +66,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
             cmdSuffix = " contributor.id=" ^ id,
             allCmd = SOME ("contributor.id=" ^ id),
             pb = pb,
-            start = 0
+            start = 0,
+            appendName = true
         }
         end
 
@@ -83,7 +85,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
             cmdPrefix = "track.id=",
             cmdSuffix = "",
             allCmd = SOME ("album.id=" ^ albumId ^ " contributor.id=" ^ artistId),
-            pb = NONE, start = 0
+            pb = NONE, start = 0,
+            appendName = false
         }
         end
 
@@ -100,7 +103,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
             cmdSuffix = "",
             allCmd = NONE,
             pb = pb,
-            start = start
+            start = start,
+            appendName = true
           }
         end
 
@@ -115,7 +119,8 @@ structure Browser :> sig val browseApp: Web.app end = struct
             cmdPrefix = "track.id=",
             cmdSuffix = "",
             allCmd = SOME ("album.id=" ^ albumId),
-            pb = NONE, start = 0
+            pb = NONE, start = 0,
+            appendName = false
         }
         end
 

@@ -134,7 +134,8 @@ structure CLIBrowser :> sig val browseApp: Web.app end = struct
            pb = pb,
            start = Int.fromLarge start,
            allCmd = NONE,
-           nextPrefix = nextPrefix
+           nextPrefix = nextPrefix,
+           appendName = true
          })
       end
 end

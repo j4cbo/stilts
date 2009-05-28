@@ -1,9 +1,14 @@
-<?template TListItem (id, name, nextPrefix, cmdPrefix, cmdSuffix) ?>
-<li onclick='${case nextPrefix of SOME p => "window.location.href=\"" ^ p ^ id ^ "/" ^ WebUtil.urlencode name ^ "/\"" | NONE => ""}'>
+<?template TListItem (id, name, nextPrefix, appendName, cmdPrefix, cmdSuffix) ?>
+<li onclick='${case nextPrefix of
+                 SOME p => "window.location.href=\"" ^ p ^ id
+                           ^ (if appendName then "/" ^ WebUtil.urlencode name ^ "/\""
+                                            else "/\"")
+               | NONE => ""}'>
  <a href="javascript:top.Sing.ctl.add('${cmdPrefix ^ id ^ cmdSuffix}')" class="addbutton" onclick="event.stopPropagation()"> </a><a
     href="javascript:top.Sing.ctl.play('${cmdPrefix ^ id ^ cmdSuffix}')" class="playbutton" onclick="event.stopPropagation()"> </a>
- <t:case exp="nextPrefix">
-  <a t:of="SOME p" href="${p}${id}/${WebUtil.urlencode name}/">${name}</a>
-  <span t:of="NONE">${name}</span>
+ <t:case exp="(nextPrefix, appendName)">
+  <a t:of="(SOME p, true)" href="${p}${id}/${WebUtil.urlencode name}/">${name}</a>
+  <a t:of="(SOME p, false)" href="${p}${id}/">${name}</a>
+  <span t:of="(NONE, _)">${name}</span>
  </t:case>
 </li>

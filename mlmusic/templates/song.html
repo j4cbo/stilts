@@ -33,9 +33,9 @@
 <div id="bcd2">
 
  <ul id="browselist">
-  <li>
-   Stuff here.
-  </li>
+  <li>Title: ${valOf title}</li>
+  <li t:ifOption="year">Year: ${Int.toString year}</li>
+  <li t:ifOption="albumTitle">Album: ${albumTitle}</li>
  </ul>
 
 </div>

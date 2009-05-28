@@ -1,4 +1,4 @@
-<?template TList { nextPrefix, cmdPrefix, cmdSuffix, allCmd:string option, path, list, title, pb, start } ?>
+<?template TList { nextPrefix, cmdPrefix, cmdSuffix, allCmd:string option, path, list, title, pb, start, appendName } ?>
 <html>
 <head>
 <link rel="stylesheet" href="${Conf.static}/css/sing-browse.css" type="text/css" />
@@ -45,10 +45,10 @@
 
  <ul class="browselist">
   <t:ifOption exp="case list of (_::_::_) => allCmd | _ => NONE" pattern="allCmd'">$H{
-    TListItem.render ("", "All Songs", NONE, allCmd', "")
+    TListItem.render ("", "All Songs", NONE, false, allCmd', "")
   }</t:ifOption>
   <t:for pattern="{ id, name }" exp="list">$H{
-    TListItem.render (Int.toString id, name, nextPrefix, cmdPrefix, cmdSuffix)
+    TListItem.render (Int.toString id, name, nextPrefix, appendName, cmdPrefix, cmdSuffix)
   }</t:for>
  </ul>
 
