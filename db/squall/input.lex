@@ -26,6 +26,7 @@ sqlline = ([^-\n] .* "\n")
 
 <INITIAL>	^ "#" .*	=>	( lines 1; continue () );
 <INITIAL>	^ "---" 	=>	( YYBEGIN HEADER; lex () );
+<INITIAL>	^ "engine"	=>	( YYBEGIN HEADER; ENGINE (!lineNum, !lineNum) );
 
 <HEADER>	"*"		=>	( STAR (!lineNum, !lineNum) );
 <HEADER>	"list"		=>	( LIST (!lineNum, !lineNum) );

@@ -6,6 +6,12 @@ fun type_lookup "string" = String
   | type_lookup "int" = Int
   | type_lookup t = raise ParseError ("Unknown type: \"" ^ t ^ "\"")
 
+fun engine_lookup s =
+      case String.map Char.toLower s of
+        "sqlite" => SQLite
+      | "mysql" => MySQL
+      | _ => raise ParseError ("Unknown engine: \"" ^ s ^ "\"")
+
 %%
 
 %term TOKEN of string
@@ -22,15 +28,17 @@ fun type_lookup "string" = String
     | ARRAY
     | VECTOR
     | UNIT
+    | ENGINE
     | EOF
     | SQLDATA of string
 
 %eop EOF
 %noshift EOF
 
-%nonterm START of sqlfunc list
+%nonterm START of engine option * sqlfunc list
        | ITEMS of sqlfunc list
        | ITEM of sqlfunc
+       | engine of engine 
        | itype of inbinding
        | otype of outbinding
        | reptype of reptype
@@ -45,7 +53,10 @@ fun type_lookup "string" = String
 
 %%
 
-START:  ITEMS (ITEMS)
+START:  engine ITEMS ((SOME engine, ITEMS))
+     |  ITEMS ((NONE, ITEMS))
+
+engine: ENGINE COLON TOKEN (engine_lookup TOKEN)
 
 ITEMS:   ITEM ITEMS (ITEM :: ITEMS)
      |   ITEM (ITEM :: nil)

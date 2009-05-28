@@ -5,4 +5,6 @@ input.grm.sig
 input.grm.sml
 input.lex.sml
 squall-sqlite.sml
+squall-mysql.sml
+squall.sml
 squall-standalone.sml

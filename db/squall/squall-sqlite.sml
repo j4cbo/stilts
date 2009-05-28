@@ -1,49 +1,14 @@
-structure Squall :> sig
-  datatype backend = SQLite | MySQL
-  type parsed_file = SquallInput.sqlfunc list
-  val parse: string -> parsed_file
-  val convert: parsed_file -> string
-  val process: string -> string
-  val process_and_write: string -> unit
-  val main: 'a -> OS.Process.status
+structure SquallSQLite :> sig
+  val convert: SquallInput.sqlfunc list -> string
 end = struct
 
-  datatype backend = SQLite | MySQL
-
-  structure SquallLrVals = SquallLrValsFun(structure Token = LrParser.Token)
-  structure SquallLex = SquallLexFun(structure Tokens = SquallLrVals.Tokens)
-  structure SquallParser = Join(structure Lex = SquallLex
-                                structure LrParser = LrParser
-                                structure ParserData = SquallLrVals.ParserData)
-
   structure SI = SquallInput
-
-  type parsed_file = SI.sqlfunc list
-
-  (* val parse: string -> SI.sqlfunc list
-   *
-   * Load and parse the specified file.
-   *)
-  fun parse s =
-      let val dev = TextIO.openIn s
-          val stream = SquallParser.makeLexer(fn i => TextIO.inputN(dev, i))
-          fun error (e, i:int, _) =
-             TextIO.output(TextIO.stdOut, s ^ "," ^ " line " ^ (Int.toString i)
-                                            ^ ", Error: " ^ e ^ "\n")
-          val () = SquallLex.UserDeclarations.lineNum := 1
-          val (res, _) = SquallParser.parse(30,stream,error,())
-          val () = TextIO.closeIn dev
-      in res
-      end
-
 
   (* val generateBindFunc: string * int * vartype -> string
    *
    * generateBindFunc typ produces SML source for a function that
-   * will bind its input  its input to be inserted into an SQL statement.
+   * will bind its input to be inserted into an SQL statement.
    * This takes place after any option type handling.
-   *
-   * Example: generateEscapeFunc SI.Int  =>  "Int.toString"
    *)
   fun generateEscapeFunc (ivar, pos, SI.Int) =
         "SQLite.bind_int (s, " ^ Int.toString (pos + 1) ^ ", " ^ ivar ^ ")"
@@ -261,39 +226,4 @@ end = struct
         ^ "end\n"
       end
 
-
-
-  (* val process: string -> string
-   *
-   * Load definitions from a file and process them as above. 
-   *)
-  val process = convert o parse
-
-
-  (* val main: 'a -> OS.process.status
-   *
-   * Main function.
-   *)
-
-  fun err msg = TextIO.output(TextIO.stdErr, String.concat msg)
-
-  fun process_and_write filename = let
-        val result = process filename
-        val outfile = TextIO.openOut (filename ^ ".sml")
-      in
-        TextIO.output (outfile, result);
-        TextIO.closeOut outfile
-      end
-
-  fun main _ = (case CommandLine.arguments () of
-                 [ filename ] => (process_and_write filename;
-                                  OS.Process.success)
-               | _ => (
-                   print ("Usage: " ^ (CommandLine.name ()) ^ " squallfile\n");
-                   OS.Process.failure
-                 ))
-
-              handle e => (err [ CommandLine.name(), ": uncaught exception ",
-                                 General.exnMessage e, "\n"];
-                           OS.Process.failure)
 end

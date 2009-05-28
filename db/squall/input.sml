@@ -1,5 +1,7 @@
 structure SquallInput = struct
 
+  datatype engine = SQLite | MySQL
+
   datatype vartype = String | Int
 
   datatype varspec = Vrequired of vartype | Voption of vartype | Vlist of vartype

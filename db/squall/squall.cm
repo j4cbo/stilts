@@ -5,3 +5,5 @@ Group is
 	input.grm
 	input.lex
 	squall-sqlite.sml
+	squall-mysql.sml
+	squall.sml
