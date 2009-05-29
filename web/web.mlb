@@ -1,17 +1,35 @@
-$(SML_LIB)/basis/basis.mlb
-$(SML_LIB)/basis/mlton.mlb
-$(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
-web.sml
-web-util.sig
-web-util.sml
-$(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
-form.sig
-form.sml
-http-date.sml
-static-server.sml
-../util/linereader.sml
-server/cgi.sml
-server/scgi-server.sml
-server/http-server.sml
-server/fastcgi-common.sml
-server/fastcgi-mlton.sml
+local
+	$(SML_LIB)/basis/basis.mlb
+	$(SML_LIB)/basis/mlton.mlb
+	$(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
+	web.sml
+	web-util.sig
+	web-util.sml
+	$(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
+	form.sig
+	form.sml
+	http-date.sml
+	static-server.sml
+	../util/linereader.sml
+	server/cgi.sml
+	server/scgi-server.sml
+	server/http-server.sml
+	server/fastcgi-common.sml
+	server/fastcgi-mlton.sml
+in
+	structure Web
+
+	signature WEB_UTIL
+	structure WebUtil
+
+	signature FORM
+	structure Form
+
+	structure HTTPDate
+
+	structure StaticServer
+	structure CGI
+	structure SCGIServer
+	structure FastCGIServer
+	structure HTTPServer
+end
