@@ -2,6 +2,10 @@ $(SML_LIB)/basis/basis.mlb
 $(SML_LIB)/smlnj-lib/RegExp/regexp-lib.mlb
 ../../stilts/db/sqlite/sqlite.mlb
 
+$(SML_LIB)/basis/mlton.mlb
+$(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
+$(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
+
 ann
 	"sequenceNonUnit warn"
 in
