@@ -148,12 +148,12 @@ structure HTTPServer :> WEB_SERVER where type opts = INetSock.sock_addr = struct
       val (server_host, server_port) = INetSock.fromAddr addr
       val sbind = (NetHostDB.toString server_host, server_port)
 
-      fun accept () = (
+      fun accept () = ((
         serveConn (server_name, sbind, nil)
                   application
                   (Socket.accept listener);
         accept ()
-      )
+      ) handle _ => accept ())
     in
       (
         Socket.Ctl.setREUSEADDR (listener, true);
