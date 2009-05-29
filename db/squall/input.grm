@@ -27,6 +27,7 @@ fun engine_lookup s =
     | OPTION
     | ARRAY
     | VECTOR
+    | FOLD
     | UNIT
     | ENGINE
     | EOF
@@ -80,6 +81,7 @@ reptype: LIST (Rlist)
        | OPTION (Roption)
        | ARRAY (Rarray)
        | VECTOR (Rvector)
+       | FOLD (Rfold)
 
 tupleitems: varspec STAR tupleitems (varspec :: tupleitems)
           | varspec (varspec :: nil)

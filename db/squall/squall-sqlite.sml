@@ -125,6 +125,8 @@ end = struct
       ^ "                   | [ r ] => SOME r\n"
       ^ "                   | x => raise Fail (\"Expected 0 or 1 rows, got \"\n"
       ^ "                                      ^ (Int.toString (length x)))\n"
+    | mkRepHandler SI.Rfold =
+        "      get\n"
 
 
   fun enumerate xs = rev (#2 (foldl (fn (x, (c, acc)) => (c+1, (x, c)::acc)) (0, nil) xs))
@@ -177,6 +179,13 @@ end = struct
    *     (map) row results                    <- depends on output type/reptype
    *   end
    *)
+  fun mkExtra outb rowFun = let
+        val isFold = case outb of SI.OBtuple (SI.Rfold, _) => true
+                                | SI.OBrecord (SI.Rfold, _) => true
+                                | _ => false
+      in
+        (isFold, if isFold then "f (" ^ rowFun ^ ", acc)" else rowFun ^ "::acc")
+      end
 
   fun convertFunc { name, inb as SI.IBtuple [ SI.Vlist SI.Int ], outb, sql } =
     let
@@ -184,15 +193,16 @@ end = struct
                        [ a, b ] => (a, b)
                      | _ => raise Fail "expected exactly one ?"
       val (rowFun, epilogue) = mkOutputProc outb
+      val (isFold, getRecurs) = mkExtra outb rowFun
     in
-        "  fun " ^ name ^ " vs = let\n"
+        "  fun " ^ name ^ " vs " ^ (if isFold then "f " else "") ^ "= let\n"
       ^ "      val db = case STMTS.db of ref (SOME db) => db | _ => raise Fail \"database not available\"\n"
       ^ "      val s = SQLite.prepare (db, \"" ^ String.toString s1
       ^ "(\" ^ String.concatWith \",\" (map Int.toString vs) ^ \")"
       ^ String.toString s2 ^ "\")\n"
       ^ "      fun get acc = case SQLite.step s of\n"
       ^ "        101 => acc\n"
-      ^ "      | 100 => get (" ^ rowFun ^ "::acc)\n"
+      ^ "      | 100 => get (" ^ getRecurs ^ ")\n"
       ^ "      | i => raise Fail (\"unexpected step result \" ^ Int.toString i ^ \": \" ^ SQLite.errmsg (valOf (!STMTS.db)))\n"
       ^ "    in\n(" ^ epilogue ^ ") before SQLite.finalize s end\n"
     end
@@ -201,8 +211,9 @@ end = struct
     let
       val (prologue, gens) = mkSQLGen (inb, sql)
       val (rowFun, epilogue) = mkOutputProc outb
+      val (isFold, getRecurs) = mkExtra outb rowFun
     in  
-        "  fun " ^ name ^ " " ^ prologue
+        "  fun " ^ name ^ " " ^ prologue ^ (if isFold then " f" else "") 
       ^ " = let\n"
       ^ "      val s = case STMTS." ^ name ^ " of ref (SOME s) => s | _ => raise Fail \"statement not prepared\"\n"
       ^ "      val _ = SQLite.reset s\n"
@@ -211,7 +222,7 @@ end = struct
       ^ "\n      ]\n"
       ^ "      fun get acc = case SQLite.step s of\n"
       ^ "        101 => acc\n"
-      ^ "      | 100 => get (" ^ rowFun ^ "::acc)\n"
+      ^ "      | 100 => get (" ^ getRecurs ^ ")\n"
       ^ "      | i => raise Fail (\"unexpected step result \" ^ Int.toString i ^ \": \" ^ SQLite.errmsg (valOf (!STMTS.db)))\n"
       ^ "    in\n" ^ epilogue ^ "    end\n"
     end

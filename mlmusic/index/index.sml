@@ -43,10 +43,9 @@ print ("Adding JT entry: \"" ^ prefix ^ "\" at " ^ Int.toString offset ^ "\n");
 
 
   fun indexFolder (sql, (acc, level)) = let
-        val rows = sql ()
 
         val () = print "Building index...\n"
-        val idx = foldl addToMap Map.empty rows
+        val idx = sql () addToMap Map.empty
 
         val () = print "Merging...\n"
 

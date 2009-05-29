@@ -30,6 +30,7 @@ sqlline = ([^-\n] .* "\n")
 
 <HEADER>	"*"		=>	( STAR (!lineNum, !lineNum) );
 <HEADER>	"list"		=>	( LIST (!lineNum, !lineNum) );
+<HEADER>	"fold"		=>	( FOLD (!lineNum, !lineNum) );
 <HEADER>	"option"	=>	( OPTION (!lineNum, !lineNum) );
 <HEADER>	"array"		=>	( ARRAY (!lineNum, !lineNum) );
 <HEADER>	"vector"	=>	( VECTOR (!lineNum, !lineNum) );

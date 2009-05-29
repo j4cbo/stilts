@@ -6,7 +6,7 @@ structure SquallInput = struct
 
   datatype varspec = Vrequired of vartype | Voption of vartype | Vlist of vartype
 
-  datatype reptype = Rlist | Rarray | Rvector | Rsingle | Roption
+  datatype reptype = Rlist | Rarray | Rvector | Rsingle | Roption | Rfold
 
   datatype inbinding = IBtuple of varspec list
                      | IBrecord of (string * varspec) list

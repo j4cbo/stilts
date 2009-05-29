@@ -1,18 +1,18 @@
 engine: sqlite
 
---- tracksTitle: unit -> (int * string) list
+--- tracksTitle: unit -> (int * string) fold
 
 select id, titlesearch from tracks
 where tracks.audio = 1 and tracks.titlesearch is not null 
 
---- tracksTitleAlbum: unit -> (int * string) list
+--- tracksTitleAlbum: unit -> (int * string) fold
 
 select tracks.id, tracks.titlesearch || " " || ifnull(albums.titlesearch, "") as ta
 from tracks
 left join albums on tracks.album = albums.id
 where tracks.audio = 1 and tracks.titlesearch is not null 
 
---- tracksTitleArtist: unit -> (int * string) list
+--- tracksTitleArtist: unit -> (int * string) fold
 
 select tracks.id, tracks.titlesearch || " " ||
                          ifnull(group_concat(contributors.namesearch, " "), "") as ta
@@ -22,7 +22,7 @@ left outer join contributors on contributors.id = ct.contributor
 where tracks.audio = 1 and tracks.titlesearch is not null 
 group by tracks.id
 
---- tracksTitleAlbumArtist: unit -> (int * string) list
+--- tracksTitleAlbumArtist: unit -> (int * string) fold
 
 select tracks.id, tracks.titlesearch || " " ||
                          ifnull(albums.titlesearch, "") || " " ||
@@ -34,18 +34,18 @@ left outer join albums on tracks.album = albums.id
 where tracks.audio = 1 and tracks.titlesearch is not null 
 group by tracks.id
 
---- artists: unit -> (int * string) list
+--- artists: unit -> (int * string) fold
 
 select distinct id, namesearch from contributors
 left join contributor_album ca on (ca.contributor = contributors.id)
 where ca.role in (1, 5, 6)
 
---- albums: unit -> (int * string) list
+--- albums: unit -> (int * string) fold
 
 select id, titlesearch from albums
 where titlesearch is not null
 
---- albumsArtist: unit -> (int * string) list
+--- albumsArtist: unit -> (int * string) fold
 
 select albums.id, albums.titlesearch || " " || contributors.namesearch ta
 from albums
