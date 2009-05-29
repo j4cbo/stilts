@@ -5,7 +5,6 @@ $(SML_LIB)/smlnj-lib/RegExp/regexp-lib.mlb
 ann
 	"sequenceNonUnit warn"
 in
-	music.squall.sml
 	conf.sml
 	../../stilts/smelt/tinyxml/tinyxml.mlb
 	../../stilts/web/web.mlb
@@ -19,6 +18,11 @@ in
 	../chiralml/socket.sig
 	../chiralml/sock-util.sml
 	../chiralml/simplehttp.sml
+
+	index/index-sqlite.squall.sml
+	index/index.sml
+
+	music.squall.sml
 
 	cli.sml
 	command.sml
@@ -34,6 +38,9 @@ in
 	search.sml
 	templates/playlist.html.sml
 	player.sml
+
+	startup.sml
+
 	music.sml
 	main.sml
 end

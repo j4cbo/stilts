@@ -1,5 +1,7 @@
 structure Index = struct
 
+  val prepare = SQL.prepare
+
   structure Map = RedBlackMapFn (type ord_key = string
                                  val compare = String.compare)
 
@@ -136,18 +138,14 @@ print ("Adding JT entry: \"" ^ prefix ^ "\" at " ^ Int.toString offset ^ "\n");
       in
         ()
       end
-  
- fun run () = let
-       val () = DB.connect ()
-       val out = index [ SQL.tracksTitle,
-                         SQL.tracksTitleAlbum,
-                         SQL.tracksTitleArtist,
-                         SQL.tracksTitleAlbumArtist,
-                         SQL.artists,
-                         SQL.albums,
-                         SQL.albumsArtist ] "searchdb.idx"
-    in
-      ()
-    end 
+
+  fun generate filename = 
+        index [ SQL.tracksTitle,
+                SQL.tracksTitleAlbum,
+                SQL.tracksTitleArtist,
+                SQL.tracksTitleAlbumArtist,
+                SQL.artists,
+                SQL.albums,
+                SQL.albumsArtist ] filename
 
 end

@@ -12,8 +12,6 @@ structure DB = struct
       }
 *)
 
-  fun connect () = SQL.prepare (SQLite.opendb (Command.cachedir () ^ "/squeezecenter.db"))
-
   fun fold_tracks res = let
         fun processSingle { id: int, tracknum, title, albumId, albumTitle,
                                                       artistId, artistName } =

@@ -7,6 +7,6 @@ $(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
 index-sqlite.squall.sml
 ../cli.sml
 ../command.sml
-../db.sml
+../startup.sml
 index.sml
 run.sml

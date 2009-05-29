@@ -79,16 +79,6 @@ structure Music = struct
                          ( [ "static" ], U.PREFIX, staticApp ),
                          ( nil, U.PREFIX, rootHandler ) ]
 
-  fun startup () = let
-        val () = Command.conn := SOME (CLI.connect ("localhost", 9090))
-        val cachedir = Command.cachedir ()
-      in
-        SQL.prepare (SQLite.opendb (cachedir ^ "/squeezecenter.db"));
-        SearchFile.init "searchdb.idx"
-      end
-
-  val () = startup ()
-
   fun timer app req = let
         val t = PrettyTimer.start ()
         val resp = app req
@@ -101,12 +91,14 @@ structure Music = struct
 *)
   val app = timer (U.exnWrapper app)
 
-  fun main _ = let
-      val () = print "Listening...\n"
-      val () = HTTPServer.addCleanupCallback GC.collectAll
-      val () = HTTPServer.serve (INetSock.any 8888) app
-    in
-      0
-    end
+  fun main _ = (
+        print "Starting up...\n";
+        Startup.startup ();
+
+        print "Listening...\n";
+        HTTPServer.addCleanupCallback GC.collectAll;
+        HTTPServer.serve (INetSock.any 8888) app;
+        0
+      )
 
 end
