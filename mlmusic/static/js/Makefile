@@ -4,5 +4,5 @@ sing-all.js: $(SRCS)
 	cat $^ > $@
 
 dist: $(SRCS)
-	cat $^ > $@
+	cat $^ > sing-all.js
 	rm $^ Makefile
