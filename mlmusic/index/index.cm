@@ -1,4 +1,6 @@
-Group is
+Library
+	structure Index
+is
 	$/basis.cm
 	$/smlnj-lib.cm
 

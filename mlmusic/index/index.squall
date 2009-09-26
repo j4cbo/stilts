@@ -1,3 +1,5 @@
+engine: mysql
+
 --- tracksTitle: unit -> (int * string) fold
 
 select id, titlesearch from tracks

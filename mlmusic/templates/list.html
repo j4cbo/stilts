@@ -48,7 +48,7 @@
     TListItem.render ("", "All Songs", NONE, false, allCmd', "")
   }</t:ifOption>
   <t:for pattern="{ id, name }" exp="list">$H{
-    TListItem.render (Int.toString id, name, nextPrefix, appendName, cmdPrefix, cmdSuffix)
+    TListItem.render (id, name, nextPrefix, appendName, cmdPrefix, cmdSuffix)
   }</t:for>
  </ul>
 

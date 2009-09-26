@@ -13,7 +13,7 @@ structure DB = struct
 *)
 
   fun fold_tracks res = let
-        fun processSingle { id: int, tracknum, title, albumId, albumTitle,
+        fun processSingle { id: string, tracknum, title, albumId, albumTitle,
                                                       artistId, artistName } =
               { id = id, tracknum = tracknum, title = title,
                 album = case (albumId, albumTitle) of

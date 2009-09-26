@@ -23,7 +23,7 @@ in
 	../chiralml/sock-util.sml
 	../chiralml/simplehttp.sml
 
-	index/index-sqlite.squall.sml
+	index/index.squall.sml
 	index/index.sml
 
 	music.squall.sml
