@@ -25,7 +25,7 @@ structure SquallTool = struct
         fun rulefun () = (
               if Tools.outdated "squall" ([ outputFile ], srcFile)
               then (Tools.vsay [ "[squall: compiling ", srcFile, "]\n" ];
-                    Squall.process_and_write srcFile)
+                    Squall.process_and_write NONE srcFile)
               else ();
               partial_expansion
             )

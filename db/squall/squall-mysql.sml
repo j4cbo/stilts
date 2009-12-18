@@ -131,6 +131,8 @@ end = struct
       ^ "                   | [ r ] => SOME (row r)\n"
       ^ "                   | x => raise Fail (\"Expected 0 or 1 rows, got \"\n"
       ^ "                                      ^ (Int.toString (length x)))\n"
+    | mkRepHandler SI.Rfold =
+        "      fn f => fn base => foldl (fn (r, a) => f (row r, a)) base results"
 
 
   (* val mkOutputProc: SI.outbinding -> string * string
