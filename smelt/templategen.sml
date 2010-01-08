@@ -50,11 +50,24 @@ struct
    * with genTextExpression.
    *)
   fun genAttr (k, v) =
-    GenConcat([
-      GenText (" " ^ k ^ "=\""),
-      genTextExpression v,
-      GenText "\""
-    ])
+    if String.isPrefix "$?" v
+    then let
+           val v' = String.extract (v, 2, NONE)
+         in
+           GenCaseOf(v', [
+             ("SOME e", GenConcat([
+                GenText (" " ^ k ^ "=\""),
+                GenSubst ("WebUtil.escapeStr", "e"),
+                GenText "\""
+              ])),
+             ("NONE", GenText "")
+           ])
+         end
+    else GenConcat([
+           GenText (" " ^ k ^ "=\""),
+           genTextExpression v,
+           GenText "\""
+         ])
 
 
   (* val genElement: string * TinyXML.attribute list * gen option -> gen
