@@ -1,0 +1,1 @@
+val _ = Hello.main ()
