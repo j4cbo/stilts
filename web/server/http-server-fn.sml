@@ -1,7 +1,7 @@
 functor HTTPServerFn (
     structure CS : CHIRAL_SOCKET
     structure T : THREAD
-) :> WEB_SERVER where type opts = CS.INetSock.sock_addr
+)
 =
 struct
 
@@ -158,7 +158,7 @@ struct
 
   type opts = CS.INetSock.sock_addr
 
-  fun serve addr application =
+  fun spawn_server addr application =
     let
       val listener = CS.INetSock.TCP.socket ()
 
@@ -168,19 +168,22 @@ struct
       val connServer = serveConn (server_name, sbind, nil) application
 
       fun accept () = let
+val () = print "accept\n"
             val conn = CS.Socket.accept listener
             val t = T.new (connServer conn)
           in
             accept ()
           end
 
-    in
-      (
+      fun app () = (
         CS.Socket.Ctl.setREUSEADDR (listener, true);
         CS.Socket.bind (listener, addr);
         CS.Socket.listen (listener, 9);
         accept ()
       ) handle x => (CS.Socket.close listener; raise x)
+
+    in
+      T.new app
     end
 
 end
