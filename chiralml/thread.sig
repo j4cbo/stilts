@@ -19,11 +19,14 @@ signature THREAD = sig
 
   exception NotRunning
   exception AlreadyRunnable
+  exception Asleep
+  exception NotAsleep
+
+  type thread
 
   val block: ('af, 't) Socket.sock * ChiralCommon.block_cond -> unit
   val sleep: Time.time -> unit
-
-  type thread
+  val wake: thread -> unit
 
   val new: (unit -> unit) -> thread
   val kill: thread -> exn -> unit

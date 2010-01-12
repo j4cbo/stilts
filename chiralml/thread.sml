@@ -9,6 +9,8 @@ struct
 
   exception NotRunning
   exception AlreadyRunnable
+  exception Asleep
+  exception NotAsleep
 
   (* Threads are stored internally as:
    *
@@ -17,9 +19,12 @@ struct
    * - A bool indicating whether the thread is currently schedulable
    * - A unique (except in case of wraparound) int for tracing/debugging.
    *)
+
+  datatype scheduling_state = RUNNABLE | BLOCKED | SLEEPING
+
   type thread_context = unit T.t
   type thread = thread_context ref
-              * bool ref
+              * scheduling_state ref
               * int
 
   type time_block_info = thread * Time.time
@@ -152,7 +157,7 @@ struct
                 thtrace (fn () => "Thread " ^ Int.toString id ^ " terminated");
               T.switch (fn _ => schedule ())
             )
-        val thread = (ref (T.new thrfun'), ref true, id)
+        val thread = (ref (T.new thrfun'), ref RUNNABLE, id)
       in
         next_id := id + 1;
         runnable_threads := thread :: (!runnable_threads);
@@ -175,16 +180,26 @@ struct
             val current as (ctx_ref, sch_ref, _) = get current_thread
           in
             ctx_ref := curctx;
-            sch_ref := false;
+            sch_ref := BLOCKED;
             schedule ()
             handle e => (etrace (fn () => "Deschedule prepare died with "
                                 ^ General.exnMessage e ^ "\n"); raise e)
           end)
 
-  fun make_runnable (_, ref true, _) = raise AlreadyRunnable
-    | make_runnable (thread as (ctx_ref, sch_ref as ref false, id)) = (
+  fun make_runnable (_, ref RUNNABLE, _) = raise AlreadyRunnable
+    | make_runnable (_, ref SLEEPING, _) = raise Asleep
+    | make_runnable (thread as (ctx_ref, sch_ref as ref BLOCKED, id)) = (
           thtrace (fn () => "Making thread " ^ Int.toString id ^ " runnable");
-          sch_ref := true;
+          sch_ref := RUNNABLE;
+          runnable_threads := thread :: (!runnable_threads);
+          ()
+        )
+
+  fun wake (_, ref BLOCKED, _) = raise NotRunning
+    | wake (_, ref RUNNABLE, _) = raise AlreadyRunnable
+    | wake (thread as (ctx_ref, sch_ref as ref SLEEPING, id)) = (
+          thtrace (fn () => "Making thread " ^ Int.toString id ^ " runnable");
+          sch_ref := RUNNABLE;
           runnable_threads := thread :: (!runnable_threads);
           ()
         )
