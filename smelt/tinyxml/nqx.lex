@@ -13,7 +13,7 @@ fun eof () = EOF
 
 %%
 
-%s MAIN TAG TAGBEGIN ATTNAME ATTVALUE DQUOT SQUOT CTAGBEGIN PIBEGIN PIDATA PIEND ;
+%s MAIN TAG TAGBEGIN ATTNAME ATTVALUE ATTVALUEDONE DQUOT SQUOT CTAGBEGIN PIBEGIN PIDATA PIEND ;
 
 space = ([\t\n] | " "); 
 identchar =  [A-Za-z_0-9:-];
@@ -37,10 +37,10 @@ pcchar = [^<];
 <ATTNAME>	"="			=>	( YYBEGIN ATTVALUE; continue () );
 <ATTVALUE>	"\""			=>	( YYBEGIN DQUOT; continue () );
 <ATTVALUE>	"'"			=>	( YYBEGIN SQUOT; continue () );
-<DQUOT>		[^"]*			=>	( ATTRIBVALUE yytext );
-<DQUOT>		"\""			=>	( YYBEGIN TAG; continue() );
-<SQUOT>		[^']*			=>	( ATTRIBVALUE yytext );
-<SQUOT>		"'"			=>	( YYBEGIN TAG; continue() );
+<DQUOT>		[^"]*			=>	( YYBEGIN ATTVALUEDONE; ATTRIBVALUE yytext );
+<SQUOT>		[^']*			=>	( YYBEGIN ATTVALUEDONE; ATTRIBVALUE yytext );
+<ATTVALUEDONE>	"\""			=>	( YYBEGIN TAG; continue() );
+<ATTVALUEDONE>	"'"			=>	( YYBEGIN TAG; continue() );
 
 <CTAGBEGIN>	{identchar}+		=>	( YYBEGIN TAG; CLOSETAG yytext );
 

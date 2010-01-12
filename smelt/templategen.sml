@@ -189,8 +189,8 @@ struct
           | attrLoop ((TA.TAIfOption (exp, binding)) :: rest) =
               GenCaseOf (exp, [ (("SOME(" ^ binding ^ ")"), attrLoop rest),
                                 ("NONE", GenConcat nil) ])
-          | attrLoop ((TA.TAStrip "") :: _) =
-              GenConcat (map genNode children)
+          | attrLoop ((TA.TAStrip " ") :: _) = GenConcat (map genNode children)
+          | attrLoop ((TA.TAStrip "") :: _) = GenConcat (map genNode children)
           | attrLoop ((TA.TAStrip exp) :: rest) =
               GenCaseOf (exp, [ ("true", GenConcat (map genNode children) ),
                                 ("false", attrLoop rest) ])
