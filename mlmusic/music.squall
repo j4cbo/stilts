@@ -7,19 +7,21 @@ FROM contributors
 WHERE EXISTS ( SELECT * FROM contributor_album WHERE contributor = id AND role IN ('1', '5', '6') )
 ORDER BY namesort 
 
---- allArtistsRange: int * int -> { id: string, name: string } list
+--- allArtistsRange: int * int -> { id: string, name: string, numAlbums: int option } list
 
-SELECT id, name
+SELECT id, name,
+  (select count(*) from contributor_album where role in ('1','5','6') and contributor = id)
 FROM contributors
 WHERE EXISTS ( SELECT * FROM contributor_album WHERE contributor = id AND role IN ('1', '5', '6') )
 ORDER BY namesort 
 LIMIT ? OFFSET ?
 
---- albumsByArtist: int -> { id: string, name: string } list
+--- albumsByArtist: int -> { id: string, name: string, compilation: int option, artist_id: int option, artist_name: string option, year: int option } list
 
-SELECT DISTINCT id, title
-FROM albums
-LEFT JOIN contributor_album ca ON ( ca.album = albums.id )
+SELECT DISTINCT me.id, me.title, me.compilation, c.id, c.name, me.year
+FROM albums me
+LEFT JOIN contributor_album ca ON ( ca.album = me.id )
+LEFT JOIN contributors c ON ( c.id = me.contributor )
 WHERE ca.contributor = ?
 ORDER BY titlesort, disc
 
@@ -29,19 +31,27 @@ SELECT titlesort
 FROM albums
 ORDER BY titlesort, disc
 
---- allAlbumsRange: int * int -> { id: string, name: string } list
+--- allAlbumsRange: int * int -> { id: string, name: string, compilation: int option, artist_id: int option, artist_name: string option, year: int option } list
 
-SELECT id, title
-FROM albums
+SELECT me.id, me.title, me.compilation, c.id, c.name, me.year
+FROM albums me
+LEFT JOIN contributors c ON ( c.id = me.contributor )
 ORDER BY titlesort, disc
 LIMIT ? OFFSET ?
 
---- albumTracks: int -> { id: string, tracknum: int option, title: string } list
+--- albumTracks: int -> { id: string, tracknum: string option, title: string, albumId: string option, albumTitle: string option, artistId: string option, artistName: string option, lossless: int option } list
 
-SELECT id, tracknum, title
-FROM tracks
-WHERE audio = 1 AND album = ?
-ORDER BY disc, tracknum, titlesort
+SELECT
+        tr.id, tr.tracknum, tr.title,
+        tr.album album_id, albums.title album_title,
+        contributors.id artist_id, contributors.name artist_name,
+        tr.lossless lossless
+FROM tracks tr
+LEFT OUTER JOIN albums ON albums.id = tr.album
+LEFT OUTER JOIN contributor_track ct ON (ct.track = tr.id and ct.role in (1, 6))
+LEFT JOIN contributors ON contributors.id = ct.contributor
+WHERE tr.audio = 1 and tr.album = ?
+ORDER BY tr.disc, tr.tracknum, tr.titlesort
 
 --- artistDetail: int -> { name: string }
 
@@ -56,19 +66,20 @@ FROM albums
 LEFT JOIN contributors ON (contributors.id = albums.contributor)
 WHERE albums.id = ? 
 
---- songInfo: int -> { title: string option, year: int option, albumId: int option, albumTitle: string option }
+--- songInfo: int -> { title: string option, year: int option, albumId: int option, albumTitle: string option, bitrate: int option, lossless: int option, contentType: string option, url: string option }
 
-SELECT tracks.title, tracks.year, tracks.album, albums.title
+SELECT tracks.title, tracks.year, tracks.album, albums.title, tracks.bitrate, tracks.lossless, tracks.content_type, tracks.url
 FROM tracks
 LEFT JOIN albums ON ( albums.id = tracks.album )
 WHERE tracks.id = ?
 
---- trackMulti: int list -> { id: string, tracknum: int option, title: string, albumId: int option, albumTitle: string option, artistId: int option, artistName: string option } list
+--- trackMulti: int list -> { id: string, tracknum: string option, title: string, albumId: string option, albumTitle: string option, artistId: string option, artistName: string option, lossless: int option } list
 
 SELECT
         tr.id, tr.tracknum, tr.title,
         tr.album album_id, albums.title album_title,
-        contributors.id artist_id, contributors.name artist_name
+        contributors.id artist_id, contributors.name artist_name,
+	tr.lossless lossless
 FROM tracks tr
 LEFT OUTER JOIN albums ON albums.id = tr.album
 LEFT OUTER JOIN contributor_track ct ON (ct.track = tr.id and ct.role in (1, 6))
@@ -76,17 +87,18 @@ LEFT JOIN contributors ON contributors.id = ct.contributor
 WHERE tr.id IN ?
 ORDER BY tr.album, tr.disc, tr.tracknum, tr.titlesort 
 
---- albumMulti: int list-> { id: string, name: string, compilation: int option, mm_mixable: int option, mb_id: string option } list
+--- albumMulti: int list-> { id: string, name: string, compilation: int option, artist_id: int option, artist_name: string option, year: int option } list
 
-SELECT me.id, me.title, me.compilation, me.musicmagic_mixable, me.musicbrainz_id
-FROM albums me
-WHERE me.id IN ?
+SELECT me.id, me.title, me.compilation, c.id, c.name, me.year
+FROM albums me, contributors c
+WHERE c.id = me.contributor AND me.id IN ?
 ORDER BY me.titlesort, me.disc
 LIMIT 200
 
---- artistMulti: int list -> { id: string, name: string, mm_mixable: int option, mb_id: string option } list
+--- artistMulti: int list -> { id: string, name: string, numAlbums: int option } list
 
-SELECT DISTINCT me.id, me.name, me.musicmagic_mixable, me.musicbrainz_id
+SELECT DISTINCT me.id, me.name, 
+  (select count(*) from contributor_album where role in ('1','5','6') and contributor = id)
 FROM contributors me
 LEFT JOIN contributor_album ca ON ( ca.contributor = me.id )
 WHERE (

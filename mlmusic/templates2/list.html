@@ -1,0 +1,42 @@
+<?template TList { all, path, list, title, pb, start, perItem } (players, initialStatus) ?>
+<?xml version="1.1"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" href="${Conf.static}/css/sing2a.css" type="text/css" />
+<title>Sing</title>
+</head>
+<body class="browsemode">
+
+$H{ (TTopBar.render (players, initialStatus, Command.render_header_lines initialStatus)) }
+
+<p id="divider">
+ <t:for pattern="(name, link)" exp="path" sep=" / "><a href="${link}">${name}</a></t:for>
+</p>
+
+<p t:ifOption="pb" id="pagebar">
+ <t:for exp="pb" pattern="(pageOffset, pageLen, itemOffset, char)"><t:if
+   exp="pageOffset <> start"><a
+     href="?start=${Int.toString pageOffset}&amp;len=${Int.toString pageLen
+            }#${Int.toString itemOffset}">${char}</a></t:if><t:if
+   exp="pageOffset = start"><a
+     href="?start=${Int.toString pageOffset}&amp;len=${Int.toString pageLen
+            }#${Int.toString itemOffset}" class="pbCur">${
+  char}</a></t:if>&#8203;</t:for>
+</p>
+
+<div id="list">
+ <ul id="listul" class="things">
+  <t:ifOption exp="case list of (_::_::_) => all | _ => NONE" pattern="all">$H{ all ()
+  }</t:ifOption>
+  <t:for pattern="item" exp="list">$H{ perItem item }</t:for>
+ </ul>
+</div>
+
+<script type="text/javascript">var initialStatus = $H{ WebUtil.escapeForJS (Command.statusJSON initialStatus) };</script>
+<script type="text/javascript" src="${Conf.static}/js/sing-all.js"> </script>
+
+</body>
+</html>
+
+
+

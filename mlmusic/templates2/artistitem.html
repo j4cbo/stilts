@@ -1,0 +1,6 @@
+<?template TArtistItem absolute { id, name, numAlbums } ?>
+<li class="album">
+ $H{ TButtons.render ("contributor.id=" ^ id) }
+ <a class="ltitle" href='${if absolute then "/browse/artists/" else ""}${id}/${name}/'>${name}</a><br/>
+ <span t:ifOption="numAlbums">${Int.toString numAlbums} ${if numAlbums = 1 then "album" else "albums"}</span>
+</li>

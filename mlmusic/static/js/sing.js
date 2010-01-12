@@ -2,10 +2,6 @@
 
 	var lastStatusObject = initialStatus;
 
-	function escapeHTML(s) {
-		return s.replace("&", "&amp;").replace("<", "&gt;");
-	}
-
 	function curPlayer() {
 		return $("#player").val();
 	}
@@ -38,48 +34,14 @@
 	}
 
 	function updateCurSong(song) {
-		if (!song) {
-			$("#cstitle").html("");
-			$("#csartist").html("");
-			$("#csalbum").html("");
-			return;
-		}
-
-		if (song.tracknum) {
-			st = song.tracknum + ". " + song.title;
-		} else {
-			st = song.title;
-		}
-
-		$("#cstitle").html(
-			"<a target=\"browseframe\" href=\"/browse/song/"
-			+ song.id + "/\">" + escapeHTML(st) + "</a>"
-		);
-
-		if (song.album) {
-			var alb = "<a target=\"browseframe\" href=\"/browse/albums/"
-				+ song.album_id + "/\">" + escapeHTML(song.album) + "</a>";
-
-			if (song.year) {
-				y = Number(song.year);
-				alb += " (<a target=\"browseframe\" href=\"/browse/years/"
-				+ y + "/\">" + y + "</a>)";
-			}
-
-			$("#csalbum").html(alb);
-		}
-
-		if (song.artist) {
-			$("#csartist").html(
-				"<a target=\"browseframe\" href=\"/browse/artists/"
-				+ song.artist_id + "/\">" + escapeHTML(song.artist) + "</a>"
-			);
-		}
+		$("#cstitle").html(song[0]);
+		$("#csalbum").html(song[1]);
+		$("#csartist").html(song[2]);
 	}
 
 	function handleStatusObject(obj) {
 		parseStatusObject(obj[0]);
-		updateCurSong(obj[1][0]);
+		updateCurSong(obj[2]);
 
 		if (obj[0].playlist_timestamp != lastStatusObject[0].playlist_timestamp) {
 			$("#playlistul").load("/player/" + curPlayer() + "/playlist");
@@ -123,17 +85,19 @@
 	});
 
 	handleStatusObject(initialStatus);
-
 	$("#playlistul").sortable({
 		axis: "y",
-/*		containment: "parent",
-*/
+		containment: "parent",
+		handle: ".handle",
+		cursor: "move",
 		forcePlaceholderSize: true,
 		opacity: 0.8,
+		start: function(e, ui) { ui.helper.addClass("dragging"); },
+		revert: 100,
 		update: function(e, ui) {
 			var item = $(ui.item);
 			var newidx = item.parent().children().index(ui.item);
-			var oldidx = Number(item.attr("id").substring(2));
+			var oldidx = Number(item.attr("id").substring(1));
 			var offset = newidx - oldidx;
 			if (offset >= 0) offset = "+" + offset;
 			updateStatus("plmove " + oldidx + " " + offset);

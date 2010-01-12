@@ -1,8 +1,8 @@
 Group is
-	$/basis.cm
-	$/regexp-lib.cm
-	$/inet-lib.cm
-	$/smlnj-lib.cm
+	$(SML_LIB)/basis.cm
+	$(SML_LIB)/regexp-lib.cm
+	$(SML_LIB)/inet-lib.cm
+	$(SML_LIB)/smlnj-lib.cm
 
 	../../stilts/db/libmysqlclient/libmysqlclient.cm
 	../../stilts/db/squall/squall-tool.cm : tool
@@ -25,6 +25,7 @@ Group is
 	templates/list.html
 	templates/song.html
 	templates/search.html
+	templates/search2.html
 	templates/playlist.html
 
 	../util/json.sml

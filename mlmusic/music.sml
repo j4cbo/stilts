@@ -19,47 +19,53 @@ structure Music = struct
         | NONE => NONE
       end
 
+  fun get_player_info req = let
+        val desiredPlayer = Option.map Form.unquote (getCookie req "SqueezeCenter-player")
+
+        (* Go through the cached player list doing two things:
+         * - Find the player that the user wants; if they didn't specify one,
+         *   take the first one we find
+         * - Assemble a list of { id, name } for all players
+         *)
+        fun plFolder (item : PlayerCache.player_item, (foundPlayer, acc)) = (
+              case (desiredPlayer, foundPlayer) of
+                  (SOME desired, SOME prev) => if (#id item = desired) then SOME item else SOME prev
+                | (NONE, SOME prev) => SOME prev
+                | _ => SOME item,
+              { id = #id item, name = #name (!(#info item)) } :: acc
+            )
+
+        val (player, playerList) = Command.Map.foldl plFolder (NONE, nil) (!PlayerCache.player_cache)
+
+        (* Add a 'cur' field to indicate whether the player is selected *)
+        val players = map (fn { id, name } => {
+              id = id, name = name,
+              cur = case player of SOME p => (id = #id p) | NONE => false
+            }) playerList
+
+      in
+        (players, player)
+      end
+
   fun index req = let
-        val () = print "index\n"
-        fun process p = { id = valOf (Command.Map.find (p, "playerid")),
-                          name = valOf (Command.Map.find (p, "name")) }
-        val () = print "index done\n"
 
-        val (_, playerMap) = Command.players ()
-        val players = map process playerMap
-
-        val defaultPlayer = case players of nil => NONE
-                                          | ({ id, ... }::_) => SOME id        
-
-        (* Find the player we're using *)
-        val player = case (getCookie req "SqueezeCenter-player") of
-              SOME s => let val s' = Form.unquote s
-                        in if List.exists (fn { id, ... } => id = s') players
-                           then SOME s'
-                           else defaultPlayer end
-            | NONE => defaultPlayer
-
-        val () = print ("Player: " ^ (case player of SOME s => s
+        val (players, player) = get_player_info req
+        val () = print ("Player: " ^ (case player of SOME p => #id p
                                                    | NONE => "NONE") ^ "\n")
 
-        fun isSel { id, name } = {
-              id = id, name = name,
-              cur = case player of SOME s => (id = s) | NONE => false
-            }
-
-        val players = map isSel players
-
         val initialPlaylist = case player of
-              SOME s => TPlaylist.render (Command.playlist s 0 9999)
+              SOME p => TPlaylist.render (Command.playlist (#id p) 0 9999)
             | NONE => Web.HTML ""
 
-        val initialStatus = case player of SOME s => Command.status s
-                                         | NONE => "null" 
+        val initialStatus = case player of
+                  SOME { info = ref info, ... } => SOME (#status info)
+                | NONE => NONE
       in
-        U.htmlResp (TIndex.render {
+        U.xhtmlResp (TIndex.render {
                       players = players,
                       initialPlaylist = initialPlaylist,
-                      initialStatus = Web.HTML (escapeNQ initialStatus) })
+                      initialStatus = initialStatus
+                   })
       end
 
   fun rootHandler (req: Web.request) = (case U.postpath req of
@@ -76,6 +82,7 @@ structure Music = struct
   val app = U.dispatch [ ( [ "browse" ], U.PREFIX, Browser.browseApp ),
                          ( [ "search", "" ], U.EXACT, SearchApp.searchApp ),
                          ( [ "player" ], U.PREFIX, PlayerApp.playerApp ),
+                         ( [ "musicfolder" ], U.PREFIX, MFBrowser.browseApp ),
                          ( [ "static" ], U.PREFIX, staticApp ),
                          ( nil, U.PREFIX, rootHandler ) ]
 
@@ -91,13 +98,14 @@ structure Music = struct
 *)
   val app = timer (U.exnWrapper app)
 
+  val () = HTTPServer.addCleanupCallback GC.collectAll;
+  val httpd = HTTPServer.spawn_server (INetSock.any 8888) app;
+
   fun main _ = (
         print "Starting up...\n";
         Startup.startup ();
-
         print "Listening...\n";
-        HTTPServer.addCleanupCallback GC.collectAll;
-        HTTPServer.serve (INetSock.any 8888) app;
+        T.run ();
         0
       )
 

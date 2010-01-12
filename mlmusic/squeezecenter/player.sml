@@ -32,7 +32,7 @@ structure PlayerApp :> sig val playerApp: Web.app end = struct
               val _ = case cmd of SOME cmd => Command.command cmd
                                 | NONE => nil
             in
-              U.resp "text/plain" (Command.status player)
+              U.resp "text/plain" (Command.statusJSON (SOME (Command.statusRaw player)))
             end 
 
         | [ player, "playlist" ] => let

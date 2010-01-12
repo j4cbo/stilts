@@ -1,0 +1,28 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/smlnj-lib/RegExp/regexp-lib.mlb
+
+ann
+	"sequenceNonUnit warn"
+in
+	conf.sml
+	../../stilts/smelt/tinyxml/tinyxml.mlb
+	../../stilts/web/web.mlb
+	../util/linereader.sml
+	../util/timer.sml
+
+	templates/templates.mlb
+
+	../util/json.sml
+	../chiralml/socket.sig
+	../chiralml/sock-util.sml
+	../chiralml/simplehttp.sml
+
+	pagebar.sml
+	clibrowser.sml
+	cli.sml
+	command.sml
+	templates/playlist.html.sml
+	player.sml
+	music.sml
+	main.sml
+end

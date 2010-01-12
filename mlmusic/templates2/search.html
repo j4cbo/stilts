@@ -1,0 +1,47 @@
+<?template TSearch ((q, results, appendName), (players, initialStatus)) ?>
+
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" href="${Conf.static}/css/sing2a.css" type="text/css" />
+<title>Sing</title>
+</head>
+<body class="browsemode">
+
+$H{ (TTopBar.render (players, initialStatus, Command.render_header_lines initialStatus)) }
+
+<p id="divider">Search: ${q}</p>
+
+<div id="list">
+
+ <ul t:ifOption="results as { artists, albums, songs, itime, ttime }" class="things">
+
+  <li t:if="case artists of nil => false | _ => true" class="header">${Int.toString (length artists)} Artists</li>
+  <t:for exp="artists" pattern="artist">$H{ TArtistItem.render true artist }</t:for>
+   
+  <li t:if="case albums of nil => false | _ => true" class="header">${Int.toString (length albums)} Albums</li>
+  <t:for exp="albums" pattern="album">$H{ TAlbumItem.render true album }</t:for>
+
+  <li t:if="case songs of nil => false | _ => true" class="header">${Int.toString (length songs)} Songs</li>
+  <t:for exp="songs" pattern="song">$H{ TTrackItem.render NONE song }</t:for>
+
+  <li t:if="case (artists, albums, songs) of (nil, nil, nil) => true | _ => false">
+   No search results.
+  </li>
+
+  <p>
+   Time: ${Real.toString ((Time.toReal itime) * 1000.0)} ms index,
+         ${Real.toString ((Time.toReal ttime) * 1000.0)} ms total
+  </p>
+
+ </ul>
+
+</div>
+
+<script type="text/javascript">var initialStatus = $H{
+  WebUtil.escapeForJS (Command.statusJSON initialStatus)
+};</script>
+<script type="text/javascript" src="${Conf.static}/js/sing-all.js"> </script>
+
+</body>
+</html>

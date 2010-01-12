@@ -1,0 +1,24 @@
+<?template TIndex { players, initialPlaylist, initialStatus } ?>
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" href="${Conf.static}/css/sing2a.css" type="text/css" />
+<title>Sing</title>
+</head>
+<body class="playlistmode">
+
+$H{ (TTopBar.render (players, initialStatus, Command.render_header_lines initialStatus)) }
+
+<p id="divider">Now Playing</p>
+
+<div id="list">
+ <ul id="playlistul" class="things">$H{initialPlaylist}</ul>
+</div>
+
+<script type="text/javascript">var initialStatus = $H{
+  WebUtil.escapeForJS (Command.statusJSON initialStatus)
+};</script>
+<script type="text/javascript" src="${Conf.static}/js/sing-all.js"> </script>
+
+</body>
+</html>

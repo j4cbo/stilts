@@ -34,15 +34,17 @@ structure SearchApp :> sig val searchApp: Web.app end = struct
                      itime = time,
                      ttime = ttime }
       in
-        U.htmlResp (TSearch.render (q, SOME opts, true))
+        (q, SOME opts, true)
       end
 
   fun searchApp (req: Web.request) = let
           val form = Form.load req
+          val header = Request.get_header req
         in
-          case Form.get form "q" of
-            SOME q => search q
-          | NONE => U.htmlResp (TSearch.render ("", NONE, true))
+          U.xhtmlResp (TSearch.render (
+            (case Form.get form "q" of SOME q => search q | NONE => ("", NONE, true)),
+            header
+          ))
         end
 
 end

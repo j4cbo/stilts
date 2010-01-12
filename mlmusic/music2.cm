@@ -1,0 +1,62 @@
+Group is
+	$/basis.cm
+	$/regexp-lib.cm
+	$/inet-lib.cm
+	$/smlnj-lib.cm
+
+	../../stilts/db/libmysqlclient/libmysqlclient.cm
+	../../stilts/db/squall/squall-tool.cm : tool
+	music.squall
+
+	../../stilts/web/web.cm
+
+	db.sml
+	conf.sml
+
+	../util/timer.sml
+	../util/gc-smlnj.sml
+
+	../util/json.sml
+
+	../chiralml/chiralml.cm
+	../chiralml/simplehttp.sml
+	../web/server/http-server-fn.sml
+	chiral.sml
+
+	index/index.cm
+
+	request.sml
+
+	squeezecenter/cli.sml
+	squeezecenter/command.sml
+	squeezecenter/playercache.sml
+	squeezecenter/player.sml
+
+	../../stilts/smelt/smelt-tool.cm : tool
+	templates2/index.html
+	templates2/item.html
+	templates2/list.html
+	templates/song.html
+	templates2/topbar.html
+	templates2/buttons.html
+	templates2/trackitem.html
+	templates2/albumitem.html
+	templates2/artistitem.html
+	templates2/folderitem.html
+	templates2/search.html
+	templates2/playlist.html
+
+
+	jsonrpc.sml
+
+	clisonginfo.sml
+
+	startup.sml
+
+	pagebar.sml
+	browser/browser.sml
+	browser/mfbrowser.sml
+	search.sml
+	music.sml
+
+	index/search.sml

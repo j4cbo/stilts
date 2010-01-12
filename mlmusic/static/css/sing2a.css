@@ -1,0 +1,270 @@
+/* * *
+ * General
+ * * */
+
+html, body {
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
+	font-size: 12px;
+}
+
+a {
+	color: #21345a;
+	text-decoration: none;
+}
+
+.browsemode #divider a, .browsemode .things a {
+	color: #215a21;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+/* * *
+ * Main layout
+ * * */
+
+#topbar {
+	border: 0px none;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	height: 90px;
+}
+
+.playlistmode #topbar {
+	border-bottom: 1px solid #99bbff;
+}
+
+.browsemode #topbar {
+	border-bottom: 1px solid #99ff99;
+}
+
+#tbclear {
+	margin: 0px;
+	padding: 0px;
+	clear: both;
+}
+
+/* * *
+ * Top bar
+ * * */
+
+#playerbox {
+	position: absolute;
+	border: 0 none;
+	margin: 0;
+	padding: 0;
+	right: 0;
+	top: 0;
+}
+
+#player {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	margin: 5px;
+}
+
+#sbdiv {
+	margin: 15px;
+	width: 200px;
+	float: left;
+}
+
+#box {
+	font-size: 16px;
+	width: 100%;
+	color: #aaa;
+}
+
+#searchlinks {
+	font-size: 12px;
+	text-align: right;
+}
+
+#nowplaying {
+	position: absolute;
+	top: 0;
+	left: 230px;
+	margin: 0;
+	height: 100%;
+	padding: 0 150px 0px 15px;
+	border-left: 1px solid #99bbff;
+}
+
+#nowplaying span {
+	display: block;
+	font-size: 14px;
+}
+
+#nowplaying span#cstitle {
+	margin-top: 15px;
+	font-size: 16px;
+}
+
+#controls {
+	position: absolute;
+	top: 0;
+	left: 70%;
+	margin: 0;
+	height: 100%;
+	padding: 0;
+	border: none;
+}
+#prevbutton, #playbutton, #nextbutton {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin: 12px 0 0 0;
+        padding: 0;
+        background-image: url(../images/icns.png);
+        background-repeat: no-repeat;
+}
+
+
+#prevbutton {                   background-position: -72px 0px; }
+#prevbutton:active {            background-position: -72px -24px; }
+#playbutton {                   background-position: -24px 0px; }
+#playbutton:active {            background-position: -24px -24px; }
+#playbutton.pause {             background-position: 0px 0px; }
+#playbutton.pause:active {      background-position: 0px -24px; }
+#nextbutton {                   background-position: -48px 0px; }
+#nextbutton:active {            background-position: -48px -24px; }
+
+#goback {
+	position: absolute;
+	left: 70%;
+	bottom: 0px;
+	display: block;
+	margin: 0;
+	padding: 2px 5px;
+	background: #ccddff;
+	font-size: 13px; 
+}
+
+.playlistmode #goback {
+	display: none;
+}
+
+/* * *
+ * Divider bar 
+ * * */
+
+#divider {
+	margin: 0;
+	padding: 2px 15px 2px 15px;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.playlistmode #divider {
+	padding-left: 245px;
+	background: #ccddff;
+}
+
+.browsemode #divider {
+	padding-left: 90px;
+	background: #ccffcc;
+}
+
+
+/* * *
+ * Page bar
+ */
+
+#pagebar {
+	margin: 0;
+	padding: 0 0 0 20px;
+	font-size: 13px;
+	background: #abffab;
+}
+
+#pagebar a {
+        color: #334d33;
+        text-decoration: none;
+        display: inline-block;
+        padding: 2px;
+}
+
+#pagebar a.pbCur {
+        background: #334d33;
+        font-weight: bold;
+        color: #abffab;
+}
+
+#pagebar a:hover {
+        text-decoration: underline;
+}
+
+
+
+/* * *
+ * Playlist
+ * * */
+
+#list {
+	border: 0px none;
+	margin: 0;
+	padding: 0 0 0 10px;
+}
+
+.playlistmode #list {
+	padding-left: 135px;
+}
+
+.things {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+}
+
+.things li {
+	padding: 3px 0 3px 110px;
+	margin: 0;
+	height: 32px;
+	position: relative;
+}
+
+.things li .ltitle {
+	font-size: 16px;
+}
+.things li.header {
+	margin-left: 0;
+	margin-right: 10px;
+	font-size: 12px;
+	color: #666;
+	height: 12px;
+	border-bottom: 1px solid #666;
+}
+
+.things li .playbutton, .things li .addbutton, .things li .handle {
+	display: none;
+}
+
+.things li:hover .playbutton, .things li.dragging .playbutton { left: 20px; }
+.things li:hover .addbutton, .things li.dragging .addbutton { left: 48px; }
+
+.things li:hover .addbutton, .things li:hover .playbutton, .things li:hover .handle,
+.things li.dragging .addbutton, .things li.dragging .playbutton, .things li.dragging .handle {
+	top: 4px;
+	width: 24px;
+	height: 12px;
+	font-size: 12px;
+	padding: 5px 0 7px 0;
+	text-align: center;
+	background: #ccddff;
+	display: block;
+	position: absolute;
+	color: #21345a;
+	text-decoration: none;
+}
+
+.things li:hover .handle, .things li.dragging .handle {
+	left: 76px;
+	background-image: url(../images/handle.gif);
+	cursor: move;
+}

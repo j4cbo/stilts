@@ -11,13 +11,7 @@ DATE=$(shell date +%Y%m%d)
 
 # ---
 
-all: $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(OUTPUT) index/index
-
-$(MYSQL_PATH)/FFI-mlton/ffi.mlb:
-	make -C $(MYSQL_PATH) FFI-mlton/ffi.mlb
-
-index/index:
-	make -C index index
+all: $(OUTPUT)
 
 DEPS = $(shell $(MLTON) -stop f $(MLB))
 
@@ -27,10 +21,10 @@ include $(SQUALL_PATH)/squall.mk
 include $(SMELT_PATH)/smelt.mk
 
 $(OUTPUT): $(MYSQL_PATH)/FFI-mlton/ffi.mlb $(DEPS) $(MLB)
-	mlton -link-opt -lsqlite3 -output $@ $(MLB)
+	mlton -link-opt -lmysqlclient -output $@ $(MLB)
 
 $(OUTPUT)-arm: $(DEPS) $(MLB)
-	mlton -target arm-poky-linux-gnueabi -cc ~/bin2/arm-poky-linux-gnueabi-gcc -link-opt -lsqlite3 -verbose 2 -output $@ $(MLB)
+	./mlton-static-libgmp -target arm-poky-linux-gnueabi -cc ~/bin2/arm-poky-linux-gnueabi-gcc -link-opt -lsqlite3 -verbose 2 -output $@ $(MLB)
 	~/bin/arm-poky-linux-gnueabi-strip $@
 
 dist: sing-$(DATE)
@@ -42,5 +36,16 @@ sing-$(DATE): all
 	strip $@/index
 	strip $@/sing
 	svn export static $@/static
+	tar czf $@.tar.gz $@
+	du -hs $@ $@.tar.gz
+
+dist-arm: sing-arm-$(DATE)
+
+sing-arm-$(DATE): sing-arm
+	rm -rf $@
+	mkdir $@
+	cp -a sing-arm $@/
+	svn export static $@/static
+	make -C $@/static/js dist
 	tar czf $@.tar.gz $@
 	du -hs $@ $@.tar.gz

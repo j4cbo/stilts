@@ -42,7 +42,7 @@
   <div t:if="case artists of nil => false | _ => true" t:strip="">
    <p>Artists matching "${q}": ${Int.toString (length artists)}</p>
    <ul class="browselist">
-    <t:for exp="artists" pattern="{ id, name, mm_mixable, mb_id }">$H{
+    <t:for exp="artists" pattern="{ id, name, mm_mixable, mb_id, numAlbums }">$H{
       TListItem.render (id, name, SOME "/browse/artists/", appendName, "artist.id=", "")
     }</t:for>
    </ul>
@@ -51,7 +51,7 @@
   <div t:if="case albums of nil => false | _ => true" t:strip="">
    <p>Albums matching "${q}": ${Int.toString (length albums)}</p>
    <ul class="browselist">
-    <t:for exp="albums" pattern="{ id, name, compilation, mm_mixable, mb_id }">$H{
+    <t:for exp="albums" pattern="{ id, name, compilation, artist_id, artist_name, year }">$H{
       TListItem.render (id, name, SOME "/browse/albums/", appendName, "album.id=", "")
     }</t:for>
    </ul>
@@ -60,7 +60,7 @@
   <div t:if="case songs of nil => false | _ => true">
    <p>Songs matching "${q}": ${Int.toString (length songs)}</p>
    <ul class="browselist">
-    <li t:for="{ id, tracknum, title, album, artists } in songs">
+    <li t:for="{ id, tracknum, title, album, artists, lossless } in songs">
      <a href="javascript:top.Sing.ctl.add('track.id=${id}')" class="addbutton"> </a><a
         href="javascript:top.Sing.ctl.play('track.id=${id}')" class="playbutton"> </a>
      <a href="/browse/song/${id}/">${title}</a>
@@ -79,6 +79,10 @@
              href="/browse/artists/${Int.toString id}/">${name}</a></t:for></t:of>
        </t:case>
       </t:of>
+     </t:case>
+     <t:case exp="lossless">
+      <t:of pattern="SOME 1"> &#10029; </t:of>
+      <t:of pattern="_" />
      </t:case>
     </li>
    </ul>

@@ -1,6 +1,6 @@
 $(SML_LIB)/basis/basis.mlb
 $(SML_LIB)/smlnj-lib/RegExp/regexp-lib.mlb
-../../stilts/db/sqlite/sqlite.mlb
+../../stilts/db/libmysqlclient/libmysqlclient.mlb
 
 $(SML_LIB)/basis/mlton.mlb
 $(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
@@ -15,33 +15,52 @@ in
 	../util/linereader.sml
 	../util/timer.sml
 	../util/gc-mlton.sml
-
-	templates/templates.mlb
-
 	../util/json.sml
-	../chiralml/socket.sig
-	../chiralml/sock-util.sml
+
+	../chiralml/chiralml.mlb
 	../chiralml/simplehttp.sml
+	../web/server/http-server-fn.sml
+	chiral.sml
 
 	index/index.squall.sml
 	index/index.sml
 
 	music.squall.sml
 
-	cli.sml
-	command.sml
+	squeezecenter/cli.sml
+	squeezecenter/command.sml
+
+	templates2/buttons.html.sml
+	templates2/topbar.html.sml
+
+	templates2/albumitem.html.sml
+	templates2/artistitem.html.sml
+	templates2/folderitem.html.sml
+	templates2/trackitem.html.sml
+	templates2/item.html.sml
+
+	templates2/list.html.sml
+	templates2/playlist.html.sml
+	templates2/search.html.sml
+
+	templates2/index.html.sml
+	templates/song.html.sml
+
+	squeezecenter/playercache.sml
+	squeezecenter/player.sml
 
 	jsonrpc.sml
 	pagebar.sml
-	jsonrpc.sml
-	browser.sml
+	db.sml
+	request.sml
+
+	browser/browser.sml
+	browser/mfbrowser.sml
+
 	clisonginfo.sml
 
 	index/search.sml
-	db.sml
 	search.sml
-	templates/playlist.html.sml
-	player.sml
 
 	startup.sml
 

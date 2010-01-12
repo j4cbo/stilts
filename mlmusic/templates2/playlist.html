@@ -1,0 +1,5 @@
+<?template TPlaylist (prologue, tracks) ?>
+<t:for exp="rev (#2 (foldl (fn (i, (n, rest)) => (n + 1, (n, i)::rest)) (0, nil) tracks))"
+   pattern="(index, track)">$H{
+   TTrackItem.render (SOME (Int.toString index)) track
+}</t:for>

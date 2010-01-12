@@ -1,0 +1,38 @@
+<?template TTopBar (players, status, (title, artist, album)) ?>
+<div id="topbar">
+
+ <form method="get" action="/search/">
+  <div id="sbdiv">
+   <input type="text" id="box" name="q" value="Search"/>
+   <div id="searchlinks">
+    <a href="/musicfolder/">Music Folder</a> | <a href="/browse/artists/">All Artists</a>
+   </div>
+  </div>
+ </form>
+
+ <div id="nowplaying">
+  <div id="cscover"> </div>
+  <span id="cstitle">$H{Web.HTML title}</span>
+  <span id="csalbum">$H{Web.HTML artist}</span>
+  <span id="csartist">$H{Web.HTML album}</span>
+ </div>
+
+ <div id="controls">
+  <a href="#" id="prevbutton" class="disabled"> </a><a
+     href="#" id="playbutton" class="disabled pause"> </a><a
+     href="#" id="nextbutton" class="disabled"> </a>
+ </div>
+
+ <a id="goback" href="/">Now Playing</a>
+
+ <div id="tbclear"> </div>
+ 
+<div id="playerbox">
+ <select name="player" id="player">
+  <t:for pattern="{ id, name, cur }" exp="players">
+   <option value="${id}" selected='$? if cur then SOME "selected" else NONE'>${name}</option>
+  </t:for>
+ </select>
+</div>
+
+</div>

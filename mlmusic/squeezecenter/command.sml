@@ -3,6 +3,33 @@ structure Command = struct
   structure Map = RedBlackMapFn (type ord_key = string
                                  val compare = String.compare)
 
+  (* Render the "now playing" lines at the header. *)
+
+  fun render_header_lines (SOME (_, track :: _)) = (
+        case (Map.find (track, "id"), Map.find (track, "title")) of
+            (SOME id, SOME title) => "<a href=\"/browse/song/" ^ WebUtil.escapeStr id ^ "/\">"
+                                   ^ WebUtil.escapeStr (case Map.find (track, "tracknum") of
+                                                            SOME tn => tn ^ ". " ^ title
+                                                          | NONE => title)
+                                   ^ "</a>"
+          | _ => "",
+        case (Map.find (track, "album_id"), Map.find (track, "album")) of
+            (SOME aid, SOME album) => "<a href=\"/browse/albums/" ^ WebUtil.escapeStr aid ^ "/"
+                                    ^ WebUtil.escapeStr album ^ "/\">"
+                                    ^ WebUtil.escapeStr album ^ "</a>"
+                                    ^ (case Map.find (track, "year") of
+                                           SOME y => let val y = WebUtil.escapeStr y
+                                                      in " (<a href=\"/browse/years/" ^ y
+                                                       ^ "/\">" ^ y ^ "</a>)" end
+                                         | NONE => "")
+          | _ => "",
+        case (Map.find (track, "artist_id"), Map.find (track, "artist")) of
+            (SOME aid, SOME artist) => "<a href=\"/browse/artists/" ^ WebUtil.escapeStr aid ^ "/"
+                                     ^ WebUtil.escapeStr artist ^ "/\">"
+                                     ^ WebUtil.escapeStr artist ^ "</a>"
+          | _ => "")
+    | render_header_lines _ = ("", "", "")
+
   fun foldMap (str, map) = let
         val str' = Substring.full str
         val (ls, rs) = Substring.splitl (fn c => c <> #":") str'
@@ -63,14 +90,21 @@ structure Command = struct
         end
   end
 
-  fun status p = let
+  fun statusRaw p = let
         val resp = case command [ p, "status", "-", "1", "tags:asledity" ] of 
                      (_::"status"::"-"::"1"::"tags:asledity"::rest) => rest
                    | _ => raise Fail "unexpected result" 
-        val (prologue, tracks) = mapMulti "playlist index" resp
+      in
+        mapMulti "playlist index" resp
+      end
+
+  fun statusJSON NONE = "null"
+    | statusJSON (SOME (prologue, tracks)) = let
+        val (ti, ar, al) = render_header_lines (SOME (prologue, tracks))
       in
         "[" ^ JSON.object (mapResp prologue)
-            ^ ",[" ^ String.concatWith "," (map JSON.object tracks) ^ "]]"
+            ^ ",[" ^ String.concatWith "," (map JSON.object tracks) ^ "]"
+            ^ ",[" ^ JSON.string ti ^ "," ^ JSON.string ar ^ "," ^ JSON.string al ^ "]]"
       end
 
   fun extractTrack m = let
@@ -79,9 +113,10 @@ structure Command = struct
       in {
         id = get "id", tracknum = Map.find (m, "tracknum"), title = get "title",
         album = case (Map.find (m, "album_id"), Map.find (m, "album")) of
-                  (SOME i, SOME a) => SOME (i, a) | _ => NONE,
-        artist = case (Map.find (m, "artist_id"), Map.find (m, "artist")) of
-                  (SOME i, SOME a) => SOME (i, a) | _ => NONE
+                  (SOME i, SOME a) => SOME { id = i, name = a } | _ => NONE,
+        artists = case (Map.find (m, "artist_id"), Map.find (m, "artist")) of
+                  (SOME i, SOME a) => [ { id = i, name = a } ] | _ => nil,
+        lossless = NONE
       } end
 
   fun playlist p start len = let
@@ -93,4 +128,8 @@ structure Command = struct
       in
         (prologue, map extractTrack tracks)
       end
+
+
+
+
 end
