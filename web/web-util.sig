@@ -24,10 +24,12 @@ signature WEB_UTIL = sig
   (* Wrappers to build a Web.response *)
   val resp: string -> string -> Web.response
   val htmlResp: Web.html -> Web.response
+  val xhtmlResp: Web.html -> Web.response
 
   (* HTML escaping *)
   val escapeStr: string -> string
   val escape: string -> Web.html
+  val escapeForJS: string -> Web.html
 
   (* Dispatching and automatic redirection *)
   datatype dispatchmode = EXACT | PREFIX | SLASH

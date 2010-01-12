@@ -193,6 +193,7 @@ structure WebUtil :> WEB_UTIL = struct
         Byte.stringToBytes data
       )
   fun htmlResp (Web.HTML data) = resp "text/html;charset=utf-8" data
+  fun xhtmlResp (Web.HTML data) = resp "application/xhtml+xml;charset=utf-8" data
 
 
   (* val escapeStr: string -> string
@@ -200,11 +201,18 @@ structure WebUtil :> WEB_UTIL = struct
    *
    * Perform HTML / XML escaping on the input string.
    *)
+  fun escapeNormalChar c = if Char.< (c, #" ")
+                           then "&#" ^ Int.toString (Char.ord c) ^ ";"
+                           else String.str c
+
   val escapeStr = String.translate (fn #"<" => "&lt;"
                                      | #"&" => "&amp;"
                                      | #"\"" => "&quot;"
-                                     | c => String.str c)
+                                     | c => escapeNormalChar c)
   val escape = Web.HTML o escapeStr
+  val escapeForJS = Web.HTML o String.translate (fn #"<" => "&lt;"
+                                                  | #"&" => "&amp;"
+                                                  | c => escapeNormalChar c)
 
 
   (* fun dispatch: (Web.pathseq * dispatchmode * Web.app) list -> Web.app
