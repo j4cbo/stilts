@@ -3,6 +3,8 @@ $(SML_LIB)/basis/mlton.mlb
 $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
 $(SML_LIB)/smlnj-lib/INet/inet-lib.mlb
 
+config.sig
+config.sml
 thread.sig
 threadbase-mlton.sml
 reactorcore.sig
@@ -12,4 +14,6 @@ thread.sml
 socket.sig
 socket.sml
 sock-util.sml
+condvar.sig
+condvar.sml
 ../util/linereader.sml
