@@ -1,5 +1,5 @@
 <?template TFolderItem { id, filename } ?>
 <li class="album">
- $H{ TButtons.render ("folder.id=" ^ id) }
+ $H{ TButtons.render ("folder_id:" ^ id) }
  <a class="ltitle" href='${id}/${filename}/'>${filename}</a><br/>
 </li>

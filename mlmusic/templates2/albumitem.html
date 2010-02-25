@@ -1,6 +1,6 @@
 <?template TAlbumItem absolute { id, name, compilation, artist_id, artist_name, year } ?>
 <li class="album">
- $H{ TButtons.render ("album.id=" ^ id) }
+ $H{ TButtons.render ("album_id:" ^ id) }
  <a class="ltitle" href='${if absolute then "/browse/albums/" else ""}${id}/${name}/'>${name}</a><br/>
  <t:case exp="(artist_id, artist_name)">
   <t:of pattern="(SOME artist_id, SOME artist_name)"><a

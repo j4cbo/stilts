@@ -2,7 +2,7 @@
 
 <li class="track" id='$? Option.map (fn i => "p" ^ i) playlistIndex'>
  <t:case exp="playlistIndex">
-  <t:of pattern="NONE">$H{ TButtons.render ("track.id=" ^ id) }</t:of>
+  <t:of pattern="NONE">$H{ TButtons.render ("track_id:" ^ id) }</t:of>
   <t:of pattern="SOME playlistIndex"><a
     class="addbutton" href="javascript:top.Sing.pl.del(${playlistIndex})">Del</a>
  <a class="playbutton" href="javascript:top.Sing.pl.play(${playlistIndex})">Play</a>
