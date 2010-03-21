@@ -116,7 +116,7 @@ structure Command = struct
                   (SOME i, SOME a) => SOME { id = i, name = a } | _ => NONE,
         artists = case (Map.find (m, "artist_id"), Map.find (m, "artist")) of
                   (SOME i, SOME a) => [ { id = i, name = a } ] | _ => nil,
-        lossless = NONE
+        lossless = NONE, ct = NONE, bitrate = NONE
       } end
 
   fun playlist p start len = let

@@ -1,4 +1,4 @@
-<?template TTrackItem playlistIndex { id, tracknum, title, artists, album, lossless } ?>
+<?template TTrackItem playlistIndex { id, tracknum, title, artists, album, lossless, bitrate, ct } ?>
 
 <li class="track" id='$? Option.map (fn i => "p" ^ i) playlistIndex'>
  <t:case exp="playlistIndex">
@@ -13,8 +13,12 @@
     href="/browse/artists/${id}/${name}/">${name}</a></t:for>
  <t:ifOption exp="album" pattern="{id = aId, name = aTitle}"
     > - <a href="/browse/albums/${aId}/${aTitle}/">${aTitle}</a></t:ifOption
- ><t:case exp="lossless">
-  <t:of pattern="SOME 1"> &#10029; </t:of>
+ ><t:case exp="ct">
+  <t:of pattern='SOME "flc"'> (FLAC) </t:of>
+  <t:of pattern='SOME ct'> (${ct}<t:case exp="bitrate">
+                                   <t:of pattern="SOME br"> ${Int.toString (br div 1000)}kbps</t:of>
+                                   <t:of pattern="_" />
+                                  </t:case>) </t:of>
   <t:of pattern="_" />
  </t:case>
 </li>

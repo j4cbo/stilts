@@ -14,8 +14,9 @@ structure DB = struct
 
   fun fold_tracks res = let
         fun processSingle { id: string, tracknum, title, lossless, albumId, albumTitle,
-                                                      artistId, artistName } =
+                                                      artistId, artistName, bitrate, ct } =
               { id = id, tracknum = tracknum, title = title, lossless = lossless,
+			bitrate = bitrate, ct = ct,
                 album = case (albumId, albumTitle) of
                           (SOME i, SOME t) => SOME { id = i, name = t }
                         | _ => NONE,
@@ -25,10 +26,10 @@ structure DB = struct
 
         fun process (item, nil) = [ processSingle item ]
           | process (item as { id, artistId, artistName, ... },
-                     (prev as { id = pId, tracknum = pNum, title = pTitle, lossless = pLossless,
+                     (prev as { id = pId, tracknum = pNum, title = pTitle, lossless = pLossless, ct = pct, bitrate = pBitrate,
                        album = pAlbum, artists = pArtists }) :: rest) =
               if id = pId
-              then { id = pId, tracknum = pNum, title = pTitle, lossless = pLossless, album = pAlbum,
+              then { id = pId, tracknum = pNum, title = pTitle, lossless = pLossless, ct = pct, bitrate = pBitrate, album = pAlbum,
                      artists = case (artistId, artistName) of
                          (SOME i, SOME n) => { id = i, name = n } :: pArtists
                        | _ => pArtists } :: rest

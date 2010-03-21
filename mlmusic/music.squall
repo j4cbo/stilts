@@ -39,13 +39,13 @@ LEFT JOIN contributors c ON ( c.id = me.contributor )
 ORDER BY titlesort, disc
 LIMIT ? OFFSET ?
 
---- albumTracks: int -> { id: string, tracknum: string option, title: string, albumId: string option, albumTitle: string option, artistId: string option, artistName: string option, lossless: int option } list
+--- albumTracks: int -> { id: string, tracknum: string option, title: string, albumId: string option, albumTitle: string option, artistId: string option, artistName: string option, lossless: int option, bitrate: int option, ct: string option } list
 
 SELECT
         tr.id, tr.tracknum, tr.title,
         tr.album album_id, albums.title album_title,
         contributors.id artist_id, contributors.name artist_name,
-        tr.lossless lossless
+	tr.lossless lossless, tr.bitrate bitrate, tr.content_type ct
 FROM tracks tr
 LEFT OUTER JOIN albums ON albums.id = tr.album
 LEFT OUTER JOIN contributor_track ct ON (ct.track = tr.id and ct.role in (1, 6))
@@ -73,13 +73,13 @@ FROM tracks
 LEFT JOIN albums ON ( albums.id = tracks.album )
 WHERE tracks.id = ?
 
---- trackMulti: int list -> { id: string, tracknum: string option, title: string, albumId: string option, albumTitle: string option, artistId: string option, artistName: string option, lossless: int option } list
+--- trackMulti: int list -> { id: string, tracknum: string option, title: string, albumId: string option, albumTitle: string option, artistId: string option, artistName: string option, lossless: int option, bitrate: int option, ct: string option } list
 
 SELECT
         tr.id, tr.tracknum, tr.title,
         tr.album album_id, albums.title album_title,
         contributors.id artist_id, contributors.name artist_name,
-	tr.lossless lossless
+	tr.lossless lossless, tr.bitrate bitrate, tr.content_type ct
 FROM tracks tr
 LEFT OUTER JOIN albums ON albums.id = tr.album
 LEFT OUTER JOIN contributor_track ct ON (ct.track = tr.id and ct.role in (1, 6))

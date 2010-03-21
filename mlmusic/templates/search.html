@@ -43,7 +43,7 @@
    <p>Artists matching "${q}": ${Int.toString (length artists)}</p>
    <ul class="browselist">
     <t:for exp="artists" pattern="{ id, name, mm_mixable, mb_id, numAlbums }">$H{
-      TListItem.render (id, name, SOME "/browse/artists/", appendName, "artist.id=", "")
+      TListItem.render (id, name, SOME "/browse/artists/", appendName, "artist_id:", "")
     }</t:for>
    </ul>
   </div>
@@ -52,7 +52,7 @@
    <p>Albums matching "${q}": ${Int.toString (length albums)}</p>
    <ul class="browselist">
     <t:for exp="albums" pattern="{ id, name, compilation, artist_id, artist_name, year }">$H{
-      TListItem.render (id, name, SOME "/browse/albums/", appendName, "album.id=", "")
+      TListItem.render (id, name, SOME "/browse/albums/", appendName, "album_id:", "")
     }</t:for>
    </ul>
   </div>
@@ -61,8 +61,8 @@
    <p>Songs matching "${q}": ${Int.toString (length songs)}</p>
    <ul class="browselist">
     <li t:for="{ id, tracknum, title, album, artists, lossless } in songs">
-     <a href="javascript:top.Sing.ctl.add('track.id=${id}')" class="addbutton"> </a><a
-        href="javascript:top.Sing.ctl.play('track.id=${id}')" class="playbutton"> </a>
+     <a href="javascript:top.Sing.ctl.add('track_id:${id}')" class="addbutton"> </a><a
+        href="javascript:top.Sing.ctl.play('track_id:${id}')" class="playbutton"> </a>
      <a href="/browse/song/${id}/">${title}</a>
      <t:ifOption exp="album" pattern="{id = aId, title = aTitle}">
       from <a t:if="appendName" href="/browse/albums/${Int.toString aId}/${WebUtil.urlencode aTitle}/">${aTitle}</a>

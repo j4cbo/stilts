@@ -86,7 +86,8 @@ structure MFBrowser :> sig val browseApp: Web.app end = struct
                    id = id,
                    tracknum = NONE,
                    title = Option.getOpt (getString map "title", name),
-                   artists = nil, album = NONE, lossless = NONE}
+                   artists = nil, album = NONE, lossless = NONE, bitrate = NONE, ct = NONE
+                 }
              | _ => Web.HTML ""
            )
       in

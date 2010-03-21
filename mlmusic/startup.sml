@@ -7,12 +7,13 @@ structure Startup = struct
         val db = SQLite.opendb (cachedir ^ "/squeezecenter.db")
 *)
 
-  val conn_info_sock : MySQLClient.connect_info = {
-        host = NONE, port = 0w0, unix_socket = SOME (cachedir ^ "/squeezebox-mysql.sock"),
-        user = SOME "root", password = NONE, db = SOME "slimserver"
-      }
-val db = MySQLClient.init ()
-val () = MySQLClient.real_connect db conn_info_sock
+        val conn_info_sock : MySQLClient.connect_info = {
+              host = NONE, port = 0w0, unix_socket = SOME (cachedir ^ "/squeezebox-mysql.sock"),
+              user = SOME "root", password = NONE, db = SOME "slimserver"
+            }
+        val db = MySQLClient.init ()
+        val () = MySQLClient.real_connect db conn_info_sock
+        val () = MySQLClient.set_reconnect db true
 
       in
         SQL.prepare db;

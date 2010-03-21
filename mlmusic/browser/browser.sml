@@ -51,7 +51,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
                        ( title, "/browse/artists/" ^ id ^ "/" ^ U.urlencode title ^ "/") ],
               pb = pb, list = SQL.albumsByArtist id', start = 0,
               perItem = TAlbumItem.render false,
-              all = SOME (fn () => TListItem.render ("All Songs", "contributor.id=" ^ id))
+              all = SOME (fn () => TListItem.render ("All Songs", "artist_id:" ^ id))
           } end
 
     | browse_list_params req [ "artists", artistId, artistName, albumId, albumTitle, "" ] = let
@@ -66,7 +66,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
               list = DB.fold_tracks (SQL.albumTracks albumId'),
               pb = NONE, start = 0,
               perItem = TTrackItem.render NONE,
-              all = SOME (fn () => TListItem.render ("All Songs", "album.id=" ^ albumId ^ " contributor.id=" ^ artistId))
+              all = SOME (fn () => TListItem.render ("All Songs", "album_id:" ^ albumId))
           } end
 
     | browse_list_params req [ "albums", "" ] = let
@@ -86,7 +86,7 @@ structure Browser :> sig val browseApp: Web.app end = struct
                      ( albumTitle, "/browse/albums/" ^ albumId ^ "/" ^ U.urlencode albumTitle ^ "/") ],
             list = DB.fold_tracks (SQL.albumTracks albumId'),
             title = albumTitle,
-            all = SOME (fn () => TListItem.render ("All Songs", "album.id=" ^ albumId)),
+            all = SOME (fn () => TListItem.render ("All Songs", "album_id:" ^ albumId)),
  
             pb = NONE, start = 0,
 	    perItem = TTrackItem.render NONE
