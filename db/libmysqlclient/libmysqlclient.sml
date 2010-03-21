@@ -338,7 +338,17 @@ structure MySQLClient :> MYSQLCLIENT = struct
         val () = print ("MySQL: Running query: \n       " ^ sp q ^ "\n")
 
         val timer = Timer.startRealTimer ()
-        val () = real_query conn q
+
+        fun try retry_count = (
+              real_query conn q
+              handle (e as MySQLException (n, _)) =>
+                  if retry_count = 0 then raise e
+                  (* CR_SERVER_GONE_ERROR or CR_SERVER_LOST *)
+                  else if n = 0w2006 orelse n = 0w2013 then try (retry_count - 1)
+                  else raise e
+              )
+
+        val () = try 3
         val queryTime = Time.toReal (Timer.checkRealTimer timer)
         val queryTS = Real.toString (queryTime * 1000.0)
 
