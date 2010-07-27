@@ -1,7 +1,7 @@
 Some notes:
 
 - On debian, you will need to install the following packages in addition to smlnj:
-    libckit-smlnj libmlnlffi-smlnj ml-nlffigen ml-lex ml-yacc ml-upt
+    libckit-smlnj libmlnlffi-smlnj ml-nlffigen ml-lex ml-yacc ml-lpt
 
 - ml-yacc will fail a few times like so:
 Usage: ml-yacc filename
