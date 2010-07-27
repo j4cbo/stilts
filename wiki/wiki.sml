@@ -6,10 +6,9 @@ structure Wiki = struct
 
   fun formatPage page = let
 
-        fun getMatch (SOME { pos, len }) = Substring.string (Substring.slice (pos, 0, SOME len))
-          | getMatch NONE = raise Option
-
         fun getMatch { pos, len } = Substring.string (Substring.slice (pos, 0, SOME len))
+
+        fun getMatch' matchopt = getMatch (valOf matchopt)
 
         fun makeLink s = "<a href=\"" ^ s ^ "\">" ^ s ^ "</a>"
 
@@ -17,9 +16,9 @@ structure Wiki = struct
                                              | c => String.str c) 
 
         val match = RE.match [ ("\\[([A-Za-z]*)\\]", fn m =>
-                                  makeLink (getMatch (MatchTree.nth (m, 1)))),
+                                  makeLink (getMatch' (MatchTree.nth (m, 1)))),
                                ("[^\\[]+", fn m => let
-                                  val match = getMatch (MatchTree.root m)
+                                  val match = getMatch' (MatchTree.root m)
                                 in        
                                   translateCR (WebUtil.escapeStr match)
                                 end) 
