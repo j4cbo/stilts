@@ -145,7 +145,7 @@ end = struct
    *)
   fun mkOutputProc SI.OBunit =
         ("()",
-         "      case results of [] => ()\n"
+         "      case get nil of [] => ()\n"
        ^ "                    | _ => raise Fail \"Unexpected rows from DB\"\n")
     | mkOutputProc (SI.OBtuple (rt, types)) =
         let
