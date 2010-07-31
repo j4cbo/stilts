@@ -166,10 +166,10 @@ structure WebUtil :> WEB_UTIL = struct
    * val redirect: string -> exn
    *
    * Helpers for commonly-used exceptions. The redirect function produces an
-   * HTTP 301 Moved.
+   * HTTP 303 See Other.
    *)
   val notFound = Web.HTTPExn Web.HTTP404NotFound
-  fun redirect addr = Web.HTTPExn (Web.HTTP301Moved addr)
+  fun redirect addr = Web.HTTPExn (Web.HTTP303SeeOther addr)
 
 
   (* val redirectPostpath: Web.request -> Web.pathsec -> exn
