@@ -1,3 +1,5 @@
+engine: mysql
+
 --- getPage: string -> { id: int, text: string } option
 
 select id, text from page where title = ?
