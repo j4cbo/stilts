@@ -86,7 +86,7 @@ structure SQLite :> SQLITE = struct
         (get stmt, num, vec, Word8Vector.length vec, SQLITE_TRANSIENT)
 
   fun bind_double (stmt, num, value) =
-        (_import "sqlite3_bind_blob" : ptr * int * Real64.real -> int;)
+        (_import "sqlite3_bind_double" : ptr * int * Real64.real -> int;)
         (get stmt, num, value)
 
   fun bind_int (stmt, num, value) =
@@ -102,7 +102,7 @@ structure SQLite :> SQLITE = struct
         (get stmt, num)
 
   fun bind_text (stmt, num, str) =
-        (_import "sqlite3_bind_blob" : ptr * int * string * int * ptr -> int;)
+        (_import "sqlite3_bind_text" : ptr * int * string * int * ptr -> int;)
         (get stmt, num, str, size str, SQLITE_TRANSIENT)
 
   fun step stmt = (_import "sqlite3_step" : ptr -> int;) (get stmt)
