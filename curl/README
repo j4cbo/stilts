@@ -1,0 +1,5 @@
+This attempts to be a very simple interface to libcurl. Pass in your URL, get the data at that URL back.
+
+Because MLton's build system is half-assed, in order to use this lib you must:
+ - add "-link-opt -lcurl" to your mlton command line parameters
+ - add ".../stilts/curl/curl_supereasy.c" after your mlb file on the mlton command line
