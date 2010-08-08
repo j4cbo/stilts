@@ -38,5 +38,6 @@ signature WEB_UTIL = sig
 
   (* URL-encoding *)
   val urlencode: string -> string
+  val urldecode: string -> string
 
 end

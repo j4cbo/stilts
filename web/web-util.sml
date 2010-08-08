@@ -286,4 +286,26 @@ structure WebUtil :> WEB_UTIL = struct
                            (Int.fmt StringCvt.HEX (Char.ord c))
       )
 
+
+  (* val urldecode: string -> string
+   *
+   * Perform URL-decoding on string; "foo%20bar" becomes "foo bar", etc.
+   *)
+  fun urldecode v = let
+      val v = String.translate (fn #"+" => " " | c => String.str c) v
+      fun process s = let
+          val v = Word8.fromString (String.extract (s, 0, SOME 2))
+        in
+          String.concat [ String.str (Byte.byteToChar (valOf v)),
+                          String.extract (s, 2, NONE) ]
+        end
+        handle Overflow => "%" ^ s
+             | Subscript => "%" ^ s
+             | Option => "%" ^ s
+    in
+      String.concat (case String.fields (fn c => c = #"%") v of
+                       nil => nil
+                     | x::rest => x::(map process rest))
+    end
+
 end

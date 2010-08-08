@@ -8,27 +8,8 @@ structure Form : FORM = struct
   type form = string list Map.map
 
 
-  (* val unquote: string -> string
-   *
-   * Perform URL-decoding on string; "foo%20bar" becomes "foo bar", etc.
-   *)
-  fun unquote v = let
-      val v = String.translate (fn #"+" => " " | c => String.str c) v
-      fun process s = let
-          val v = Word8.fromString (String.extract (s, 0, SOME 2))
-        in
-          String.concat [ String.str (Byte.byteToChar (valOf v)),
-                          String.extract (s, 2, NONE) ]
-        end
-        handle Overflow => "%" ^ s
-             | Subscript => "%" ^ s
-             | Option => "%" ^ s
-    in
-      String.concat (case String.fields (fn c => c = #"%") v of
-                       nil => nil
-                     | x::rest => x::(map process rest))
-    end
-
+  (* Still here for compatibility *)
+  val unquote = WebUtil.urldecode
 
   (* val parseVars: string -> (string * string) list
    *
