@@ -8,9 +8,6 @@ structure Form : FORM = struct
   type form = string list Map.map
 
 
-  (* Still here for compatibility *)
-  val unquote = WebUtil.urldecode
-
   (* val parseVars: string -> (string * string) list
    *
    * Parse out a query string (key=value&key=value&...) into a set of pairs
