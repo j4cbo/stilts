@@ -87,7 +87,7 @@ struct
         val (spath, squery) = Substring.splitl (fn c => c <> #"?")
                                                (Substring.full url)
 
-        val pathsections = case map (Form.unquote o Substring.string)
+        val pathsections = case map (WebUtil.urldecode o Substring.string)
                                     (Substring.fields (fn c => c = #"/") spath)
                            of nil => [ "" ]
                             | ""::sections => sections

@@ -16,7 +16,7 @@ structure Request = struct
       end
 
   fun get_player_info req = let
-        val desiredPlayer = Option.map Form.unquote (getCookie req "SqueezeCenter-player")
+        val desiredPlayer = Option.map U.urldecode (getCookie req "SqueezeCenter-player")
 
         (* Go through the cached player list doing two things:
          * - Find the player that the user wants; if they didn't specify one,

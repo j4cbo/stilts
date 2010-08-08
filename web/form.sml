@@ -22,7 +22,7 @@ structure Form : FORM = struct
           val (k, v) = Substring.splitl (fn c => c <> #"=") field
         in
           SOME (Substring.string k,
-                unquote (Substring.string (Substring.slice (v, 1, NONE))))
+                WebUtil.urldecode (Substring.string (Substring.slice (v, 1, NONE))))
         end
         handle Subscript => NONE
       ) (Substring.fields (fn c => c = #"&") (Substring.full qstring))
