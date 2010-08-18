@@ -66,7 +66,7 @@ structure Wiki = struct
 
       | _ => raise U.notFound
     )
-
+(*
   val conn_info : MySQLClient.connect_info = {
         host = NONE, port = 0w0, unix_socket = NONE,
         user = SOME "root", password = NONE, db = SOME "foowiki"
@@ -76,6 +76,8 @@ structure Wiki = struct
 
   val () = (MySQLClient.real_connect conn conn_info;
             SQL.conn := SOME conn)
+*)
+  val () = SQL.prepare (SQLite.opendb "wiki.db")
 
   val app = U.dumpRequestWrapper print (U.exnWrapper handler)
 

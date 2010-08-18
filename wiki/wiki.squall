@@ -1,4 +1,4 @@
-engine: mysql
+engine: sqlite
 
 --- getPage: string -> { id: int, text: string } option
 
