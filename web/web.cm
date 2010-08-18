@@ -1,4 +1,17 @@
-Group is
+Library
+	structure Web
+	signature WEB_UTIL
+	structure WebUtil
+	signature FORM
+	structure Form
+	structure HTTPDate
+	structure StaticServer
+	structure CGI
+	structure HTTPServer
+	structure SCGIServer
+	structure FastCGIServer
+	functor LineReader
+is
 	$/basis.cm
 	$/smlnj-lib.cm
 	$/inet-lib.cm
