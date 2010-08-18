@@ -7,11 +7,6 @@ struct
 
   val () = SIGPIPE.ignore ()
 
-  exception NotRunning
-  exception AlreadyRunnable
-  exception Asleep
-  exception NotAsleep
-
   (* Threads are stored internally as:
    *
    * - A ref to the THREAD_COMMON value saved last time this thread was
@@ -20,22 +15,61 @@ struct
    * - A unique (except in case of wraparound) int for tracing/debugging.
    *)
 
-  datatype scheduling_state = RUNNABLE | BLOCKED | SLEEPING
+  datatype state = datatype ChiralCommon.state
 
   type thread_context = unit T.t
-  type thread = thread_context ref
-              * scheduling_state ref
-              * int
+  type thread = (thread_context ref
+                 * state ref
+                 * int) ref
 
-  type time_block_info = thread * Time.time
+  fun get_id (ref (_, _, id)) = id
+  fun get_state (ref (_, ref state, _)) = state
+
+  exception NotRunning
+  exception BadState of state
 
   val next_id = ref 0
+
+  (* Introspection support
+   *
+   * For runtime monitoring and debugging, we keep track of all existing
+   * threads in a map. Weak references are used to ensure that the map doesn't
+   * keep threads alive forever.
+   *)
+
+  structure IM = IntBinaryMap
+
+  val threads : thread Weak.t IM.map ref = ref IM.empty
+
+  fun gc () = threads := IM.filter
+                           (Option.isSome o Weak.get)
+                           (!threads)
+
+  fun get_thread id = (
+      gc ();
+      Option.mapPartial Weak.get (IM.find (!threads, id))
+    )
+
+  fun get_threads () = (
+      gc ();
+      List.mapPartial Weak.get (IM.listItems (!threads))
+    )
+
+  (* Sleeping threads
+   *
+   * We need to store a set of sleeping threads, and efficiently be able to:
+   * - Find the next thread scheduled to wake up
+   * - Insert a thread to wake up at a specified time in the future
+   *
+   * Therefore, we use a priority queue; the basis library provides an
+   * implementation for us.
+   *)
 
   val invert_order = fn GREATER => LESS
                       | EQUAL => EQUAL
                       | LESS => GREATER
 
-  structure PQ = LeftPriorityQFn (type item = time_block_info
+  structure PQ = LeftPriorityQFn (type item = thread * Time.time
                                   type priority = Time.time
                                   val priority : item -> priority = #2
                                   val compare = invert_order o Time.compare)
@@ -78,10 +112,11 @@ struct
    *)
   fun schedule () =
         case !runnable_threads of
-          (ctx, dsc, id) :: rest => (
+          (cur as ref (ctx, state, id)) :: rest => (
                 sctrace (fn () => "Using next runnable: " ^ Int.toString id);
                 runnable_threads := rest;
-                current_thread := SOME (ctx, dsc, id);
+                current_thread := SOME cur;
+                state := RUNNING;
                 T.prepare (!ctx, ())
               )
         | nil => let
@@ -127,9 +162,10 @@ struct
 
   fun block (sock, cond) =
         T.switch (fn curctx => let
-            val current as (ctx_ref, _, _) = get current_thread
+            val current as ref (ctx_ref, state_ref, _) = get current_thread
           in
             ctx_ref := curctx;
+            state_ref := BLOCKED cond;
             RC.add_sock rcstate (current, cond, Socket.sockDesc sock);
             schedule ()
             handle e => (etrace (fn () => "Block prepare died with "
@@ -139,9 +175,10 @@ struct
   fun sleep time = 
         T.switch (fn curctx => let
             val waketime = Time.+ (Time.now (), time)
-            val current as (ctx_ref, _, _) = get current_thread
+            val current as ref (ctx_ref, state_ref, _) = get current_thread
           in
             ctx_ref := curctx;
+            state_ref := SLEEPING waketime;
             sleepq := PQ.insert ((current, waketime), !sleepq);
             schedule ()
             handle e => (etrace (fn () => "Sleep prepare died with "
@@ -150,15 +187,23 @@ struct
 
   fun new thrfun = let
         val id = !next_id
+        val state = ref RUNNABLE
         fun thrfun' () = (
-              thrfun ()
-                handle e => thtrace (fn () => "Thread " ^ Int.toString id
-                                     ^ " died with " ^ General.exnMessage e);
-                thtrace (fn () => "Thread " ^ Int.toString id ^ " terminated");
+              (
+                (thrfun ();
+                 state := FINISHED;
+                 thtrace (fn () => "Thread " ^ Int.toString id ^ " finished"))
+               handle e => (
+                 state := FAILED e;
+                 thtrace (fn () => "Thread " ^ Int.toString id
+                                 ^ " died with " ^ General.exnMessage e))
+              );
               T.switch (fn _ => schedule ())
             )
-        val thread = (ref (T.new thrfun'), ref RUNNABLE, id)
+        val thread = ref (ref (T.new thrfun'), state, id)
       in
+        gc ();
+        threads := IM.insert (!threads, id, Weak.new thread);
         next_id := id + 1;
         runnable_threads := thread :: (!runnable_threads);
         thread
@@ -177,31 +222,29 @@ struct
 
   fun deschedule () =
         T.switch (fn curctx => let
-            val current as (ctx_ref, sch_ref, _) = get current_thread
+            val current as ref (ctx_ref, sch_ref, _) = get current_thread
           in
             ctx_ref := curctx;
-            sch_ref := BLOCKED;
+            sch_ref := DESCHEDULED "deschedule";
             schedule ()
             handle e => (etrace (fn () => "Deschedule prepare died with "
                                 ^ General.exnMessage e ^ "\n"); raise e)
           end)
 
-  fun make_runnable (_, ref RUNNABLE, _) = raise AlreadyRunnable
-    | make_runnable (_, ref SLEEPING, _) = raise Asleep
-    | make_runnable (thread as (ctx_ref, sch_ref as ref BLOCKED, id)) = (
+  fun make_runnable (thread as ref (ctx_ref, sch_ref as ref (BLOCKED _), id)) = (
           thtrace (fn () => "Making thread " ^ Int.toString id ^ " runnable");
           sch_ref := RUNNABLE;
           runnable_threads := thread :: (!runnable_threads);
           ()
         )
+    | make_runnable (ref (_, ref state, _)) = raise BadState state
 
-  fun wake (_, ref BLOCKED, _) = raise NotRunning
-    | wake (_, ref RUNNABLE, _) = raise AlreadyRunnable
-    | wake (thread as (ctx_ref, sch_ref as ref SLEEPING, id)) = (
+  fun wake (thread as ref (ctx_ref, sch_ref as ref (SLEEPING _), id)) = (
           thtrace (fn () => "Making thread " ^ Int.toString id ^ " runnable");
           sch_ref := RUNNABLE;
           runnable_threads := thread :: (!runnable_threads);
           ()
         )
+    | wake (ref (_, ref state, _)) = raise BadState state
 
 end
