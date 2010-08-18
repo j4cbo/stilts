@@ -10,6 +10,7 @@ threadbase-mlton.sml
 reactorcore.sig
 reactorcore.sml
 sigpipe-mlton.sml
+weak-mlton.sml
 thread.sml
 socket.sig
 socket.sml

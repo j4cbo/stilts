@@ -1,4 +1,29 @@
-Group is
+Library
+	signature THREAD_CONFIG
+	structure ConfigPrintEverything
+	structure ConfigNoPrint
+
+	structure ChiralCommon
+	signature THREAD_COMMON
+	signature THREAD
+
+	structure ThreadBase
+
+	signature REACTOR_CORE
+	structure SelectReactorCore
+
+	structure SIGPIPE
+	structure Weak
+
+	functor Thread
+
+	signature CHIRAL_SOCKET
+	functor ChiralSocketFn
+	functor ChiralSockUtil
+
+	signature CONDVAR
+	functor CondVar
+is
 	$/basis.cm
 	$/smlnj-lib.cm
 	$/inet-lib.cm
@@ -9,6 +34,7 @@ Group is
 	reactorcore.sig
 	reactorcore.sml
 	sigpipe-smlnj.sml
+	weak-smlnj.sml
 	thread.sml
 	socket.sig
 	socket.sml
