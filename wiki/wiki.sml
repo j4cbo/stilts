@@ -83,8 +83,9 @@ structure Wiki = struct
 
   fun main _ = let
       val () = print "Listening...\n"
-      val () = HTTPServer.serve (INetSock.any 5124) app
+      val serverthread = HTTPServer.spawn_server (INetSock.any 5124) app
     in
+      T.run ();
       0
     end
 
