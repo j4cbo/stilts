@@ -1,0 +1,9 @@
+Library
+	signature SQLITE
+	structure SQLite
+is
+	$/basis.cm
+	$c/c.cm
+	FFI-smlnj/ffi.cm : make ()
+	sqlite.sig
+	sqlite-smlnj.sml
