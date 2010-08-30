@@ -10,6 +10,7 @@ Library
 	structure HTTPServer
 	structure SCGIServer
 	structure FastCGIServer
+	functor HTTPHandlerFn
 	functor LineReader
 is
 	$/basis.cm
@@ -27,6 +28,7 @@ is
 	server/http-server.sml
 	server/scgi-server.sml
 	server/fastcgi-server.sml
+	server/http-handler-fn.sml
 #if (SMLNJ_VERSION = 110) andalso (SMLNJ_MINOR_VERSION < 57)
 	pack-compat.sml
 #endif

@@ -13,6 +13,7 @@ local
 	../util/linereader.sml
 	server/cgi.sml
 	server/scgi-server.sml
+	server/http-handler-fn.sml
 	server/http-server.sml
 	server/fastcgi-common.sml
 	server/fastcgi-mlton.sml
@@ -32,4 +33,6 @@ in
 	structure SCGIServer
 	structure FastCGIServer
 	structure HTTPServer
+
+	functor HTTPHandlerFn
 end
