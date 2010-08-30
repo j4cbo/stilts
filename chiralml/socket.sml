@@ -12,7 +12,8 @@ functor ChiralSocketFn (T: THREAD) :> CHIRAL_SOCKET
 
     fun wrap (f, args, sock, typ) = let
           val res = f args
-                    handle e => (print "well that didn't go so well\n"; raise e)
+                    handle e => (print ("well that didn't go so well\n"
+                                       ^ General.exnMessage e ^ "\n"); raise e)
         in
           case res of
             SOME res => res
