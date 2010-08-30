@@ -1,0 +1,14 @@
+$(SML_LIB)/basis/basis.mlb
+
+../smelt/tinyxml/tinyxml.mlb
+../web/web.mlb
+
+../chiralml/chiralml.mlb
+../web/server/http-server-fn.sml
+chiral.sml
+
+../chiralml/introspector/thread-list.html.sml
+../chiralml/introspector/introspector.sml
+
+test.sml
+main.sml

@@ -1,0 +1,13 @@
+Group is
+	$/basis.cm
+	$/regexp-lib.cm
+
+	../web/web.cm
+
+	../chiralml/chiralml.cm
+	../web/server/http-server-fn.sml
+	chiral.sml
+
+	../chiralml/introspector/introspector.cm
+
+	test.sml
