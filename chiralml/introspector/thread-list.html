@@ -1,0 +1,13 @@
+<?template IntrospectorThreadList { threads } ?>
+<html>
+ <head>
+  <title>Chiral Introspector</title>
+ </head>
+ <body>
+  <h1>Chiral Introspector</h1>
+  <p>Threads:</p>
+  <ul>
+   <li t:for="(id, state) in threads">Thread ${Int.toString id}: ${ChiralCommon.stateToStr state}</li>
+  </ul>
+ </body>
+</html>

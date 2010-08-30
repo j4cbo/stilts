@@ -1,0 +1,13 @@
+Library
+	functor Introspector
+is
+	$/basis.cm
+	$/smlnj-lib.cm
+
+	../../web/web.cm
+	../chiralml.cm
+
+	../../smelt/smelt-tool.cm : tool
+	thread-list.html
+
+	introspector.sml
