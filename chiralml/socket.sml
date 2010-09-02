@@ -40,12 +40,29 @@ functor ChiralSocketFn (T: THREAD) :> CHIRAL_SOCKET
     val sameAddr = S.sameAddr
     val familyOfAddr = S.familyOfAddr
 
+    (* Work around an SML/NJ bug.
+     *
+     * In versions of SML/NJ through 110.72, Socket.acceptNB has a problem:
+     * it returns a socket that SML/NJ thinks is already nonblocking, but
+     * which the OS thinks is blocking. Therefore, future NB calls will
+     * actually block. Performing a single "blocking" call, even writing
+     * zero bytes, will fix the situation.
+     *)
+    val nullSlice = Word8VectorSlice.full (Byte.stringToBytes "")
+    fun acceptNB s = let
+        val s' = S.acceptNB s
+        val () = case s' of
+            NONE => ()
+          | SOME (sock, _) => ignore (S.sendVec (sock, nullSlice))
+      in
+        s'
+      end
+
+    fun accept s = wrap (acceptNB, s, s, C.BLOCK_RD)
+
     val bind = S.bind
     val listen = S.listen
-    val acceptNB = S.acceptNB
     val connectNB = S.connectNB
-
-    fun accept s = wrap (S.acceptNB, s, s, C.BLOCK_RD)
 
     (* Connect doesn't use wrap, because unlike all the other functions, we
      * don't want to retry the connect once it's writeable; we just want to
