@@ -8,6 +8,9 @@ signature FORM = sig
   val get: form -> string -> string option
   val getAll: form -> string -> string list
 
+  val export: form -> string
+  val import: string -> form
+
   val dump: form -> string
 
 end

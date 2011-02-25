@@ -36,6 +36,28 @@ structure Form : FORM = struct
       end
 
 
+  (* val import: string -> form
+   *
+   * Builds a form from a query string.
+   *)
+  fun import str = foldl add_value Map.empty (parseVars str)
+
+
+  (* val export: form -> string
+   *
+   * Exports a form into a query string format suitable for use by the "import"
+   * function. May not properly preserve the ordering of keys with multiple
+   * values.
+   *)
+  fun export form = String.concatWith "&" (
+                      map (fn (k, vs) =>
+                        String.concatWith "&" (
+                          map (fn v => k ^ "=" ^ (WebUtil.urlencode v)) vs
+                        )
+                      ) (Map.listItemsi form)
+                    )
+
+
   (* val load: Web.request -> form
    *
    * Parse all form variables out of a request.
@@ -44,7 +66,7 @@ structure Form : FORM = struct
    * of application/x-www-form-urlencoded data, that content is loaded as well.
    *)
   fun load (req: Web.request) = let
-        val form = foldl add_value Map.empty (parseVars (#query_string req))
+        val form = import (#query_string req)
         val content_type = case WebUtil.server_header "CONTENT_TYPE" req of
               SOME ct => SOME ct
             | NONE => WebUtil.http_header "HTTP_CONTENT_TYPE" req
@@ -77,7 +99,8 @@ structure Form : FORM = struct
 
   (* val dump: form -> string
    *
-   * Return a multiline string of all keys and values in the form. 
+   * Return a multiline string of all keys and values in the form which is
+   * nominally human-readable and useful for debugging.
    *)
   fun dump form = String.concat (
                     map (fn (k, vs) =>
