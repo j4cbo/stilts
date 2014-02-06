@@ -29,6 +29,8 @@ fun engine_lookup s =
     | VECTOR
     | FOLD
     | UNIT
+    | AFFECTED_ROWS
+    | INSERT_ID
     | ENGINE
     | EOF
     | SQLDATA of string
@@ -39,7 +41,7 @@ fun engine_lookup s =
 %nonterm START of engine option * sqlfunc list
        | ITEMS of sqlfunc list
        | ITEM of sqlfunc
-       | engine of engine 
+       | engine of engine
        | itype of inbinding
        | otype of outbinding
        | reptype of reptype
@@ -76,6 +78,8 @@ otype: LPAREN tupleitems RPAREN (OBtuple (Rsingle, tupleitems))
      | LBRACE recorditems RBRACE (OBrecord (Rsingle, recorditems))
      | LBRACE recorditems RBRACE reptype (OBrecord (reptype, recorditems))
      | UNIT (OBunit)
+     | INSERT_ID (OBinsertId)
+     | AFFECTED_ROWS (OBaffectedRows)
 
 reptype: LIST (Rlist)
        | OPTION (Roption)

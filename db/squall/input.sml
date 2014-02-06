@@ -15,6 +15,8 @@ structure SquallInput = struct
   datatype outbinding = OBtuple of reptype * varspec list
                       | OBrecord of reptype * (string * varspec) list
                       | OBunit
+                      | OBinsertId
+                      | OBaffectedRows
 
   type sqlfunc = { name: string,
                    inb: inbinding,
