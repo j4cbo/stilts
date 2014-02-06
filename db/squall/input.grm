@@ -4,6 +4,7 @@ exception ParseError of string
 
 fun type_lookup "string" = String
   | type_lookup "int" = Int
+  | type_lookup "blob" = Blob
   | type_lookup t = raise ParseError ("Unknown type: \"" ^ t ^ "\"")
 
 fun engine_lookup s =

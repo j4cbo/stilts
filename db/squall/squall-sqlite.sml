@@ -14,6 +14,8 @@ end = struct
         "SQLite.bind_int (s, " ^ Int.toString (pos + 1) ^ ", " ^ ivar ^ ")"
     | generateBindFunc (ivar, pos, SI.String) =
         "SQLite.bind_text (s, " ^ Int.toString (pos + 1) ^ ", " ^ ivar ^ ")"
+    | generateBindFunc (ivar, pos, SI.Blob) =
+        "SQLite.bind_blob (s, " ^ Int.toString (pos + 1) ^ ", " ^ ivar ^ ")"
 
 
   (* val generateBind: string * int * varspec -> string
@@ -39,6 +41,7 @@ end = struct
    *)
   fun generateReader (idx, SI.Int) = "SQLite.column_int (s, " ^ Int.toString idx ^ ")"
     | generateReader (idx, SI.String) = "(case SQLite.column_text (s, " ^ Int.toString idx ^ ")of SOME s=>s|_=>raise(DataFormatError\""^Int.toString idx ^ "\"))"
+    | generateReader (idx, SI.Blob) = "(case SQLite.column_blob (s, " ^ Int.toString idx ^ ")of SOME s=>s|_=>raise(DataFormatError\""^Int.toString idx ^ "\"))"
 
   (* fun generateConv: int * varspec -> string
    *
