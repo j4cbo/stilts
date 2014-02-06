@@ -14,6 +14,9 @@ signature SQLITE = sig
   val opendb : string -> db
   val close : db -> unit
 
+  val last_insert_rowid : db -> Int32.int
+  val changes : db -> Int32.int
+
   val prepare : db * string -> stmt
   val reset : stmt -> unit
   val finalize : stmt -> unit

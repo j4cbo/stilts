@@ -18,7 +18,7 @@ fun eof () = EOF (!lineNum, !lineNum)
 
 whitespace = [\ \t];
 token = [a-zA-Z_'];
-sqlline = ([^-\n] .* "\n") 
+sqlline = ([^-\n] .* "\n")
         | ("-" ([^-\n] .* "\n" | "\n"))
         | ("--" ([^-\n] .* "\n" | "\n"));
 
@@ -35,6 +35,9 @@ sqlline = ([^-\n] .* "\n")
 <HEADER>	"array"		=>	( ARRAY (!lineNum, !lineNum) );
 <HEADER>	"vector"	=>	( VECTOR (!lineNum, !lineNum) );
 <HEADER>	"unit"		=>	( UNIT (!lineNum, !lineNum) );
+<HEADER>	"insert_id"	=>	( INSERT_ID (!lineNum, !lineNum) );
+<HEADER>	"affected_rows"	=>	( AFFECTED_ROWS (!lineNum, !lineNum) );
+<HEADER>	"->"		=>	( ARROW (!lineNum, !lineNum) );
 <HEADER>	"->"		=>	( ARROW (!lineNum, !lineNum) );
 <HEADER>	":"		=>	( COLON (!lineNum, !lineNum) );
 <HEADER>	"{"		=>	( LBRACE (!lineNum, !lineNum) );

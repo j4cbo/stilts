@@ -67,3 +67,10 @@ const unsigned char *sqlite3_column_text(sqlite3_stmt*, int iCol);
 const void *sqlite3_column_text16(sqlite3_stmt*, int iCol);
 int sqlite3_column_type(sqlite3_stmt*, int iCol);
 sqlite3_value *sqlite3_column_value(sqlite3_stmt*, int iCol);
+
+
+/*sqlite3_int64 sqlite3_last_insert_rowid(sqlite3*);*/
+/* XXX: this is super wrong. but will probably work. */
+/* Woooooo relying on platform ABI details. */
+int sqlite3_last_insert_rowid(sqlite3*);
+int sqlite3_changes(sqlite3*);

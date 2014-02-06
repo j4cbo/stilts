@@ -151,6 +151,16 @@ end = struct
         ("",
          "      case results of [] => ()\n"
        ^ "                    | _ => raise Fail \"Unexpected rows from DB\"\n")
+
+    | mkOutputProc SI.OBinsertId =
+        ("()",
+         "      case get nil of [] => Int32.fromLarge (Word64.toLargeInt (MySQLClient.insert_id conn))\n"
+       ^ "                    | _ => raise Fail \"Unexpected rows from DB\"\n")
+    | mkOutputProc SI.OBaffectedRows =
+        ("()",
+         "      case get nil of [] => Int32.fromLarge (Word64.toLargeInt (MySQLClient.affected_rows conn))\n"
+       ^ "                    | _ => raise Fail \"Unexpected rows from DB\"\n")
+
     | mkOutputProc (SI.OBtuple (rt, types)) =
         let
           val names = List.tabulate(length types, fn i => "a_" ^ Int.toString i)

@@ -79,6 +79,12 @@ structure SQLite :> SQLITE = struct
         stmt := NONE
       )
 
+  fun last_insert_rowid db =
+      Int64.toInt
+      ((_import "sqlite3_last_insert_rowid" : ptr -> Int64.int;) (get db))
+  fun changes db =
+      (_import "sqlite3_changes" : ptr -> int;) (get db)
+
   val SQLITE_TRANSIENT = P.sub (P.null, 0w1)
 
   fun bind_blob (stmt, num, vec) =

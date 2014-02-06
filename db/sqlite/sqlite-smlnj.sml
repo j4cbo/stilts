@@ -22,7 +22,7 @@ structure SQLite :> SQLITE = struct
        val ptrcell = C.alloc' C.S.ptr 0w1
        val res = F_sqlite3_open.f' (filename', ptrcell)
        val ptr = C.Get.ptr' (C.Ptr.|*! ptrcell)
-     in 
+     in
        C.free' filename';
        C.free' ptrcell;
        if C.Ptr.isNull' ptr
@@ -57,6 +57,10 @@ structure SQLite :> SQLITE = struct
         F_sqlite3_finalize.f' (get stmt);
         stmt := NONE
       )
+
+  fun last_insert_rowid db = F_sqlite3_last_insert_rowid.f' (get db)
+  fun changes db = F_sqlite3_changes.f' (get db)
+
 
   val SQLITE_TRANSIENT : C.voidptr = C.U.i2p (C.Cvt.c_ulong (~(0w1)))
 
@@ -108,7 +112,7 @@ structure SQLite :> SQLITE = struct
   fun read_bytes (p, n) = Word8Vector.tabulate (n,
         fn i => Word8.fromLarge (Word32.toLarge (
                   C.Get.uchar' (C.Ptr.sub' C.S.uchar (p, i)))))
- 
+
   fun column_blob (stmt, num) = let
         val arg = (get stmt, Int32.fromInt num)
         val f = F_sqlite3_column_blob.f'

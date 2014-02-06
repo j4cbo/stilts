@@ -2,7 +2,7 @@ structure SquallInput = struct
 
   datatype engine = SQLite | MySQL
 
-  datatype vartype = String | Int
+  datatype vartype = String | Int | Blob
 
   datatype varspec = Vrequired of vartype | Voption of vartype | Vlist of vartype
 
@@ -15,6 +15,8 @@ structure SquallInput = struct
   datatype outbinding = OBtuple of reptype * varspec list
                       | OBrecord of reptype * (string * varspec) list
                       | OBunit
+                      | OBinsertId
+                      | OBaffectedRows
 
   type sqlfunc = { name: string,
                    inb: inbinding,
